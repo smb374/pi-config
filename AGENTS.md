@@ -26,12 +26,12 @@
 - LSP results are intermediate feedback only. Before saying a task is done, run the project's real format/lint/typecheck/test commands (see the project AGENTS.md or package scripts).
 - Never claim something works without running it. If you couldn't verify, say so explicitly.
 
-## Delegation (`pi-subagents`)
+## Delegation
 - Use subagents for bounded, well-scoped work: `scout` for recon, `reviewer` after non-trivial changes, `oracle` for risky decisions.
 - Prefer foreground runs. Only run in the background when I ask.
 - Don't delegate trivial tasks; one subagent call costs more than a direct read.
 
-## Goals (`pi-goal-x`)
+## Goals
 - When working on a goal, keep task status and evidence up to date. Report "blocked" instead of looping on the same failure.
 
 ## Safety
