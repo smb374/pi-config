@@ -13,6 +13,7 @@
     "npm:pi-workspace-history",
     "npm:pi-rtk-optimizer",
     "npm:pi-commandcode-provider",
+    "npm:pi-hashline-edit-pro",
     "npm:@narumitw/pi-btw",
     "npm:@narumitw/pi-goal",
     "npm:@narumitw/pi-lsp",

@@ -50,3 +50,6 @@
 - No sycophantic closers ("I hope this helps", "feel free to leave a comment and discuss").
 - No slogan-like generalizations ("soul vs. shell", "two-layer signaling").
 - Use "Note", "In other words", and "In comparison" sparingly.
+
+## Misc
+- DO NOT `cd` to current working directory, this is redundant.
