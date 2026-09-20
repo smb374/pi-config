@@ -52,6 +52,8 @@
     "openai-codex/gpt-5.6-terra",
     "openai-codex/gpt-5.6-sol",
     "commandcode/deepseek/deepseek-v4.1-flash",
-    "commandcode/z-ai/glm-5.3-flash"
+    "commandcode/z-ai/glm-5.3-flash",
+    "opencode-go/deepseek-v4.1-flash",
+    "opencode-go/glm-5.3-flash"
   ]
 }
