@@ -52,4 +52,5 @@
 - Use "Note", "In other words", and "In comparison" sparingly.
 
 ## Misc
-- DO NOT `cd` to current working directory, this is redundant.
+- DO NOT `cd` to current working directory if you're in the same directory, this is redundant.
+- Some lsp server may return nothing if there's no error.
