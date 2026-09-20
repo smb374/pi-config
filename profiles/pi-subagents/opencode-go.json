@@ -11,10 +11,10 @@
         "model": "opencode-go/glm-5.3"
       },
       "worker": {
-        "model": "opencode-go/glm-5.3"
+        "model": "opencode-go/gpt-5.6-luna"
       },
       "reviewer": {
-        "model": "opencode-go/glm-5.3"
+        "model": "opencode-go/glm-5.3-flash"
       },
       "oracle": {
         "model": "opencode-go/glm-5.3"

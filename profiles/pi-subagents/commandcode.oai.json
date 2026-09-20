@@ -11,10 +11,10 @@
         "model": "commandcode/gpt-5.6-sol"
       },
       "worker": {
-        "model": "commandcode/gpt-5.6-sol"
+        "model": "commandcode/gpt-5.6-luna"
       },
       "reviewer": {
-        "model": "commandcode/gpt-5.6-sol"
+        "model": "commandcode/gpt-5.6-terra"
       },
       "oracle": {
         "model": "commandcode/gpt-5.6-sol"

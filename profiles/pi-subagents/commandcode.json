@@ -11,10 +11,10 @@
         "model": "commandcode/zai-org/GLM-5.3"
       },
       "worker": {
-        "model": "commandcode/zai-org/GLM-5.3"
+        "model": "commandcode/gpt-5.6-luna"
       },
       "reviewer": {
-        "model": "commandcode/zai-org/GLM-5.3"
+        "model": "commandcode/z-ai/glm-5.3-flash"
       },
       "oracle": {
         "model": "commandcode/zai-org/GLM-5.3"

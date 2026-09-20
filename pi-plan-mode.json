@@ -1,0 +1,13 @@
+{
+  "defaultPlanTools": [
+    "bash",
+    "find",
+    "grep",
+    "ls",
+    "powershell",
+    "read",
+    "ask_user_question",
+    "anchor_grep"
+  ],
+  "implementationPlanRetention": "clear-on-start"
+}

@@ -11,10 +11,10 @@
         "model": "openai-codex/gpt-5.6-sol"
       },
       "worker": {
-        "model": "openai-codex/gpt-5.6-sol"
+        "model": "openai-codex/gpt-5.6-luna"
       },
       "reviewer": {
-        "model": "openai-codex/gpt-5.6-sol"
+        "model": "openai-codex/gpt-5.6-terra"
       },
       "oracle": {
         "model": "openai-codex/gpt-5.6-sol"
