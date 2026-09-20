@@ -8,3 +8,6 @@ settings.json
 missions
 extensions
 pi-todo-state.json
+crashes.json
+pi-blackhole/*
+!pi-blackhole/pi-blackhole-config.json

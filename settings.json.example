@@ -8,7 +8,7 @@
     "npm:pi-context-view",
     "npm:pi-open-tui",
     "npm:pi-subagents",
-    "npm:pi-observational-memory",
+    "npm:pi-blackhole",
     "npm:pi-jingle",
     "npm:pi-workspace-history",
     "npm:pi-rtk-optimizer",
@@ -40,15 +40,6 @@
   },
   "editorPaddingX": 0,
   "quietStartup": true,
-  "observational-memory": {
-    "compactAfterTokensMode": "calibrated",
-    "compactAfterTokens": 81000,
-    "model": {
-      "provider": "<provider>",
-      "id": "<model>",
-      "thinking": "low"
-    }
-  },
   "subagents": {
   },
   "enabledModels": [
