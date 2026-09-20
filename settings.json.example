@@ -1,9 +1,9 @@
 {
   "lastChangelogVersion": "0.85.1",
   "theme": "catppuccin-mocha",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-terra",
-  "defaultThinkingLevel": "medium",
+  "defaultProvider": "<provider>",
+  "defaultModel": "<model>",
+  "defaultThinkingLevel": "<level>",
   "packages": [
     "npm:pi-context-view",
     "npm:pi-open-tui",
@@ -14,13 +14,15 @@
     "npm:pi-rtk-optimizer",
     "npm:pi-commandcode-provider",
     "npm:pi-hashline-edit-pro",
+    "npm:@arhen/pi-core-ask",
+    "npm:@arhen/pi-core-skill-tool",
+    "npm:@arhen/pi-core-todo",
+    "npm:@arhen/pi-core-tps-stats",
     "npm:@narumitw/pi-btw",
     "npm:@narumitw/pi-goal",
     "npm:@narumitw/pi-lsp",
     "npm:@narumitw/pi-plan-mode",
     "npm:@narumitw/pi-usage",
-    "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:@juicesharp/rpiv-todo",
     "npm:@juicesharp/rpiv-web-tools",
     "npm:@ifi/oh-pi-themes",
     "git:github.com/elpapi42/pi-fork"
@@ -42,20 +44,16 @@
     "compactAfterTokensMode": "calibrated",
     "compactAfterTokens": 81000,
     "model": {
-      "provider": "openai-codex",
-      "id": "gpt-5.6-luna",
+      "provider": "<provider>",
+      "id": "<model>",
       "thinking": "low"
     }
   },
   "subagents": {
   },
   "enabledModels": [
-    "openai-codex/gpt-5.6-luna",
-    "openai-codex/gpt-5.6-terra",
-    "openai-codex/gpt-5.6-sol",
-    "commandcode/deepseek/deepseek-v4.1-flash",
-    "commandcode/z-ai/glm-5.3-flash",
-    "opencode-go/deepseek-v4.1-flash",
-    "opencode-go/glm-5.3-flash"
+    "<provider1>/<model1>",
+    "<provider2>/<model2>",
+    "<provider3>/<model3>"
   ]
 }
