@@ -46,6 +46,8 @@
       "thinking": "low"
     }
   },
+  "subagents": {
+  },
   "enabledModels": [
     "openai-codex/gpt-5.6-luna",
     "openai-codex/gpt-5.6-terra",
@@ -54,27 +56,5 @@
     "commandcode/z-ai/glm-5.3-flash",
     "opencode-go/deepseek-v4.1-flash",
     "opencode-go/glm-5.3-flash"
-  ],
-  "subagents": {
-    "agentOverrides": {
-      "scout": {
-        "model": "commandcode/deepseek/deepseek-v4.1-flash"
-      },
-      "delegate": {
-        "model": "commandcode/deepseek/deepseek-v4.1-flash"
-      },
-      "researcher": {
-        "model": "commandcode/zai-org/GLM-5.3"
-      },
-      "worker": {
-        "model": "commandcode/zai-org/GLM-5.3"
-      },
-      "reviewer": {
-        "model": "commandcode/zai-org/GLM-5.3"
-      },
-      "oracle": {
-        "model": "commandcode/zai-org/GLM-5.3"
-      }
-    }
-  }
+  ]
 }
