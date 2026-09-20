@@ -5,6 +5,7 @@
 - Keep changes minimal and scoped to the request. No drive-by refactors, renames, or reformatting of untouched code.
 - If requirements are ambiguous or a decision is hard to reverse, ask with the ask-user-question tool instead of guessing.
 - Match the existing code style, patterns, and libraries of the project.
+- Always `ask_user_question` tools when asking multiple questions to the user when the tool is registered.
 
 ## Engineering principles
 - KISS. If the architecture is becoming bloated, propose a simpler design before continuing. Don't restructure beyond the task without agreement.
@@ -20,9 +21,11 @@
 - Don't use `sed` or `awk` at all, even for printing. Read files with the read tool (or `rg -n` / `head` / `tail` for slices).
   If a stream edit is truly needed, ask first.
 - Only use `edit` & `write` tools when editing/writing files in the worktree, never use self-generated short scripts to perform these tasks.
+- DO NOT `cd` to current working directory if you're in the same directory.
 
 ## Verification
 - While editing, call `lsp_diagnostics` on the files you changed when targeted feedback is useful. It is not automatic.
+  - Some LSP server may not return anything if it found no diagnostics.
 - LSP results are intermediate feedback only. Before saying a task is done, run the project's real format/lint/typecheck/test commands (see the project AGENTS.md or package scripts).
 - Never claim something works without running it. If you couldn't verify, say so explicitly.
 
@@ -50,7 +53,3 @@
 - No sycophantic closers ("I hope this helps", "feel free to leave a comment and discuss").
 - No slogan-like generalizations ("soul vs. shell", "two-layer signaling").
 - Use "Note", "In other words", and "In comparison" sparingly.
-
-## Misc
-- DO NOT `cd` to current working directory if you're in the same directory, this is redundant.
-- Some lsp server may return nothing if there's no error.
