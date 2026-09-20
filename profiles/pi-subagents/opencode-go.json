@@ -1,0 +1,24 @@
+{
+  "subagents": {
+    "agentOverrides": {
+      "scout": {
+        "model": "opencode-go/deepseek-v4.1-flash"
+      },
+      "delegate": {
+        "model": "opencode-go/deepseek-v4.1-flash"
+      },
+      "researcher": {
+        "model": "opencode-go/glm-5.3"
+      },
+      "worker": {
+        "model": "opencode-go/glm-5.3"
+      },
+      "reviewer": {
+        "model": "opencode-go/glm-5.3"
+      },
+      "oracle": {
+        "model": "opencode-go/glm-5.3"
+      }
+    }
+  }
+}

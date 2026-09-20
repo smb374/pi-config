@@ -1,0 +1,24 @@
+{
+  "subagents": {
+    "agentOverrides": {
+      "scout": {
+        "model": "commandcode/deepseek/deepseek-v4.1-flash"
+      },
+      "delegate": {
+        "model": "commandcode/deepseek/deepseek-v4.1-flash"
+      },
+      "researcher": {
+        "model": "commandcode/zai-org/GLM-5.3"
+      },
+      "worker": {
+        "model": "commandcode/zai-org/GLM-5.3"
+      },
+      "reviewer": {
+        "model": "commandcode/zai-org/GLM-5.3"
+      },
+      "oracle": {
+        "model": "commandcode/zai-org/GLM-5.3"
+      }
+    }
+  }
+}
