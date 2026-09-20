@@ -22,7 +22,6 @@
     "npm:@juicesharp/rpiv-todo",
     "npm:@juicesharp/rpiv-web-tools",
     "npm:@ifi/oh-pi-themes",
-    "npm:@arihantdeva/heimdall",
     "git:github.com/elpapi42/pi-fork"
   ],
   "npmCommand": [
@@ -55,5 +54,27 @@
     "commandcode/z-ai/glm-5.3-flash",
     "opencode-go/deepseek-v4.1-flash",
     "opencode-go/glm-5.3-flash"
-  ]
+  ],
+  "subagents": {
+    "agentOverrides": {
+      "scout": {
+        "model": "commandcode/deepseek/deepseek-v4.1-flash"
+      },
+      "delegate": {
+        "model": "commandcode/deepseek/deepseek-v4.1-flash"
+      },
+      "researcher": {
+        "model": "commandcode/zai-org/GLM-5.3"
+      },
+      "worker": {
+        "model": "commandcode/zai-org/GLM-5.3"
+      },
+      "reviewer": {
+        "model": "commandcode/zai-org/GLM-5.3"
+      },
+      "oracle": {
+        "model": "commandcode/zai-org/GLM-5.3"
+      }
+    }
+  }
 }
