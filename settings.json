@@ -21,7 +21,8 @@
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:@juicesharp/rpiv-todo",
     "npm:@juicesharp/rpiv-web-tools",
-    "npm:@ifi/oh-pi-themes"
+    "npm:@ifi/oh-pi-themes",
+    "git:github.com/elpapi42/pi-fork"
   ],
   "npmCommand": [
     "bun"
