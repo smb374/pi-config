@@ -1,0 +1,24 @@
+{
+  "subagents": {
+    "agentOverrides": {
+      "scout": {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash"
+      },
+      "delegate": {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash"
+      },
+      "researcher": {
+        "model": "openrouter/zai-org/GLM-5.3"
+      },
+      "worker": {
+        "model": "openrouter/gpt-5.6-luna"
+      },
+      "reviewer": {
+        "model": "openrouter/z-ai/glm-5.3-flash"
+      },
+      "oracle": {
+        "model": "openrouter/zai-org/GLM-5.3"
+      }
+    }
+  }
+}
