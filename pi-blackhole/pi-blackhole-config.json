@@ -27,7 +27,7 @@
   "memory": true,
   "model": {
     "provider": "commandcode",
-    "id": "gpt-5.6-luna",
+    "id": "deepseek/deepseek-v4.1-flash",
     "thinking": "low"
   },
   "debugLog": false
