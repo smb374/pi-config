@@ -25,6 +25,6 @@
   "observerPreambleMaxTokens": 0,
   "agentMaxTurns": 16,
   "memory": true,
-  "model": { "provider": "openai-codex", "id": "gpt-5.6-luna", "thinking": "low" },
+  "model": { "provider": "commandcode", "id": "gpt-5.6-luna", "thinking": "low" },
   "debugLog": false
 }
