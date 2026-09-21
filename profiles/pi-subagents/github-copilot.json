@@ -11,10 +11,10 @@
         "model": "github-copilot/gpt-5.6-sol"
       },
       "worker": {
-        "model": "github-copilot/gpt-5.6-luna"
+        "model": "github-copilot/gpt-5.6-terra"
       },
       "reviewer": {
-        "model": "github-copilot/gpt-5.6-terra"
+        "model": "github-copilot/gpt-5.6-sol"
       },
       "oracle": {
         "model": "github-copilot/gpt-5.6-sol"
