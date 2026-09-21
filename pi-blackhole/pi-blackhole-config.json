@@ -26,7 +26,7 @@
   "agentMaxTurns": 16,
   "memory": true,
   "model": {
-    "provider": "commandcode",
+    "provider": "openrouter",
     "id": "deepseek/deepseek-v4.1-flash",
     "thinking": "low"
   },
