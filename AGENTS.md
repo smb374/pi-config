@@ -16,7 +16,7 @@
 
 ## Tooling
 - You must attempt all tools other than `bash` first before resulting to use `bash` tool if no tool suits your need.
-- You must not use `bash` tools just to pipe several commands and combine output, use separated tool calls instead.
+- You must not use `bash` tools just to combine several commands with simple separator just for pretty print, use separated tool calls instead.
 - When using `bash` tool:
   - Prefer `rg` and `fd` command over `grep` and `find` command when available.
   - You must not use `sed` or `awk` at all, even for printing. Read files with the `read` tool (or `rg -n` / `head` / `tail` for slices).
