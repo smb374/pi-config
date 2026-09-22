@@ -15,22 +15,20 @@
 - Encapsulate complexity inside components; expose only the necessary lifecycle methods and APIs.
 
 ## Tooling
-- Prefer `bun` over `node` when available.
-- Prefer `grep` and `find` tool over using `bash` to do grepping and finding
+- You must attempt all tools other than `bash` first before resulting to use `bash` tool if no tool suits your need.
+- You must not use `bash` tools just to pipe several commands and combine output, use separated tool calls instead.
 - When using `bash` tool:
   - Prefer `rg` and `fd` command over `grep` and `find` command when available.
-  - Don't use `sed` or `awk` at all, even for printing. Read files with the read tool (or `rg -n` / `head` / `tail` for slices).
+  - You must not use `sed` or `awk` at all, even for printing. Read files with the `read` tool (or `rg -n` / `head` / `tail` for slices).
     If a stream edit is truly needed, ask first.
+- Prefer `bun` over `node` when available.
 - Get the current date/time with `date` in `bash`; never assume it.
-- When editing/writing files in the worktree, only use these tools:
-  - `write`
-  - normal edit: `edit`
-  - hashline edit: `insert`, `replace`
-  Never use self-generated short scripts to perform these tasks.
+- When editing/writing files in the worktree, only use these tools: `write`, `edit`. Never use self-generated short scripts to perform editing or writing.
 - DO NOT `cd` to current working directory if you're in the same directory.
 
 ## Verification
-- While editing, call `lsp_diagnostics` on the files you changed when targeted feedback is useful. It is not automatic.
+- While editing:
+  - Call `lsp_diagnostics` on the files you changed when targeted feedback is useful. It is not automatic.
   - Some LSP server may not return anything if it found no diagnostics.
 - LSP results are intermediate feedback only. Before saying a task is done, run the project's real format/lint/typecheck/test commands (see the project AGENTS.md or package scripts).
 - Never claim something works without running it. If you couldn't verify, say so explicitly.
