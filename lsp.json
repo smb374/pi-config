@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "ols": {
+      "command": "ols",
+      "args": [],
+      "extensions": [".odin"],
+      "languageId": "odin",
+      "rootMarkers": ["ols.json", ".git"]
+    }
+  }
+}
