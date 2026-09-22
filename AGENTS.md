@@ -16,6 +16,7 @@
 
 ## Tooling
 - Prefer `bun` over `node` when available.
+- Prefer `grep` and `find` tool over using `bash` to do grepping and finding
 - When using `bash` tool:
   - Prefer `rg` and `fd` command over `grep` and `find` command when available.
   - Don't use `sed` or `awk` at all, even for printing. Read files with the read tool (or `rg -n` / `head` / `tail` for slices).
