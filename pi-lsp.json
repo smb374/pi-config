@@ -1,4 +1,8 @@
 {
+  "typescript-language-server": {
+    "command": ["typescript-language-server", "--stdio"],
+    "extensions": [".ts", ".js", ".mjs", ".tsx", ".jsx"]
+  },
   "ols": {
     "command": ["ols"],
     "extensions": [".odin"]
