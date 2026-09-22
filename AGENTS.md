@@ -5,7 +5,7 @@
 - Keep changes minimal and scoped to the request. No drive-by refactors, renames, or reformatting of untouched code.
 - If requirements are ambiguous or a decision is hard to reverse, ask with the ask-user-question tool instead of guessing.
 - Match the existing code style, patterns, and libraries of the project.
-- Always use `ask_user_question` tool when asking user questions.
+- Always use `ask_user` tool when asking user questions.
 
 ## Engineering principles
 - KISS. If the architecture is becoming bloated, propose a simpler design before continuing. Don't restructure beyond the task without agreement.
@@ -16,11 +16,16 @@
 
 ## Tooling
 - Prefer `bun` over `node` when available.
-- Prefer `rg` and `fd` over `grep` and `find` when available.
-- Get the current date/time with `date` in bash; never assume it.
-- Don't use `sed` or `awk` at all, even for printing. Read files with the read tool (or `rg -n` / `head` / `tail` for slices).
-  If a stream edit is truly needed, ask first.
-- Only use `edit` & `write` tools when editing/writing files in the worktree, never use self-generated short scripts to perform these tasks.
+- When using `bash` tool:
+  - Prefer `rg` and `fd` command over `grep` and `find` command when available.
+  - Don't use `sed` or `awk` at all, even for printing. Read files with the read tool (or `rg -n` / `head` / `tail` for slices).
+    If a stream edit is truly needed, ask first.
+- Get the current date/time with `date` in `bash`; never assume it.
+- When editing/writing files in the worktree, only use these tools:
+  - `write`
+  - normal edit: `edit`
+  - hashline edit: `insert`, `replace`
+  Never use self-generated short scripts to perform these tasks.
 - DO NOT `cd` to current working directory if you're in the same directory.
 
 ## Verification
@@ -46,7 +51,7 @@
 
 ## Communication
 - Be concise. Summarize what changed, what was verified, and anything left undone.
-- Use the todo tool for multi-step tasks so progress is visible.
+- Use the `todo` tool for multi-step tasks so progress is visible.
 - Support claims with concrete examples or code snippets, not abstract descriptions.
 - Prefer direct quotes over paraphrase, with sources I can verify. If no source is available, say why.
 - No clichéd transitions ("as we all know", "it goes without saying", "it is worth noting", "delving into the details").
