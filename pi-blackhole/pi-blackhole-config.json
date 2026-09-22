@@ -26,8 +26,8 @@
   "agentMaxTurns": 16,
   "memory": true,
   "model": {
-    "provider": "commandcode",
-    "id": "deepseek/deepseek-v4.1-flash",
+    "provider": "opencode-go",
+    "id": "deepseek-v4.1-flash",
     "thinking": "low"
   },
   "debugLog": false
