@@ -2,6 +2,7 @@ auth.json
 commandcode-models.json
 models-store.json
 npm
+git
 sessions
 state
 settings.json
