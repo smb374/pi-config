@@ -6,7 +6,6 @@
   "defaultThinkingLevel": "<level>",
   "packages": [
     "npm:pi-blackhole",
-    "npm:pi-commandcode-provider",
     "npm:pi-context-view",
     "npm:pi-better-edit",
     "npm:pi-jingle",
@@ -20,13 +19,13 @@
     "npm:@narumitw/pi-btw",
     "npm:@narumitw/pi-goal",
     "npm:@narumitw/pi-lsp",
+    "npm:@narumitw/pi-tool",
     "npm:@narumitw/pi-usage",
     "npm:@xynogen/pix-find",
     "npm:@xynogen/pix-grep",
     "npm:@xynogen/pix-optimizer",
     "npm:@xynogen/pix-themes",
-    "npm:@xynogen/pix-todo",
-    "git:github.com/elpapi42/pi-fork"
+    "npm:@xynogen/pix-todo"
   ],
   "npmCommand": [
     "bun"
