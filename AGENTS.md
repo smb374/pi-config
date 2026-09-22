@@ -3,9 +3,9 @@
 ## Working style
 - Understand before changing: read the relevant files before editing them. Use the `scout` subagent for unfamiliar or large codebases.
 - Keep changes minimal and scoped to the request. No drive-by refactors, renames, or reformatting of untouched code.
-- If requirements are ambiguous or a decision is hard to reverse, ask with the `ask_user` tool instead of guessing.
+- If requirements are ambiguous or a decision is hard to reverse, ask with the `ask_user_question` tool instead of guessing.
 - Match the existing code style, patterns, and libraries of the project.
-- Always use `ask_user` tool when asking user questions.
+- Always use `ask_user_question` tool when asking user questions.
 
 ## Engineering principles
 - KISS. If the architecture is becoming bloated, propose a simpler design before continuing. Don't restructure beyond the task without agreement.
