@@ -6,15 +6,15 @@
     "model": "opencode-go/deepseek-v4.1-flash"
   },
   "researcher": {
-    "model": "opencode-go/glm-5.3"
+    "model": "opencode-go/glm-5.3-flash"
   },
   "worker": {
     "model": "opencode-go/gpt-5.6-luna"
   },
   "reviewer": {
-    "model": "opencode-go/glm-5.3-flash"
+    "model": "opencode-go/glm-5.3"
   },
   "oracle": {
-    "model": "opencode-go/glm-5.3"
+    "model": "opencode/claude-opus-5-5"
   }
 }

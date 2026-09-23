@@ -26,7 +26,7 @@
     "npm:@xynogen/pix-optimizer",
     "npm:@xynogen/pix-themes",
     "npm:@xynogen/pix-todo",
-    "extensions/pi-subagents-plus"
+    "git:github.com/smb374/pi-subagents-plus"
   ],
   "npmCommand": [
     "bun"
