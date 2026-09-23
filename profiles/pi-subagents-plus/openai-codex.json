@@ -1,0 +1,20 @@
+{
+  "scout": {
+    "model": "openai-codex/gpt-6-luna"
+  },
+  "delegate": {
+    "model": "openai-codex/gpt-6-luna"
+  },
+  "researcher": {
+    "model": "openai-codex/gpt-6-sol"
+  },
+  "worker": {
+    "model": "openai-codex/gpt-6-sol"
+  },
+  "reviewer": {
+    "model": "openai-codex/gpt-6-sol"
+  },
+  "oracle": {
+    "model": "openai-codex/gpt-6-sol"
+  }
+}

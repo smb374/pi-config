@@ -11,10 +11,10 @@
     "npm:pi-jingle",
     "npm:pi-mcp-extension",
     "npm:pi-open-tui",
-    "npm:pi-subagents",
     "npm:pi-workspace-history",
     "npm:@arhen/pi-core-ask",
     "npm:@arhen/pi-core-tps-stats",
+    "npm:@gotgenes/pi-subagents",
     "npm:@juicesharp/rpiv-web-tools",
     "npm:@narumitw/pi-btw",
     "npm:@narumitw/pi-goal",
@@ -25,7 +25,8 @@
     "npm:@xynogen/pix-grep",
     "npm:@xynogen/pix-optimizer",
     "npm:@xynogen/pix-themes",
-    "npm:@xynogen/pix-todo"
+    "npm:@xynogen/pix-todo",
+    "extensions/pi-subagents-plus"
   ],
   "npmCommand": [
     "bun"
@@ -40,8 +41,6 @@
   },
   "editorPaddingX": 0,
   "quietStartup": true,
-  "subagents": {
-  },
   "enabledModels": [
     "<provider1>/<model1>",
     "<provider2>/<model2>",
