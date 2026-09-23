@@ -13,6 +13,7 @@
     "npm:pi-mcp-extension",
     "npm:pi-open-tui",
     "npm:pi-workspace-history",
+    "npm:@arhen/pi-core-todo",
     "npm:@arhen/pi-core-tps-stats",
     "npm:@gotgenes/pi-subagents",
     "npm:@juicesharp/rpiv-web-tools",
@@ -25,7 +26,6 @@
     "npm:@xynogen/pix-grep",
     "npm:@xynogen/pix-optimizer",
     "npm:@xynogen/pix-themes",
-    "npm:@xynogen/pix-todo",
     "git:github.com/smb374/pi-subagents-plus"
   ],
   "npmCommand": [
