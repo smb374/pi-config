@@ -1,0 +1,20 @@
+{
+  "scout": {
+    "model": "opencode-go/deepseek-v4.1-flash"
+  },
+  "delegate": {
+    "model": "opencode-go/deepseek-v4.1-flash"
+  },
+  "researcher": {
+    "model": "opencode-go/glm-5.3-flash"
+  },
+  "worker": {
+    "model": "opencode-go/gpt-5.6-luna"
+  },
+  "reviewer": {
+    "model": "opencode-go/glm-5.3"
+  },
+  "oracle": {
+    "model": "opencode/claude-opus-5-5"
+  }
+}
