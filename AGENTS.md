@@ -36,13 +36,9 @@
 - Run `date` only when the task depends on the current date or time. Never guess it.
 
 ## Verification
-- While editing:
-  - Call `lsp_diagnostics` on the files you changed when targeted feedback is useful. It is not automatic.
-  - Some LSP server may not return anything if it found no diagnostics.
-- LSP results are intermediate feedback only. Before saying a task is done, run the project's real format/lint/typecheck/test commands (see the project AGENTS.md or package scripts).
+- While editing, call `lsp_diagnostics` on the files you changed when targeted feedback is useful. It is not automatic. An empty result can mean no diagnostics were found.
+- LSP results are intermediate feedback only. Before saying a task is done, run the project's commands (found in the order under Tooling) in this order: format (write mode) → lint with auto-fix → typecheck → test. Fix remaining issues with `edit`, then rerun.
 - Never claim something works without running it. If you couldn't verify, say so explicitly.
-- Before saying a task is done, run the project's commands in this order: format (write mode) -> lint with auto-fix -> typecheck -> test.
-  Fix remaining issues with `edit`, then rerun.
 
 ## Delegation
 - Use subagents for bounded, well-scoped work: `scout` for recon, `reviewer` after non-trivial changes, `oracle` for risky decisions.
