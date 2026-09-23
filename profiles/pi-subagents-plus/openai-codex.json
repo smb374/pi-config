@@ -6,15 +6,15 @@
     "model": "openai-codex/gpt-6-luna"
   },
   "researcher": {
-    "model": "openai-codex/gpt-6-sol"
+    "model": "openai-codex/gpt-5.6-sol"
   },
   "worker": {
     "model": "openai-codex/gpt-6-sol"
   },
   "reviewer": {
-    "model": "openai-codex/gpt-6-sol"
+    "model": "openai-codex/gpt-5.6-sol"
   },
   "oracle": {
-    "model": "openai-codex/gpt-6-sol"
+    "model": "openai-codex/gpt-5.6-sol"
   }
 }
