@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "inlineFooter": true,
+  "inlineFooter": false,
   "settingsLanguage": "en",
   "cursorStyle": "block",
   "fullscreen": {
