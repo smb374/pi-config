@@ -1,5 +1,6 @@
 {
   "enabled": true,
+  "inlineFooter": true,
   "settingsLanguage": "en",
   "cursorStyle": "block",
   "fullscreen": {
@@ -10,6 +11,7 @@
   },
   "footerSegments": {
     "cwd": true,
+    "hostname": true,
     "sessionName": false,
     "gitBranch": true,
     "gitStatus": true,
@@ -18,7 +20,8 @@
     "context": true,
     "tokens": true,
     "cost": true,
-    "extensionStatuses": true
+    "extensionStatuses": true,
+    "capitalizeProviderName": false
   },
   "telemetry": {
     "enabled": true,
