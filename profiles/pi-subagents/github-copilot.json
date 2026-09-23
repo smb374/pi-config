@@ -11,7 +11,7 @@
         "model": "github-copilot/gpt-6-sol"
       },
       "worker": {
-        "model": "github-copilot/gpt-6-luna"
+        "model": "github-copilot/gpt-6-sol"
       },
       "reviewer": {
         "model": "github-copilot/gpt-6-sol"

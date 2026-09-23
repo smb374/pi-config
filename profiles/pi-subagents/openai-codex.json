@@ -11,7 +11,7 @@
         "model": "openai-codex/gpt-6-sol"
       },
       "worker": {
-        "model": "openai-codex/gpt-6-luna"
+        "model": "openai-codex/gpt-6-sol"
       },
       "reviewer": {
         "model": "openai-codex/gpt-6-sol"
