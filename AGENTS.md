@@ -5,7 +5,7 @@
 - Keep changes minimal and scoped to the request. Don't refactor, rename, or reformat code that the task does not touch.
 - Match the existing code style, patterns, and libraries of the project.
 - If requirements are ambiguous or a decision is hard to reverse, ask the user instead of guessing.
-- Always use the `ask_user` tool to ask the user questions.
+- Always use the `ask_user_question` tool to ask the user questions.
 
 ## Engineering principles
 - KISS (keep it simple). If the architecture becomes bloated, propose a simpler design before you continue. Don't restructure beyond the task without agreement.

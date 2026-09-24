@@ -15,6 +15,6 @@
     "model": "opencode-go/glm-5.3"
   },
   "oracle": {
-    "model": "opencode/claude-opus-5-5"
+    "model": "opencode-go/glm-5.3"
   }
 }

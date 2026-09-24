@@ -1,0 +1,21 @@
+{
+  "scout": {
+    "model": "commandcode/deepseek/deepseek-v4.1-flash"
+  },
+  "delegate": {
+    "model": "commandcode/deepseek/deepseek-v4.1-flash"
+  },
+  "researcher": {
+    "model": "commandcode/z-ai/glm-5.3-flash"
+  },
+  "worker": {
+    "model": "commandcode/z-ai/glm-5.3-flash"
+  },
+  "reviewer": {
+    "model": "commandcode/zai-org/GLM-5.3"
+  },
+  "oracle": {
+    "model": "commandcode/zai-org/GLM-5.3"
+  }
+}
+
