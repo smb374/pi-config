@@ -15,12 +15,13 @@
 - Encapsulate complexity inside components. Expose only the necessary lifecycle methods and APIs.
 
 ## Tooling
-- Use the dedicated tool whenever one fits. Use `bash` only to run programs: builds, tests, git, package scripts, formatters, linters, `date`.
+- Use the dedicated tool whenever one fits. Use `bash` only to run programs: builds, tests, git, project targets, package scripts, formatters, linters, `date`.
   - Read files with `read`. Use `windows` to get several ranges in one call. Use `read_skill` for skill files.
-  - Search with `grep` (file contents) and `find` (file names and directory listings). Don't run `grep`, `rg`, `find`, `fd`, or `ls` through `bash`, even though the `bash` tool description mentions them.
-  - Use `web_search`/`web_fetch` for the web, not `curl`/`wget`.
-  - Change files with `edit` (existing files) or `write` (new files or full rewrites). Don't write ad-hoc scripts (Python, heredocs, `cat >`, `sed -i`) to change files.
-  - Revert your own last edit with `undo_last_edit`, not git.
+  - Search with `grep` tool (file contents) and `find` tool (file names and directory listings).
+  - Use `web_search`/`web_fetch` for the web.
+  - Change files only with `edit` (existing files) or `write` (new files or full rewrites), never with scripts or heredocs.
+  - Revert your own last edit with `undo_last_edit`.
+- If the permission system denies a `bash` command, switch to the dedicated tool. Don't rephrase the command to get around the rule (e.g. `command grep`, `/usr/bin/grep`, `xargs grep`, `bash -c "…"`).
 - If the project has a `Justfile` or `Makefile`, run its targets (`just <recipe>`, `make <target>`). Use them for builds, tests, formatting, linting, and anything else they cover. Don't compose the equivalent commands yourself. Where to find a project command, in order: project AGENTS.md → `just`/`make` targets → package scripts → the underlying tool.
   - List recipes with `just --list`. For `make`, `read` the Makefile.
   - Read a target's definition before its first use. Targets that deploy, publish, delete data, or touch Git history fall under Safety: ask first.
@@ -29,9 +30,8 @@
   - If the target or script only runs on the whole repo, call the underlying tool with explicit paths through the project's package runner (e.g. `prettier --write src/a.ts`, `eslint --fix src/a.ts`) so untouched files stay untouched.
   - Prefer the project's commands over `lsp_fix`, since they match what CI runs. Use `lsp_fix` only when the project has no command for that fix.
 - After any command rewrites a file (formatter, `--fix`, codegen, `lsp_fix`), your anchors for that file are stale. `read` it again before the next `edit`.
-- `bash` runs in the project root. Don't prefix commands with `cd <project root> &&`.
 - Chain commands with `&&` only when a later command depends on an earlier one. Run independent commands as separate calls. Don't add `echo` separators.
-- Don't use `sed`, `awk`, `cat`, `head`, or `tail` to read files. Use `read`. You can pipe long command output through `head`/`tail`.
+- Don't use `cat`, `head`, or `tail` to read files. Use `read`. You can pipe long command output through `head`/`tail`.
 - Use the project's package manager and runtime, as indicated by its lockfile. Outside a project, prefer `bun`/`bunx` over `node`/`npx`.
 - Run `date` only when the task depends on the current date or time. Never guess it.
 

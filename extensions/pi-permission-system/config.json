@@ -1,0 +1,37 @@
+{
+  "permission": {
+    "*": "allow",
+    "path": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
+    },
+    "bash": {
+      "*": "allow",
+      "grep *": "deny",
+      "egrep *": "deny",
+      "fgrep *": "deny",
+      "git grep *": "deny",
+      "find *": "deny",
+      "sed *": "deny",
+      "awk *": "deny",
+      "echo *": "deny",
+      "curl *": "ask",
+      "wget *": "ask",
+      "python -c *": "ask",
+      "python3 -c *": "ask",
+      "node -e *": "ask",
+      "bun -e *": "ask",
+      "rm *": "ask",
+      "rm -rf /tmp/*": "allow",
+      "rm -r /tmp/*": "allow",
+      "rm -f /tmp/*": "allow",
+      "sudo *": "ask",
+      "git push *": "ask",
+      "git reset *": "ask",
+      "git checkout *": "ask",
+      "git restore *": "ask"
+    }
+  }
+}

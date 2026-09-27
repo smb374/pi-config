@@ -6,15 +6,16 @@
   "defaultThinkingLevel": "<level>",
   "packages": [
     "npm:pi-better-edit",
-    "npm:pi-blackhole",
     "npm:pi-commandcode-provider",
     "npm:pi-context-view",
     "npm:pi-jingle",
     "npm:pi-mcp-extension",
-    "npm:pi-zentui",
     "npm:pi-workspace-history",
     "npm:@arhen/pi-core-todo",
+    "npm:@ff-labs/pi-fff",
     "npm:@gotgenes/pi-anthropic-auth",
+    "npm:@gotgenes/pi-nocd",
+    "npm:@gotgenes/pi-permission-system",
     "npm:@gotgenes/pi-subagents",
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:@juicesharp/rpiv-web-tools",
@@ -23,10 +24,10 @@
     "npm:@narumitw/pi-lsp",
     "npm:@narumitw/pi-tool",
     "npm:@narumitw/pi-usage",
-    "npm:@xynogen/pix-find",
-    "npm:@xynogen/pix-grep",
+    "npm:@sting8k/pi-vcc",
     "npm:@xynogen/pix-optimizer",
     "npm:@xynogen/pix-themes",
+    "npm:@yorch/pi-statusbar",
     "git:github.com/smb374/pi-subagents-plus"
   ],
   "showHardwareCursor": true,
@@ -43,5 +44,9 @@
     "<provider1>/<model1>",
     "<provider2>/<model2>",
     "<provider3>/<model3>"
-  ]
+  ],
+  "statusbar": {
+    "enabled": true,
+    "preset": "default"
+  }
 }
