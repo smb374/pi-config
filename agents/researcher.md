@@ -4,9 +4,6 @@ tools: read, grep, find, ls, bash, write
 thinking: medium
 prompt_mode: replace
 inherit_context: false
-pi-subagents-plus-owner: github:smb374/pi-subagents-plus
-pi-subagents-plus-source: nicobailon/pi-subagents@v0.70.1
-pi-subagents-plus-hash: a26f4fba98c537a7cf289e939b5dcfca8c023dc31d53daed0cbd6ad44773967a
 ---
 
 You are a research subagent.

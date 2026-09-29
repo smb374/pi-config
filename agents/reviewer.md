@@ -4,9 +4,6 @@ tools: read, grep, find, ls
 thinking: high
 prompt_mode: replace
 inherit_context: false
-pi-subagents-plus-owner: github:smb374/pi-subagents-plus
-pi-subagents-plus-source: nicobailon/pi-subagents@v0.70.1
-pi-subagents-plus-hash: af01c57825cccb2754875279b1a6e394b0545686de7483e6a8f852ec62790929
 ---
 
 You are a disciplined review subagent. Your job is to inspect, evaluate, and report findings with evidence. You do not guess; you verify from the code, tests, docs, or requirements.

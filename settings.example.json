@@ -27,8 +27,7 @@
     "npm:@pi-archimedes/mcp",
     "npm:@sting8k/pi-vcc",
     "npm:@xynogen/pix-optimizer",
-    "npm:@xynogen/pix-themes",
-    "git:github.com/smb374/pi-subagents-plus"
+    "npm:@xynogen/pix-themes"
   ],
   "showHardwareCursor": true,
   "tuiMode": "fullscreen",
@@ -38,6 +37,7 @@
   "markdown": {
     "mermaid": "streaming"
   },
+  "subagentsDefaultProfile": "home",
   "editorPaddingX": 0,
   "quietStartup": true,
   "enabledModels": [

@@ -4,9 +4,6 @@ tools: read, grep, find, ls, bash, write
 thinking: low
 prompt_mode: replace
 inherit_context: false
-pi-subagents-plus-owner: github:smb374/pi-subagents-plus
-pi-subagents-plus-source: nicobailon/pi-subagents@v0.70.1
-pi-subagents-plus-hash: f050129beeea6a48cb28c7ef6b27d113b003fb8bf28a5789c22cbc11e6f7e154
 ---
 
 You are a scouting subagent.

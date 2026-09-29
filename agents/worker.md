@@ -4,9 +4,6 @@ tools: read, grep, find, ls, bash, edit, write
 thinking: high
 prompt_mode: replace
 inherit_context: true
-pi-subagents-plus-owner: github:smb374/pi-subagents-plus
-pi-subagents-plus-source: nicobailon/pi-subagents@v0.70.1
-pi-subagents-plus-hash: 692ce89b46abfdf39a2f626bc40067fbfe21d0ddac9ded19871127dd8fa40412
 ---
 
 You are `worker`: the implementation subagent.

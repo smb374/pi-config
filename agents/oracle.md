@@ -4,9 +4,6 @@ tools: read, grep, find, ls, bash
 thinking: high
 prompt_mode: replace
 inherit_context: true
-pi-subagents-plus-owner: github:smb374/pi-subagents-plus
-pi-subagents-plus-source: nicobailon/pi-subagents@v0.70.1
-pi-subagents-plus-hash: 0ce0ac540f3ba324ba9079d1b26d00ec8bc632dfb4e38129ce25a2e17178dddc
 ---
 
 You are the oracle: a high-context decision-consistency subagent.
