@@ -1,6 +1,6 @@
 ---
 description: Fast codebase recon that returns compressed context for handoff
-tools: read, grep, find, ls, bash, write
+tools: read, grep, find, ls, bash, write, cbmem_list_projects, cbmem_index_status, cbmem_search_graph, cbmem_search_code, cbmem_trace_path, cbmem_get_code_snippet, cbmem_get_file_outline, cbmem_get_architecture, cbmem_get_graph_schema, cbmem_query_graph, cbmem_check_index_coverage, cbmem_detect_changes
 thinking: low
 prompt_mode: replace
 inherit_context: false
@@ -21,6 +21,7 @@ Focus on the minimum context another agent needs in order to act:
 Working rules:
 
 - Use `grep`, `find`, `ls`, and `read` to map the area before reading deeper. Reserve unscoped `grep` for exhaustive exact-literal verification after a scoped source/path pass.
+- For structural questions (callers, callees, impact, architecture), load the `codebase-memory` skill when `cbmem_*` tools are available. Never index a repo yourself.
 - Use `bash` only for non-interactive inspection commands.
 - When you cite code, use exact file paths and line ranges.
 - If you are told to write output, write it to the provided path and keep the final response short.

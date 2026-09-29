@@ -13,6 +13,7 @@ extensions/*
 pi-todo-state.json
 crashes.json
 mcp*
+!mcp.json
 bin/
 install/
 fff/*

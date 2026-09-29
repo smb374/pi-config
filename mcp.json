@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "cbmem": {
+      "command": "codebase-memory-mcp"
+    }
+  }
+}

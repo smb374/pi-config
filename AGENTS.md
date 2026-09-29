@@ -18,6 +18,7 @@
 - Use the dedicated tool whenever one fits. Use `bash` only to run programs: builds, tests, git, project targets, package scripts, formatters, linters, `date`.
   - Read files with `read`. Use `windows` to get several ranges in one call. Use `read_skill` for skill files.
   - Search with `grep` tool (file contents) and `find` tool (file names and directory listings).
+  - For structural code questions (callers, callees, impact, dead code, architecture), load the `codebase-memory` skill when codebase-memory MCP tools are available.
   - Use `web_search`/`web_fetch` for the web.
   - Change files only with `edit` (existing files) or `write` (new files or full rewrites), never with scripts or heredocs.
   - Revert your own last edit with `undo_last_edit`.
