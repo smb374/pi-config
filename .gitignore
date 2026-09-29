@@ -9,6 +9,7 @@ settings.json
 missions
 extensions/*
 !extensions/pi-permission-system/config.json
+!extensions/*.ts
 pi-todo-state.json
 crashes.json
 mcp*
