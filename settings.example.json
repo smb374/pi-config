@@ -11,6 +11,7 @@
     "npm:pi-jingle",
     "npm:pi-mcp-extension",
     "npm:pi-workspace-history",
+    "npm:pi-zentui",
     "npm:@arhen/pi-core-todo",
     "npm:@ff-labs/pi-fff",
     "npm:@gotgenes/pi-anthropic-auth",
@@ -27,7 +28,6 @@
     "npm:@sting8k/pi-vcc",
     "npm:@xynogen/pix-optimizer",
     "npm:@xynogen/pix-themes",
-    "npm:@yorch/pi-statusbar",
     "git:github.com/smb374/pi-subagents-plus"
   ],
   "showHardwareCursor": true,
@@ -44,9 +44,5 @@
     "<provider1>/<model1>",
     "<provider2>/<model2>",
     "<provider3>/<model3>"
-  ],
-  "statusbar": {
-    "enabled": true,
-    "preset": "full"
-  }
+  ]
 }
