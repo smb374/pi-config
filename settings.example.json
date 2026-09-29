@@ -47,6 +47,6 @@
   ],
   "statusbar": {
     "enabled": true,
-    "preset": "default"
+    "preset": "full"
   }
 }
