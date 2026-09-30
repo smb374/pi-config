@@ -1,5 +1,10 @@
 # Global agent rules
 
+## Code exploration
+- When `mcp__cbmem__*` tools exist, use the code graph before `grep`, `find`, or `read` for any structural question: symbols, definitions, callers, callees, impact, architecture, dead code.
+- Read the `codebase-memory` skill first. It holds the project-name steps and the question-to-tool map.
+- Use `grep`, `find`, and `read` for literal text, config, docs, non-code files, and edits in files you already know.
+
 ## Working style
 - Keep changes minimal and scoped to the request. Don't refactor, rename, or reformat code that the task does not touch.
 - Match the existing code style, patterns, and libraries of the project.
@@ -16,8 +21,6 @@
 ## Tooling
 - Use `codemode` tool when calling non-exposed MCP tools and batching multiple tool calls.
 - Use the dedicated tool whenever one fits. Use `bash` only to run programs: builds, tests, git, project targets, package scripts, formatters, linters, `date`.
-  - When `mcp__cbmem__*` tools exist, you must start every code exploration in a source repo with the code graph.
-    - Load the `codebase-memory` skill and follow its "Start here" steps.
   - Read files with `read`. Use `windows` to get several ranges in one call. Use `read_skill` for skill files.
   - Search with `grep` tool (file contents) and `find` tool (file names and directory listings).
     - The exception to use `rg`/`fd`(`fdfind` in Ubuntu) with `bash` tool is that the path you want to access is in `.gitignore`. Remember to add corresponding no ignore flags.

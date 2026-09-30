@@ -7,7 +7,8 @@
         "index_repository": "direct",
         "search_graph": "direct",
         "trace_path": "direct",
-        "get_code_snippet": "direct"
+        "get_code_snippet": "direct",
+        "search_code": "direct"
       }
     }
   }

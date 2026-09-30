@@ -1,6 +1,6 @@
 ---
 name: codebase-memory
-description: "When codebase-memory (cbmem) MCP tools are available, use the codebase knowledge graph first for any code exploration in a source repo. Triggers on: explore the codebase, find where X is defined, understand the architecture, what functions exist, show me the structure, who calls this function, what does X call, trace the call chain, find callers of, show dependencies, impact analysis, dead code, unused functions, high fan-out, refactor candidates, code quality audit, index the repo, graph query syntax, Cypher query examples, edge types, how to use search_graph."
+description: "Use the code graph before grep or find for any structural code question in an indexed repo. Applies to: symbol lookup, definitions, who calls this, what this calls, call chains, dependencies, impact analysis, architecture, dead code, unused functions, fan-in, fan-out, refactor candidates, index the repo, graph query syntax, Cypher examples, edge types."
 ---
 
 # Codebase Memory — Knowledge Graph Tools
