@@ -5,33 +5,42 @@
       "*": "allow",
       "*.env": "deny",
       "*.env.*": "deny",
-      "*.env.example": "allow"
+      "*.env.example": "allow",
+      "~/.ssh/*": "deny"
     },
     "bash": {
       "*": "allow",
-      "grep *": "deny",
-      "egrep *": "deny",
-      "fgrep *": "deny",
-      "git grep *": "deny",
-      "find *": "deny",
-      "sed *": "deny",
-      "awk *": "deny",
-      "echo *": "deny",
+      "rm *": "ask",
+      "rm -rf /tmp/*": "allow",
+      "rm -r /tmp/*": "allow",
+      "rm -f /tmp/*": "allow",
+
+      "bun add *": "ask",
+      "bun remove *": "ask",
+      "bun -e *": "ask",
+      "pnpm add *": "ask",
+      "pnpm remove *": "ask",
+      "pnpm dlx *": "ask",
       "curl *": "ask",
       "wget *": "ask",
       "python -c *": "ask",
       "python3 -c *": "ask",
       "node -e *": "ask",
-      "bun -e *": "ask",
-      "rm *": "ask",
-      "rm -rf /tmp/*": "allow",
-      "rm -r /tmp/*": "allow",
-      "rm -f /tmp/*": "allow",
       "sudo *": "ask",
       "git push *": "ask",
       "git reset *": "ask",
       "git checkout *": "ask",
-      "git restore *": "ask"
+      "git restore *": "ask",
+
+      "grep *": { "action": "deny", "reason": "Use the grep tool" },
+      "egrep *": { "action": "deny", "reason": "Use the grep tool" },
+      "fgrep *": { "action": "deny", "reason": "Use the grep tool" },
+      "rg *": { "action": "deny", "reason": "Use the grep tool" },
+      "git grep *": { "action": "deny", "reason": "Use the grep tool" },
+      "find *": { "action": "deny", "reason": "Use the find tool" },
+      "sed *": { "action": "deny", "reason": "Use the edit tool, or read for viewing" },
+      "awk *": { "action": "deny", "reason": "Use read/grep, or a real script" },
+      "echo *": { "action": "deny", "reason": "Write prose in your reply, not via echo" }
     }
   }
 }
