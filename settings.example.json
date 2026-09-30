@@ -1,10 +1,12 @@
 {
   "lastChangelogVersion": "0.85.1",
-  "theme": "pix-catppuccin-mocha",
+  "theme": "catppuccin-mocha",
   "defaultProvider": "<provider>",
   "defaultModel": "<model>",
   "defaultThinkingLevel": "<level>",
-  "defaultTools": ["+codemode"],
+  "defaultTools": [
+    "+codemode"
+  ],
   "packages": [
     "npm:pi-better-edit",
     "npm:pi-commandcode-provider",
@@ -14,6 +16,7 @@
     "npm:pi-zentui",
     "npm:@arhen/pi-core-todo",
     "npm:@ff-labs/pi-fff",
+    "npm:@firstpick/pi-themes-bundle",
     "npm:@gotgenes/pi-anthropic-auth",
     "npm:@gotgenes/pi-nocd",
     "npm:@gotgenes/pi-permission-system",
@@ -26,8 +29,7 @@
     "npm:@narumitw/pi-tool",
     "npm:@narumitw/pi-usage",
     "npm:@sting8k/pi-vcc",
-    "npm:@xynogen/pix-optimizer",
-    "npm:@xynogen/pix-themes"
+    "npm:@xynogen/pix-optimizer"
   ],
   "npmCommand": [
     "bun"
