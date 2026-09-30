@@ -1,15 +1,3 @@
 {
-  "mcpServers": {
-    "cbmem": {
-      "command": "codebase-memory-mcp",
-      "toolExposure": {
-        "list_projects": "direct",
-        "index_repository": "direct",
-        "search_graph": "direct",
-        "trace_path": "direct",
-        "get_code_snippet": "direct",
-        "search_code": "direct"
-      }
-    }
-  }
+  "mcpServers": {}
 }

@@ -1,9 +1,7 @@
 # Global agent rules
 
 ## Code exploration
-- When `mcp__cbmem__*` tools exist, use the code graph before `grep`, `find`, or `read` for any structural question: symbols, definitions, callers, callees, impact, architecture, dead code.
-- Read the `codebase-memory` skill first. It holds the project-name steps and the question-to-tool map.
-- Use `grep`, `find`, and `read` for literal text, config, docs, non-code files, and edits in files you already know.
+- For Cypher, coverage evidence, and subagent handoff with the `code_*` tools, read the `codebase-memory` skill.
 
 ## Working style
 - Keep changes minimal and scoped to the request. Don't refactor, rename, or reformat code that the task does not touch.
