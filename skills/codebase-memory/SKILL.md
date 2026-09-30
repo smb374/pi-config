@@ -62,8 +62,9 @@ The server refreshes indexes automatically. Do not re-index a project that is in
 - Page through all results (`has_more`, `offset`, `next_cursor`) before you make an exhaustive claim.
 
 ## Subagents
-- Subagents have no graph tools and no `codemode`.
-- Query the graph in the parent before you delegate. Put the findings in the prompt: project, index freshness, scope, qualified symbols, paths, call chains, coverage gaps, and open questions.
+- Subagents have no MCP tools and no `codemode`.
+- `scout`, `reviewer`, and `oracle` can query the graph with `codebase-memory-mcp cli <tool>` through `bash`. They cannot index. Make sure that the repo has an index before you delegate, and put the `project` name in the prompt.
+- Other subagents have no graph access. Query the graph in the parent, and put the findings in the prompt: project, scope, qualified symbols, paths, call chains, coverage gaps, and open questions.
 
 ## Gotchas
 1. `trace_path` needs exact names. Use `search_graph` first.
