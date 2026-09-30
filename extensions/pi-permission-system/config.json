@@ -35,7 +35,6 @@
       "grep *": { "action": "deny", "reason": "Use the grep tool" },
       "egrep *": { "action": "deny", "reason": "Use the grep tool" },
       "fgrep *": { "action": "deny", "reason": "Use the grep tool" },
-      "rg *": { "action": "deny", "reason": "Use the grep tool" },
       "git grep *": { "action": "deny", "reason": "Use the grep tool" },
       "find *": { "action": "deny", "reason": "Use the find tool" },
       "sed *": { "action": "deny", "reason": "Use the edit tool, or read for viewing" },

@@ -14,11 +14,13 @@
 - Encapsulate complexity inside components. Expose only the necessary lifecycle methods and APIs.
 
 ## Tooling
-- Use `codemode` tool when calling non-exposed MCP tools.
+- Use `codemode` tool when calling non-exposed MCP tools and batching multiple tool calls.
 - Use the dedicated tool whenever one fits. Use `bash` only to run programs: builds, tests, git, project targets, package scripts, formatters, linters, `date`.
-  - When `mcp__cbmem__*` tools exist, you must start every code exploration in a source repo with the code graph. Load the `codebase-memory` skill and follow its "Start here" steps.
+  - When `mcp__cbmem__*` tools exist, you must start every code exploration in a source repo with the code graph.
+    - Load the `codebase-memory` skill and follow its "Start here" steps.
   - Read files with `read`. Use `windows` to get several ranges in one call. Use `read_skill` for skill files.
   - Search with `grep` tool (file contents) and `find` tool (file names and directory listings).
+    - The exception to use `rg`/`fd`(`fdfind` in Ubuntu) with `bash` tool is that the path you want to access is in `.gitignore`. Remember to add corresponding no ignore flags.
   - Use `web_search`/`web_fetch` for the web.
   - Change files only with `edit` (existing files) or `write` (new files or full rewrites), never with scripts or heredocs.
   - Revert your own last edit with `undo_last_edit`.
