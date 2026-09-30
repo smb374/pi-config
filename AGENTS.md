@@ -1,8 +1,5 @@
 # Global agent rules
 
-## Code exploration
-- For Cypher, coverage evidence, and subagent handoff with the `code_*` tools, read the `codebase-memory` skill.
-
 ## Working style
 - Keep changes minimal and scoped to the request. Don't refactor, rename, or reformat code that the task does not touch.
 - Match the existing code style, patterns, and libraries of the project.
@@ -17,21 +14,12 @@
 - Encapsulate complexity inside components. Expose only the necessary lifecycle methods and APIs.
 
 ## Tooling
-- Use `codemode` tool when calling non-exposed MCP tools and batching multiple tool calls.
-- Use the dedicated tool whenever one fits. Use `bash` only to run programs: builds, tests, git, project targets, package scripts, formatters, linters, `date`.
-  - Read files with `read`. Use `windows` to get several ranges in one call. Use `read_skill` for skill files.
-  - Search with `grep` tool (file contents) and `find` tool (file names and directory listings).
-    - The exception to use `rg`/`fd`(`fdfind` in Ubuntu) with `bash` tool is that the path you want to access is in `.gitignore`. Remember to add corresponding no ignore flags.
-  - Use `web_search`/`web_fetch` for the web.
-  - Change files only with `edit` (existing files) or `write` (new files or full rewrites), never with scripts or heredocs.
-  - Revert your own last edit with `undo_last_edit`.
+- Use `codemode` tool when calling non-exposed MCP tools.
+- Use `code_*` tools to perform structured queries whenever working on source code. See tool guidelines.
+  - For Cypher, coverage evidence, and subagent handoff with the `code_*` tools, read the `codebase-memory` skill.
+- Use the dedicated tools (`read`, `grep`, `find`, `edit`, `write`, `web_*`) over `bash`. Use `bash` only to run programs: builds, tests, git, formatters, linters, `date`.
 - Find project commands in this order: project AGENTS.md → `just`/`make` targets → package scripts → the underlying tool. Read a target before its first use.
-  - List recipes with `just --list`. For `make`, `read` the Makefile.
-  - Read a target's definition before its first use. Targets that deploy, publish, delete data, or touch Git history fall under Safety: ask first.
-  - Compose a command yourself only when no target covers the task, or when the target would break another rule here (e.g. it formats the whole repo). Pass arguments when the target accepts them (e.g. `just fmt src/a.ts`).
-- Formatting and auto-fixable lint are the toolchain's job, not yours. After editing, run the project's formatter and lint auto-fix (found in the order above) on the files you changed. Use `edit` only for issues the tools report but cannot fix. Never hand-apply whitespace, line wrapping, import order, quote style, or anything else a formatter would change.
-  - If the target or script only runs on the whole repo, call the underlying tool with explicit paths through the project's package runner (e.g. `prettier --write src/a.ts`, `eslint --fix src/a.ts`) so untouched files stay untouched.
-  - Prefer the project's commands over `lsp_fix`, since they match what CI runs. Use `lsp_fix` only when the project has no command for that fix.
+- After editing, run the formatter and lint auto-fix on the changed files only. Never hand-apply formatting. Use `lsp_fix` only when the project has no command for the fix. Fix what the tools cannot fix with `edit` only after you ask me.
 - After a command rewrites a file, `read` it again before the next `edit`.
 - Chain commands with `&&` only when a later command depends on an earlier one. Run independent commands as separate calls or use `codemode` to batch them. Don't add `echo` separators.
 - Don't use `cat`, `head`, or `tail` to read files. Use `read`. You can pipe long command output through `head`/`tail`.
