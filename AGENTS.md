@@ -16,9 +16,12 @@
 
 ## Tooling
 - Use the dedicated tool whenever one fits. Use `bash` only to run programs: builds, tests, git, project targets, package scripts, formatters, linters, `date`.
+  - When `mcp__cbmem__*` tools exist, start every code exploration in a source repo with the code graph. Load the `codebase-memory` skill and follow its "Start here" steps. In short:
+    1. Call `mcp__cbmem__list_projects`. Find the project whose `root_path` is the git root (`git rev-parse --show-toplevel`). Use its `name` as `project`.
+    2. If no project matches, count files with `git ls-files | wc -l`. At 5000 files or less, call `index_repository` with `mode: "moderate"` and tell the user. Above 5000, ask the user first.
+    3. Use the graph for structure (symbols, callers, callees, impact, architecture). Use `grep`/`find`/`read` for literal text, config, docs, and non-code files.
   - Read files with `read`. Use `windows` to get several ranges in one call. Use `read_skill` for skill files.
   - Search with `grep` tool (file contents) and `find` tool (file names and directory listings).
-  - For structural code questions (callers, callees, impact, dead code, architecture), load the `codebase-memory` skill when codebase-memory MCP (`cbmem`) tools are available.
   - Use `web_search`/`web_fetch` for the web.
   - Change files only with `edit` (existing files) or `write` (new files or full rewrites), never with scripts or heredocs.
   - Revert your own last edit with `undo_last_edit`.

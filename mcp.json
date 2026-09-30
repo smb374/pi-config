@@ -3,7 +3,8 @@
     "cbmem": {
       "command": "codebase-memory-mcp",
       "toolExposure": {
-        "index_status": "direct",
+        "list_projects": "direct",
+        "index_repository": "direct",
         "search_graph": "direct",
         "trace_path": "direct",
         "get_code_snippet": "direct"

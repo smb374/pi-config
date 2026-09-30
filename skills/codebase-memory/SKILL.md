@@ -1,13 +1,25 @@
 ---
 name: codebase-memory
-description: "When codebase-memory (cbmem) MCP tools are available, use the codebase knowledge graph for structural code queries. Triggers on: explore the codebase, understand the architecture, what functions exist, show me the structure, who calls this function, what does X call, trace the call chain, find callers of, show dependencies, impact analysis, dead code, unused functions, high fan-out, refactor candidates, code quality audit, graph query syntax, Cypher query examples, edge types, how to use search_graph."
+description: "When codebase-memory (cbmem) MCP tools are available, use the codebase knowledge graph first for any code exploration in a source repo. Triggers on: explore the codebase, find where X is defined, understand the architecture, what functions exist, show me the structure, who calls this function, what does X call, trace the call chain, find callers of, show dependencies, impact analysis, dead code, unused functions, high fan-out, refactor candidates, code quality audit, index the repo, graph query syntax, Cypher query examples, edge types, how to use search_graph."
 ---
 
 # Codebase Memory — Knowledge Graph Tools
 
+## Start here
+Do these steps once per session, and again after compaction.
+1. Get the git root: `git rev-parse --show-toplevel`.
+2. Call `mcp__cbmem__list_projects`. Find the row whose `root_path` equals the git root. Use its `name` as `project` in every call. The name is not the path.
+3. If no row matches, count the files: `git ls-files | wc -l`.
+   - 5000 files or less: call `index_repository` with `repo_path: "<git root>"` and `mode: "moderate"`. Then tell the user that you indexed the repo.
+   - More than 5000 files: ask the user with `ask_user_question` before you index. Until the user answers, use `grep`/`find`/`read`.
+4. Use the `project` name from `index_repository` or `list_projects`.
+
+If a call returns `"project not found or not indexed"`, do step 2 again. Do not guess the name.
+The server refreshes indexes automatically. Do not re-index a project that is in `list_projects`.
+
 ## How to call the tools
 - Tool names are `mcp__cbmem__<tool>`. This file uses bare names.
-- Four tools are direct tools. Call them like `read`: `index_status`, `search_graph`, `trace_path`, `get_code_snippet`.
+- Five tools are direct tools. Call them like `read`: `list_projects`, `index_repository`, `search_graph`, `trace_path`, `get_code_snippet`.
 - Call all other cbmem tools from `codemode`. Example:
   ```js
   const r = await tools.mcp__cbmem__query_graph({ project: "p", query: "MATCH (f:Function) RETURN f.name LIMIT 20" });
@@ -17,13 +29,9 @@ description: "When codebase-memory (cbmem) MCP tools are available, use the code
 - If no `mcp__cbmem__*` tool exists, use `grep`/`find`/`read` and stop reading this skill. Do not install or configure the server.
 
 ## When to use
-- Use the graph for structural questions: callers, callees, call chains, dependencies, impact of a change, architecture, dead code, fan-in/fan-out.
+- Use the graph first for any code exploration: find symbols, read definitions, callers, callees, call chains, dependencies, impact of a change, architecture, dead code, fan-in/fan-out.
 - Use `grep`/`find`/`read` for literal text, config, docs, non-code files, and edits in files you already know.
-
-## Indexing
-1. Call `index_status` for the current repo before structural exploration. Do this again after compaction.
-2. If the repo has no index, ask the user with `ask_user_question` before you call `index_repository`. Until then, use `grep`/`find`/`read`.
-3. If the index is stale, say so and ask before you re-index.
+- If the graph gives no result for a symbol you expect, check with `grep` before you conclude that it does not exist.
 
 ## Decision matrix
 
