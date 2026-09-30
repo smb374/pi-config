@@ -4,6 +4,7 @@
   "defaultProvider": "<provider>",
   "defaultModel": "<model>",
   "defaultThinkingLevel": "<level>",
+  "defaultTools": ["+codemode"],
   "packages": [
     "npm:pi-better-edit",
     "npm:pi-commandcode-provider",
@@ -24,10 +25,12 @@
     "npm:@narumitw/pi-lsp",
     "npm:@narumitw/pi-tool",
     "npm:@narumitw/pi-usage",
-    "npm:@pi-archimedes/mcp",
     "npm:@sting8k/pi-vcc",
     "npm:@xynogen/pix-optimizer",
     "npm:@xynogen/pix-themes"
+  ],
+  "npmCommand": [
+    "bun"
   ],
   "showHardwareCursor": true,
   "tuiMode": "fullscreen",
@@ -37,7 +40,7 @@
   "markdown": {
     "mermaid": "streaming"
   },
-  "subagentsDefaultProfile": "home",
+  "subagentsDefaultProfile": "<profile>",
   "editorPaddingX": 0,
   "quietStartup": true,
   "enabledModels": [

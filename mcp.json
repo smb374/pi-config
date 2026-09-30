@@ -1,7 +1,13 @@
 {
   "mcpServers": {
     "cbmem": {
-      "command": "codebase-memory-mcp"
+      "command": "codebase-memory-mcp",
+      "toolExposure": {
+        "index_status": "direct",
+        "search_graph": "direct",
+        "trace_path": "direct",
+        "get_code_snippet": "direct"
+      }
     }
   }
 }
