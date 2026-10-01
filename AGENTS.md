@@ -17,11 +17,12 @@
 - Use `codemode` tool when calling non-exposed MCP tools.
 - Use `code_*` tools to perform structured queries whenever working on source code. See tool guidelines.
   - For Cypher, coverage evidence, and subagent handoff with the `code_*` tools, read the `codebase-memory` skill.
+- Prefer use `codemode` tool to batch multiple tool calls in one.
 - Use the dedicated tools (`read`, `grep`, `find`, `edit`, `write`, `web_*`) over `bash`. Use `bash` only to run programs: builds, tests, git, formatters, linters, `date`.
 - Find project commands in this order: project AGENTS.md → `just`/`make` targets → package scripts → the underlying tool. Read a target before its first use.
 - After editing, run the formatter and lint auto-fix on the changed files only. Never hand-apply formatting. Use `lsp_fix` only when the project has no command for the fix. Fix what the tools cannot fix with `edit` only after you ask me.
 - After a command rewrites a file, `read` it again before the next `edit`.
-- Chain commands with `&&` only when a later command depends on an earlier one. Run independent commands as separate calls or use `codemode` to batch them. Don't add `echo` separators.
+- Chain commands with `&&` only when a later command depends on an earlier one. Run independent commands as separate calls. Don't add `echo` separators.
 - Don't use `cat`, `head`, or `tail` to read files. Use `read`. You can pipe long command output through `head`/`tail`.
 - Use the package manager from the lockfile. Outside a project, prefer `bun`/`bunx` for TS/JS.
 - Run `date` when the task needs the date. Never guess it.
