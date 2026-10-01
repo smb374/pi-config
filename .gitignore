@@ -7,9 +7,7 @@ sessions
 state
 settings.json
 missions
-extensions/*
-!extensions/pi-permission-system/config.json
-!extensions/*.ts
+**/logs/*
 pi-todo-state.json
 crashes.json
 mcp*
