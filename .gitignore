@@ -17,3 +17,4 @@ install/
 fff/*
 .env
 trust.json
+node_modules/
