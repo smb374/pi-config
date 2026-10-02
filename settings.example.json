@@ -44,7 +44,7 @@
   },
   "subagentsDefaultProfile": "<profile>",
   "editorPaddingX": 0,
-  "quietStartup": true,
+  "quietStartup": "header",
   "enabledModels": [
     "<provider1>/<model1>",
     "<provider2>/<model2>",
