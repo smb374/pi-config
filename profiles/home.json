@@ -9,7 +9,7 @@
     "model": "commandcode/deepseek/deepseek-v4.1-flash"
   },
   "worker": {
-    "model": "commandcode/z-ai/glm-5.3-flash"
+    "model": "anthropic/claude-sonnet-5-5"
   },
   "reviewer": {
     "model": "anthropic/claude-opus-5-5"
