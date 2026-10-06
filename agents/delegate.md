@@ -1,6 +1,6 @@
 ---
 description: Lightweight delegated agent that inherits the parent model and runs the assigned task directly
-tools: read, grep, find, ls, bash, edit, write
+tools: codemode, read, grep, find, ls, bash, edit, write
 prompt_mode: append
 inherit_context: false
 ---

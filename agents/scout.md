@@ -1,6 +1,6 @@
 ---
 description: Fast codebase recon that returns compressed context for handoff
-tools: read, grep, find, ls, bash, write, code_find, code_callers, code_callees, code_read, code_query, cbmem
+tools: codemode, read, grep, find, ls, bash, write, code_find, code_callers, code_callees, code_read, code_query, cbmem
 thinking: low
 prompt_mode: replace
 inherit_context: false

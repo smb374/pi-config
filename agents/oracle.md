@@ -1,6 +1,6 @@
 ---
 description: High-context decision-consistency oracle that protects inherited state and prevents drift
-tools: read, grep, find, ls, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem
+tools: codemode, read, grep, find, ls, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem
 thinking: high
 prompt_mode: replace
 inherit_context: true

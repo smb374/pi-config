@@ -1,6 +1,6 @@
 ---
 description: Versatile review specialist for code diffs, plans, proposed solutions, and codebase health
-tools: read, grep, find, ls, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem
+tools: codemode, read, grep, find, ls, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem
 thinking: high
 prompt_mode: replace
 inherit_context: false

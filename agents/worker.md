@@ -1,6 +1,6 @@
 ---
 description: Implementation agent for normal tasks and approved directions
-tools: read, edit, write, bash, read_skill, code_find, code_callers, code_callees, code_read, code_query, cbmem
+tools: codemode, read, edit, write, bash, read_skill, code_find, code_callers, code_callees, code_read, code_query, cbmem
 thinking: high
 prompt_mode: replace
 inherit_context: false

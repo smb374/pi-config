@@ -13,6 +13,8 @@
 
 ## Commands
 - `bash` runs programs only (builds, tests, git, formatters, linters, `date`); everything else goes through the dedicated tools. Read files with `read`; pipe long command output through `head`/`tail`.
+- Do data work in codemode JavaScript: parse, filter, and transform tool results inside the script. `bash` runs programs, never inline Python or heredoc scripts.
+- Chain dependent calls in one codemode script and return only what the next decision needs; drop intermediate results inside the script.
 - Find project commands in this order: project AGENTS.md → `just`/`make` targets → package scripts → the underlying tool. Read a target before its first use.
 - Use the package manager from the lockfile. Outside a project, use `bun`/`bunx` for TS/JS.
 - Chain with `&&` only when a later command depends on an earlier one. Run independent commands as separate calls.

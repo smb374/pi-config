@@ -1,6 +1,6 @@
 ---
 description: Autonomous web researcher — searches, evaluates, and synthesizes a focused research brief
-tools: read, grep, find, ls, write, web_search, web_fetch
+tools: codemode, read, grep, find, ls, write, web_search, web_fetch
 thinking: medium
 prompt_mode: replace
 inherit_context: false

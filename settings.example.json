@@ -44,6 +44,10 @@
   "subagentsDefaultProfile": "<profile>",
   "editorPaddingX": 0,
   "quietStartup": "header",
+  "codemode": {
+    "mode": "on",
+    "inlineBudget": 6000
+  },
   "enabledModels": [
     "<provider1>/<model1>",
     "<provider2>/<model2>",
