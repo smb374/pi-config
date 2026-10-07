@@ -1,0 +1,16 @@
+{
+  "icons": {
+    "mode": "nerd"
+  },
+  "components": {
+    "userMessages": {
+      "enabled": true,
+      "style": "compact",
+      "colorSource": "theme"
+    },
+    "thinkingSteps": {
+      "enabled": true,
+      "mode": "tree"
+    }
+  }
+}
