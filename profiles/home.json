@@ -1,12 +1,12 @@
 {
   "scout": {
-    "model": "commandcode/deepseek/deepseek-v4.1-flash"
+    "model": "commandcode/claude-haiku-5-5"
   },
   "delegate": {
-    "model": "commandcode/deepseek/deepseek-v4.1-flash"
+    "model": "commandcode/claude-haiku-5-5"
   },
   "researcher": {
-    "model": "commandcode/deepseek/deepseek-v4.1-flash"
+    "model": "commandcode/claude-haiku-5-5"
   },
   "worker": {
     "model": "anthropic/claude-sonnet-5-5"
