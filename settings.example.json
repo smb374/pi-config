@@ -45,8 +45,7 @@
   "editorPaddingX": 0,
   "quietStartup": "header",
   "codemode": {
-    "mode": "only",
-    "inlineBudget": 6000
+    "mode": "only"
   },
   "archimedes.notify": { "delayMs": 10000 },
   "enabledModels": [
