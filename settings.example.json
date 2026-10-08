@@ -11,7 +11,6 @@
     "npm:pi-better-edit",
     "npm:pi-commandcode-provider",
     "npm:pi-context-view",
-    "npm:pi-jingle",
     "npm:pi-workspace-history",
     "npm:pi-zentui",
     "npm:@ff-labs/pi-fff",
@@ -24,6 +23,7 @@
     "npm:@narumitw/pi-lsp",
     "npm:@narumitw/pi-tool",
     "npm:@narumitw/pi-usage",
+    "npm:@pi-archimedes/notify",
     "npm:@pi-archimedes/todo",
     "npm:@schovest/pi-goal",
     "npm:@sting8k/pi-vcc",
@@ -45,9 +45,10 @@
   "editorPaddingX": 0,
   "quietStartup": "header",
   "codemode": {
-    "mode": "on",
+    "mode": "only",
     "inlineBudget": 6000
   },
+  "archimedes.notify": { "delayMs": 10000 },
   "enabledModels": [
     "<provider1>/<model1>",
     "<provider2>/<model2>",
