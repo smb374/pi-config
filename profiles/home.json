@@ -1,12 +1,12 @@
 {
   "scout": {
-    "model": "commandcode/claude-haiku-5-5"
+    "model": "commandcode/gpt-6-luna"
   },
   "delegate": {
-    "model": "commandcode/claude-haiku-5-5"
+    "model": "commandcode/gpt-6-luna"
   },
   "researcher": {
-    "model": "commandcode/claude-haiku-5-5"
+    "model": "commandcode/gpt-6-luna"
   },
   "worker": {
     "model": "anthropic/claude-sonnet-5-5"
