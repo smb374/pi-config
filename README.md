@@ -4,33 +4,22 @@ My [pi](https://github.com/earendil-works/pi) agent config. It lives in `~/.pi/a
 
 ## Set up
 
-1. Clone the repo into the agent directory:
+Requires `bun`, `git`, and `sh` (Linux or macOS).
 
-   ```sh
-   git clone git@github.com:smb374/pi-config.git ~/.pi/agent
-   cd ~/.pi/agent
-   ```
+```sh
+curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/setup.ts -o /tmp/setup.ts && bun /tmp/setup.ts
+```
 
-2. Copy the example settings, then fill in the `<placeholders>`:
+`setup.ts` does the following:
 
-   ```sh
-   cp settings.example.json settings.json
-   ```
+1. Clones the repo into `~/.pi/agent`, or pulls if the clone exists. Set `PI_CONFIG_REPO` to use another remote.
+2. Installs pi with `bun add -g` if `pi` is missing.
+3. Renders `templates/settings.json.mustache` into `settings.json`. It prompts for each field declared in a `{{! key: description | default=value }}` comment, prefilled from the current `settings.json`. Template keys win; keys you or pi added survive. Pass `--values values.json` to skip prompts.
+4. Installs [herdr](https://github.com/herdrdev/herdr) if it is missing or older than 0.9.3 (asks before running the official installer), then runs `herdr integration install pi`. That writes `extensions/herdr-agent-state.ts`, which herdr manages and Git ignores.
 
-   - `defaultProvider`, `defaultModel`, `defaultThinkingLevel`: the main model.
-   - `enabledModels`: the models to cycle through, as `provider/model`.
-   - `defaultAgentProfile`: a file name from `profiles/`, without `.json`.
-   - `loopbackMcp`: optional remote MCP servers to proxy to a local port. Delete the block if you have none.
+Then start `herdr`, start `pi` inside a herdr pane (a pi outside herdr cannot delegate to agents), and log in with `/login`. Edit `enabledModels` (`provider/model` list) in `settings.json` by hand; see `extensions/loopback-mcp/README.md` for `loopbackMcp`.
 
-3. Install [herdr](https://github.com/herdrdev/herdr) 0.9.3 or newer. pi-herdsman runs agents in herdr panes. Then install herdr's pi integration:
-
-   ```sh
-   herdr integration install pi
-   ```
-
-   This writes `extensions/herdr-agent-state.ts`, which reports pi's working/idle state to herdr. herdr manages the file, and Git ignores it.
-4. Start `herdr`, then start `pi` inside a herdr pane. A pi started outside herdr cannot delegate to agents. On the first start, pi installs the `packages` from `settings.json` with `bun`.
-5. Log in to your providers with `/login`.
+Rerun `bun setup.ts` to update. Check the template with `bun setup.check.ts`.
 
 `extensions/footer.ts` replaces pi's footer. Do not add packages that set their own footer (for example `@yorch/pi-statusbar`), or one will override the other.
 
@@ -38,6 +27,8 @@ My [pi](https://github.com/earendil-works/pi) agent config. It lives in `~/.pi/a
 
 | Path | What it does |
 | --- | --- |
+| `setup.ts` | Installer; `setup.check.ts` is its self-check. |
+| `templates/` | Mustache templates rendered by `setup.ts`. |
 | `AGENTS.md` | Global rules for the agent. |
 | `agents/` | pi-herdsman agent definitions. |
 | `profiles/` | Model profiles for agents (`/profile:use <name>`). |

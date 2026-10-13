@@ -1,10 +1,13 @@
+{{! defaultProvider: Main model provider (e.g. anthropic) | default=anthropic }}
+{{! defaultModel: Main model id | default=claude-opus-4-5 }}
+{{! defaultThinkingLevel: Thinking level (off|minimal|low|medium|high|xhigh) | default=high }}
+{{! defaultAgentProfile: Agent profile from profiles/ | default=home }}
 {
-  "lastChangelogVersion": "1.2.0",
   "theme": "catppuccin-mocha",
-  "defaultProvider": "<provider>",
-  "defaultModel": "<model>",
-  "defaultThinkingLevel": "<level>",
-  "defaultAgentProfile": "<profile>",
+  "defaultProvider": "{{{defaultProvider}}}",
+  "defaultModel": "{{{defaultModel}}}",
+  "defaultThinkingLevel": "{{{defaultThinkingLevel}}}",
+  "defaultAgentProfile": "{{{defaultAgentProfile}}}",
   "defaultTools": [
     "+codemode"
   ],
@@ -49,15 +52,5 @@
   "archimedes.notify": {
     "delayMs": 10000
   },
-  "loopbackMcp": {
-    "<name>": {
-      "url": "http://<host>:<port>/mcp",
-      "port": 8081
-    }
-  },
-  "enabledModels": [
-    "<provider1>/<model1>",
-    "<provider2>/<model2>",
-    "<provider3>/<model3>"
-  ]
+  "enabledModels": []
 }
