@@ -6,7 +6,6 @@ import {
   getAgentDir,
   type ExtensionAPI,
   type ExtensionContext,
-  type ToolInfo,
 } from "@earendil-works/pi-coding-agent";
 
 type Thinking = "off" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
@@ -23,8 +22,10 @@ type ProfileFile = {
 };
 type Validation = { ok: true; value: ModelProfile } | { ok: false; error: string };
 
-const ENTRY = "subagent-profile";
-const SETTING = "subagentsDefaultProfile";
+const ENTRY = "agent-profile";
+const SETTING = "defaultAgentProfile";
+const BOOTSTRAP = "pi-herdsman:managed-agent-bootstrap";
+const PARTICIPANT = "pi-config/agent-profile";
 const THINKING = new Set<string>(["off", "minimal", "low", "medium", "high", "xhigh", "max"]);
 const MODEL = /^[^/\s]+\/.+$/u;
 
@@ -131,35 +132,13 @@ async function defaultProfileName(ctx: ExtensionContext): Promise<string | undef
   return project ?? (await readSetting(path.join(getAgentDir(), "settings.json")));
 }
 
-function upstreamAvailable(tools: ToolInfo[]): boolean {
-  const parameters: unknown = tools.find(({ name }) => name === "subagent")?.parameters;
-  const properties: unknown = isRecord(parameters) ? parameters.properties : undefined;
-  if (!isRecord(properties)) return false;
-  return ["subagent_type", "model", "thinking", "resume"].every((field) =>
-    Object.hasOwn(properties, field),
-  );
-}
-
 /** Resolve a profile name into an Active profile, or an error message. */
-async function load(
-  name: string,
-  ctx: ExtensionContext,
-  tools: ToolInfo[],
-): Promise<Active | string> {
-  if (!upstreamAvailable(tools)) return "a compatible subagent tool is not loaded";
-
+async function load(name: string, ctx: ExtensionContext): Promise<Active | string> {
   const found = (await discover(ctx)).find((candidate) => candidate.name === name);
   if (found === undefined) return "the profile was not found";
   if (found.profile === undefined)
     return `the profile is invalid: ${found.error ?? "unknown error"}`;
 
-  const available = ctx.modelRegistry.getAvailable();
-  for (const { model } of Object.values(found.profile)) {
-    const [provider, ...ids] = model.split("/");
-    const modelId = ids.join("/");
-    if (!available.some((candidate) => candidate.provider === provider && candidate.id === modelId))
-      return `model '${model}' is unavailable`;
-  }
   return { name, profile: structuredClone(found.profile) };
 }
 
@@ -169,36 +148,23 @@ function profileText(profile: ProfileFile): string {
   return `${profile.name} (${profile.origin}, ${status}${hidden})`;
 }
 
-type SubagentInput = {
-  subagent_type?: unknown;
-  model?: unknown;
-  thinking?: unknown;
-  resume?: unknown;
-};
-
-function injectProfile(input: SubagentInput, active: Active | undefined): void {
-  const blank = (value: unknown) => typeof value === "string" && value.trim() === "";
-  const subagentType = input.subagent_type;
-  if (
-    active === undefined ||
-    (input.resume !== undefined && !blank(input.resume)) ||
-    typeof subagentType !== "string"
-  )
-    return;
-
+/** Apply the profile entry for this managed agent's definition. No entry keeps the inherited model. */
+async function applyEntry(pi: ExtensionAPI, ctx: ExtensionContext, active: Active): Promise<void> {
+  const definition = process.env.PI_HERDSMAN_AGENT_DEFINITION;
+  if (definition === undefined) throw new Error("PI_HERDSMAN_AGENT_DEFINITION is not set");
   const entry = Object.entries(active.profile).find(
-    ([selector]) => selector.toLocaleLowerCase() === subagentType.toLocaleLowerCase(),
+    ([selector]) => selector.toLocaleLowerCase() === definition.toLocaleLowerCase(),
   )?.[1];
   if (entry === undefined) return;
 
-  // ponytail: Normalize blanks only for matched spawns; upstream validates other calls.
-  if (blank(input.resume)) delete input.resume;
-  if (input.model === undefined || blank(input.model)) input.model = entry.model;
-  if (blank(input.thinking)) delete input.thinking;
-  if (input.thinking === undefined && entry.thinking !== undefined) input.thinking = entry.thinking;
+  const [provider, ...ids] = entry.model.split("/");
+  const model = ctx.modelRegistry.find(provider, ids.join("/"));
+  if (model === undefined || !(await pi.setModel(model)))
+    throw new Error(`Model Profile '${active.name}' cannot set model '${entry.model}'`);
+  if (entry.thinking !== undefined) pi.setThinkingLevel(entry.thinking);
 }
 
-/** Session-level Model Profiles for the upstream `subagent` tool. */
+/** Session-level Model Profiles for pi-herdsman managed agents. */
 export default function extension(pi: ExtensionAPI): void {
   let active: Active | undefined;
 
@@ -217,7 +183,7 @@ export default function extension(pi: ExtensionAPI): void {
           : undefined;
     if (name === undefined) return;
 
-    const result = await load(name, ctx, pi.getAllTools());
+    const result = await load(name, ctx);
     if (typeof result === "string")
       ctx.ui.notify(
         `Model Profile '${name}' was not loaded: ${result}. The profile is off.`,
@@ -226,12 +192,39 @@ export default function extension(pi: ExtensionAPI): void {
     else active = result;
   });
 
-  pi.on("tool_call", async (event) => {
-    if (event.toolName === "subagent") injectProfile(event.input, active);
+  // Herdsman bootstrap protocol 1: the delegating session sends the Active profile name;
+  // the fresh child adopts it and applies its own entry. `continue` keeps the saved model.
+  pi.events.on(BOOTSTRAP, (value: unknown) => {
+    if (!isRecord(value) || value.protocol !== 1) return;
+
+    if (value.phase === "prepare" && typeof value.register === "function") {
+      const name = active?.name;
+      value.register(PARTICIPANT, async () => (name === undefined ? undefined : { payload: name }));
+      return;
+    }
+
+    const participant = value.participant;
+    if (
+      value.phase !== "initialize" ||
+      typeof value.accept !== "function" ||
+      !isRecord(participant) ||
+      participant.id !== PARTICIPANT ||
+      typeof participant.payload !== "string"
+    )
+      return;
+    const name = participant.payload;
+    const ctx = value.context as ExtensionContext;
+    value.accept(async () => {
+      const result = await load(name, ctx);
+      if (typeof result === "string") throw new Error(`Model Profile '${name}': ${result}`);
+      active = result;
+      pi.appendEntry(ENTRY, { name });
+      await applyEntry(pi, ctx, result);
+    });
   });
 
   for (const command of ["list", "show", "use", "off"] as const) {
-    pi.registerCommand(`subagents:profile:${command}`, {
+    pi.registerCommand(`profile:${command}`, {
       description: `${command} a Model Profile.`,
       async getArgumentCompletions(prefix) {
         if (command !== "show" && command !== "use") return null;
@@ -272,19 +265,22 @@ export default function extension(pi: ExtensionAPI): void {
         if (command === "show") {
           const profile = (await discover(ctx)).find((candidate) => candidate.name === name);
           if (profile === undefined)
-            ctx.ui.notify(`subagents:profile:show: '${name}' was not found.`, "error");
+            ctx.ui.notify(`profile:show: '${name}' was not found.`, "error");
           else ctx.ui.notify(`${profileText(profile)}\n${profile.content ?? ""}`, "info");
           return;
         }
 
-        const result = await load(name, ctx, pi.getAllTools());
+        const result = await load(name, ctx);
         if (typeof result === "string") {
-          ctx.ui.notify(`subagents:profile:use: '${name}': ${result}.`, "error");
+          ctx.ui.notify(`profile:use: '${name}': ${result}.`, "error");
           return;
         }
         active = result;
         pi.appendEntry(ENTRY, { name });
-        ctx.ui.notify(`Active Model Profile: ${name}.`, "info");
+        ctx.ui.notify(
+          `Active Model Profile: ${name}. It applies to newly delegated agents.`,
+          "info",
+        );
       },
     });
   }

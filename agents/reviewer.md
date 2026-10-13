@@ -1,9 +1,13 @@
 ---
+name: reviewer
 description: Versatile review specialist for code diffs, plans, proposed solutions, and codebase health
-tools: codemode, read, grep, find, ls, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem
+tools: [codemode, read, grep, find, ls, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem]
 thinking: high
-prompt_mode: replace
-inherit_context: false
+systemPromptMode: replace
+agents: []
+noExtensions: false
+noSkills: false
+inheritGlobalContext: true
 permission:
   bash:
     "*": deny
@@ -126,6 +130,6 @@ Filter findings by evidence, not by severity. Report only concrete current issue
 
 Use `blockers only` only for a final pre-merge re-check after the P1/P2 inventory is already captured, or for an explicit emergency hotfix where the parent intentionally defers non-blocking findings.
 
-## Parent coordination
+## Owner coordination
 
-Parent coordination: `ask_parent` is available; `notify_parent` is available when mid-run updates are enabled. Follow their tool descriptions when coordination is needed. These protocol tools are supplied independently of this agent's capability allowlist.
+Use `ask_owner` when you need a decision from your owner to continue. Follow its tool description: it must be the only and final tool call of your turn.

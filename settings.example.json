@@ -1,9 +1,10 @@
 {
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "1.2.0",
   "theme": "catppuccin-mocha",
   "defaultProvider": "<provider>",
   "defaultModel": "<model>",
   "defaultThinkingLevel": "<level>",
+  "defaultAgentProfile": "<profile>",
   "defaultTools": [
     "+codemode"
   ],
@@ -11,12 +12,12 @@
     "npm:pi-better-edit",
     "npm:pi-commandcode-provider",
     "npm:pi-context-view",
+    "npm:pi-herdsman",
     "npm:pi-workspace-history",
     "npm:@ff-labs/pi-fff",
     "npm:@gotgenes/pi-anthropic-auth",
     "npm:@gotgenes/pi-nocd",
     "npm:@gotgenes/pi-permission-system",
-    "npm:@gotgenes/pi-subagents",
     "npm:@inobit/pi-themes",
     "npm:@juicesharp/rpiv-web-tools",
     "npm:@narumitw/pi-btw",
@@ -39,7 +40,6 @@
   "markdown": {
     "mermaid": "streaming"
   },
-  "subagentsDefaultProfile": "<profile>",
   "editorPaddingX": 0,
   "quietStartup": "header",
   "codemode": {
@@ -48,6 +48,12 @@
   },
   "archimedes.notify": {
     "delayMs": 10000
+  },
+  "loopbackMcp": {
+    "<name>": {
+      "url": "http://<host>:<port>/mcp",
+      "port": 8081
+    }
   },
   "enabledModels": [
     "<provider1>/<model1>",

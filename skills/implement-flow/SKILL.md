@@ -1,40 +1,40 @@
 ---
 name: implement-flow
-description: "Implement one ticket through scouts, a background worker, a verify gate, and a two-axis code review, then commit."
+description: "Implement one ticket through scouts, an implementer agent, a verify gate, and a two-axis code review, then commit."
 disable-model-invocation: true
 ---
 
 # Implement flow
 
-You are **main**. You talk to the user, prepare the contract, run the subagents, gate their output, and commit. You do not write implementation code yourself.
+You are **main**. You talk to the user, prepare the contract, run the agents, gate their output, and commit. You do not write implementation code yourself.
 
 | Role | Agent | Job |
 | --- | --- | --- |
 | main | you | Contract, coordination, verify gate, review, commit |
 | scout | `scout` | Gather facts and flag ticket conflicts |
-| worker | `worker` | Write tests and code from the brief |
+| implementer | `implementer` | Write tests and code from the brief |
 | reviewer | `reviewer` | The two axes of the code-review skill |
 
-Subagent rules:
+Agent rules:
 
-- Never pass `model` to `subagent`. The active profile chooses models.
-- Spawn every subagent with `run_in_background: true`. Collect each result with `get_subagent_result` and `wait: true` before you act on it.
-- Pass `inherit_context: false`. The brief is the only shared state.
-- Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 6).
+- Start every agent with `delegate_agent`. The active Model Profile chooses models.
+- Delegate independent agents together in one response. Results come back to you on their own: do not poll. Wait for each result before you act on it.
+- An agent does not see this conversation. The brief, passed through `files`, is the only shared state.
+- Every fix goes to a **fresh implementer**. Never use `continue_agent` on an implementer. Answer its `ask_owner` question with `reply_agent` (step 6).
 
 ## 1. Prepare
 
 1. Fetch the ticket through `docs/agents/issue-tracker.md`, with its comments and parent spec. If that file is missing, tell the user to run `/setup-matt-pocock-skills` and stop.
-2. Record the base: `git rev-parse HEAD`. Require a clean tree: `git status --porcelain` prints nothing. If it prints anything, tell the user and stop; their own edits would enter the worker's diff and the review.
+2. Record the base: `git rev-parse HEAD`. Require a clean tree: `git status --porcelain` prints nothing. If it prints anything, tell the user and stop; their own edits would enter the implementer's diff and the review.
 3. Set the brief directory: `/tmp/<project>-<ticket>/`, where `<project>` is the repo directory name.
-4. Run `just --list`. Confirm `just` recipes exist for format, typecheck, a single test (taking the test name as an argument), and the full test suite. The worker can run only `just`, so each check must be a `just` recipe; never substitute a raw command. If one is missing, name it and ask the user to add it to the Justfile. Stop until they do.
+4. Run `just --list`. Confirm `just` recipes exist for format, typecheck, a single test (taking the test name as an argument), and the full test suite. The implementer can run only `just`, so each check must be a `just` recipe; never substitute a raw command. If one is missing, name it and ask the user to add it to the Justfile. Stop until they do.
 5. If the user passed a plan file from `plan-ticket-impl`, copy it into the brief directory as the contract and skip to step 4.
 
 Completion criterion: the base SHA is recorded and all four recipes are named.
 
 ## 2. Scout
 
-Spawn scouts in parallel. Each one gets the ticket text and one area:
+Delegate scouts in parallel. Each one gets the ticket text and one area:
 
 - **Code map**: the symbols, callers, and files the ticket touches, with paths and line ranges. The prompt must tell the scout to find symbols and callers with `code_find`, `code_callers`, `code_callees`, and `code_read`, not text search, and to report each symbol with its `code_find` qualified name.
 - **References**: the specs and documents the ticket cites, quoted with file and line range or section.
@@ -70,14 +70,14 @@ With a plan file from `plan-ticket-impl`, write only the Ticket, Acceptance crit
 
 Completion criterion: every section is filled from scout output or the plan, with no guessed paths or values.
 
-## 5. Spawn the worker
+## 5. Delegate the implementer
 
-Spawn `worker` with this prompt, filled in:
+Delegate `implementer` with this task, filled in, and `files: ["<brief-dir>/brief.md", "~/.agents/skills/tdd/SKILL.md"]`:
 
 ```text
 Implement ticket <ticket>. Your contract is <brief-dir>/brief.md. Read it first.
 
-Load the tdd skill with read_skill and follow it at the seams the brief names.
+Follow the attached tdd skill at the seams the brief names.
 For each new test: write it, run it alone with `<single-test recipe> <test name>`, and see it fail before you change implementation code. Put that failing output in your report. If you add no new test, say so in the report.
 
 Run <format recipe> and <typecheck recipe> as you go, and <full-suite recipe> once at the end.
@@ -85,25 +85,25 @@ In your report, list the code_* queries you ran.
 Do not commit.
 ```
 
-This first worker, and a fresh worker that replaces a refused resume (step 6), do not count against the fix cap (step 9).
+This first implementer, and a fresh implementer that replaces a lost one (step 6), do not count against the fix cap (step 9).
 
 ## 6. Wait and answer
 
-Collect the worker's result. If it ended with an `ask_parent` question:
+Wait for the implementer. If it asks an `ask_owner` question:
 
 - Answer it yourself when the brief or the scout output already settles it.
 - Otherwise ask the user with `ask_user_question`. Record any new amendment in `brief.md`, and amend the upstream ticket as in step 3.
-- Resume the worker with the answer. If the resume is refused, spawn a fresh worker with the step 5 prompt plus: the question, the answer, and the note `Partial work is in the tree: run git diff <base>.`
+- Send the answer with `reply_agent`. If the reply is refused because the agent is gone, delegate a fresh implementer with the step 5 task plus: the question, the answer, and the note `Partial work is in the tree: run git diff <base>.`
 
-If the worker's status is `steered` or `aborted`, it hit `max_turns`: go to **Max turns** below.
+If the result says the agent's context was retired, or its status is not `completed`: go to **Unfinished implementer** below.
 
-If the worker added implementation code under a test seam without failing output for that seam's tests, present the report to the user and stop. This rejection does not spawn a worker and does not count against the fix cap.
+If the implementer added implementation code under a test seam without failing output for that seam's tests, present the report to the user and stop. This rejection does not delegate an implementer and does not count against the fix cap.
 
-Completion criterion: the worker's status is `completed`, its question (if any) is answered, and every new test in its report has failing output.
+Completion criterion: the implementer's status is `completed`, its question (if any) is answered, and every new test in its report has failing output.
 
 ## 7. Verify gate
 
-1. Run `git add -N` on every untracked file the worker created (`git status --porcelain`, lines starting `??`), so `git diff <base>` shows them.
+1. Run `git add -N` on every untracked file the implementer created (`git status --porcelain`, lines starting `??`), so `git diff <base>` shows them.
 2. Run `git diff <base> --name-only`. Every listed file must be in the brief's Scope. A file outside Scope is a **Big** finding (step 9).
 3. Run the format recipe, then the typecheck and full-suite recipes, yourself.
 
@@ -123,10 +123,10 @@ Completion criterion: both axis reports are collected.
 ## 9. Decide
 
 - **Green** (no findings on either axis, or only judgement-call smells): go to step 10.
-- **Small**: every finding stays inside the brief's Acceptance criteria and its Scope files. Spawn a fresh worker with the step 5 prompt plus the findings, quoted, and `Your earlier work is in the tree: run git diff <base>.` Then return to step 6.
+- **Small**: every finding stays inside the brief's Acceptance criteria and its Scope files. Delegate a fresh implementer with the step 5 task plus the findings, quoted, and `Your earlier work is in the tree: run git diff <base>.` Then return to step 6.
 - **Big**: a finding changes ticket behavior, needs an amendment, touches a file outside Scope, or reports a missing requirement. Present it to the user with your recommendation, and stop.
 
-**Fix cap**: at most 2 fix workers per ticket, counting verify-gate and review triggers together. When a third would be needed, present the open findings to the user and stop.
+**Fix cap**: at most 2 fix implementers per ticket, counting verify-gate and review triggers together. When a third would be needed, present the open findings to the user and stop.
 
 ## 10. Commit
 
@@ -135,12 +135,12 @@ Completion criterion: both axis reports are collected.
 3. Delete the brief: `rm -rf <brief-dir>`.
 4. Report to the user: the commit SHA, files changed, the verify output, the review summary per axis, and every amendment made.
 
-## Max turns
+## Unfinished implementer
 
-A worker that hit `max_turns` stopped unfinished. Do not spawn another worker for it.
+An implementer whose context was retired, or that failed, stopped unfinished. Do not delegate another implementer for it.
 
-1. Read `git diff <base>` and the worker's last report.
-2. Judge the cause: the ticket is **too big** (more files or tests than one run can finish), or **too complex** (the worker looped on one problem).
+1. Read `git diff <base>` and the implementer's last report or handoff.
+2. Judge the cause: the ticket is **too big** (more files or tests than one run can finish), or **too complex** (the implementer looped on one problem).
 3. Report to the user: what got done, the cause with evidence, and one proposal:
    - too big: split the ticket; list draft sub-tickets with their acceptance criteria;
    - too complex: tell the user to run `/skill:plan-ticket-impl` on the ticket, then start this skill again with the plan path.

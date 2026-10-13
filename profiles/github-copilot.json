@@ -2,13 +2,13 @@
   "scout": {
     "model": "github-copilot/gpt-6-luna"
   },
-  "delegate": {
+  "generalist": {
     "model": "github-copilot/gpt-6-luna"
   },
   "researcher": {
     "model": "github-copilot/claude-opus-5.5"
   },
-  "worker": {
+  "implementer": {
     "model": "github-copilot/claude-sonnet-5.5"
   },
   "reviewer": {

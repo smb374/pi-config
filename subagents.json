@@ -1,9 +1,0 @@
-{
-  "maxConcurrent": 8,
-  "defaultMaxTurns": 0,
-  "wrapUpTurns": 2,
-  "consumedSessionRetentionMinutes": 10,
-  "unconsumedSessionRetentionMinutes": 720,
-  "abortAllOnInterrupt": false,
-  "midRunUpdates": true
-}

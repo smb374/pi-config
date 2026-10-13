@@ -2,13 +2,13 @@
   "scout": {
     "model": "commandcode/gpt-6-luna"
   },
-  "delegate": {
+  "generalist": {
     "model": "commandcode/gpt-6-luna"
   },
   "researcher": {
     "model": "commandcode/gpt-6-luna"
   },
-  "worker": {
+  "implementer": {
     "model": "anthropic/claude-sonnet-5-5"
   },
   "reviewer": {
@@ -18,4 +18,3 @@
     "model": "anthropic/claude-opus-5-5"
   }
 }
-

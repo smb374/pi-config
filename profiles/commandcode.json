@@ -2,13 +2,13 @@
   "scout": {
     "model": "commandcode/deepseek/deepseek-v4.1-flash"
   },
-  "delegate": {
+  "generalist": {
     "model": "commandcode/deepseek/deepseek-v4.1-flash"
   },
   "researcher": {
     "model": "commandcode/z-ai/glm-5.3-flash"
   },
-  "worker": {
+  "implementer": {
     "model": "commandcode/z-ai/glm-5.3-flash"
   },
   "reviewer": {
@@ -18,4 +18,3 @@
     "model": "commandcode/zai-org/GLM-5.3"
   }
 }
-

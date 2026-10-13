@@ -27,9 +27,10 @@
 - Claim only what you ran. Report anything you could not run as unverified.
 
 ## Delegation
-- Delegate bounded work: `scout` for recon, `reviewer` after non-trivial changes, `oracle` for risky decisions. Do trivial tasks yourself.
-- Launch every subagent with `run_in_background: true`: independent ones together in one response, dependent ones after their prerequisite finishes.
-- Collect each needed result with `get_subagent_result` and `wait: true` before you use it or end the turn.
+- Delegate bounded work with `delegate_agent`: `scout` for recon, `reviewer` after non-trivial changes, `oracle` for risky decisions. Do trivial tasks yourself.
+- `oracle` does not see this conversation. Give it a decision brief: the decisions made so far, the constraints, the open question, and the files it must read.
+- Delegate independent agents together in one response; delegate dependent ones after their prerequisite returns its result.
+- Results come back to you on their own: do not poll. Wait for each needed result before you use it. Answer an agent's `ask_owner` question with `reply_agent`.
 - Parallel editors get disjoint files. Leave a running agent's files to it.
 
 ## Safety

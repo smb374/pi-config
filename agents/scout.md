@@ -1,9 +1,12 @@
 ---
+name: scout
 description: Fast codebase recon that returns compressed context for handoff
-tools: codemode, read, grep, find, ls, bash, write, code_find, code_callers, code_callees, code_read, code_query, cbmem
+tools: [codemode, read, grep, find, ls, bash, write, code_find, code_callers, code_callees, code_read, code_query, cbmem]
 thinking: low
-prompt_mode: replace
-inherit_context: false
+systemPromptMode: replace
+noExtensions: false
+noSkills: false
+inheritGlobalContext: true
 permission:
   bash:
     "*": deny
@@ -87,6 +90,6 @@ Explain how the pieces connect.
 
 Name the first file another agent should open and why.
 
-## Parent coordination
+## Owner coordination
 
-Parent coordination: `ask_parent` is available; `notify_parent` is available when mid-run updates are enabled. Follow their tool descriptions when coordination is needed. These protocol tools are supplied independently of this agent's capability allowlist.
+Use `ask_owner` when you need a decision from your owner to continue. Follow its tool description: it must be the only and final tool call of your turn.
