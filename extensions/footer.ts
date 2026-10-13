@@ -200,8 +200,12 @@ export default function (pi: ExtensionAPI) {
 		ctx.ui.setFooter((tui, theme, footerData) => {
 			render = () => tui.requestRender();
 			const unsub = footerData.onBranchChange(() => void refreshGit());
+			// ponytail: fixed 5s poll catches edits made outside pi; make it configurable if large repos lag.
+			const poll = setInterval(() => void refreshGit(), 5000);
+			poll.unref?.();
 			return {
 				dispose() {
+					clearInterval(poll);
 					unsub();
 					render = undefined;
 				},

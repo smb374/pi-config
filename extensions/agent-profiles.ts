@@ -159,9 +159,11 @@ async function applyEntry(pi: ExtensionAPI, ctx: ExtensionContext, active: Activ
 
   const [provider, ...ids] = entry.model.split("/");
   const model = ctx.modelRegistry.find(provider, ids.join("/"));
+  // setModel resets thinking to the default; keep the level herdsman set from the definition.
+  const thinking = entry.thinking ?? pi.getThinkingLevel();
   if (model === undefined || !(await pi.setModel(model)))
     throw new Error(`Model Profile '${active.name}' cannot set model '${entry.model}'`);
-  if (entry.thinking !== undefined) pi.setThinkingLevel(entry.thinking);
+  pi.setThinkingLevel(thinking);
 }
 
 /** Session-level Model Profiles for pi-herdsman managed agents. */
