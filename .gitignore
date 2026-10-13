@@ -16,6 +16,10 @@ bin/
 install/
 fff/*
 .env
+.envrc
 trust.json
 node_modules/
 cache/*
+extensions/herdr-agent-state.ts
+pi-herdsman/
+usage-extension-cache.json

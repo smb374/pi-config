@@ -12,22 +12,20 @@
     "npm:pi-commandcode-provider",
     "npm:pi-context-view",
     "npm:pi-workspace-history",
-    "npm:pi-zentui",
     "npm:@ff-labs/pi-fff",
     "npm:@gotgenes/pi-anthropic-auth",
     "npm:@gotgenes/pi-nocd",
     "npm:@gotgenes/pi-permission-system",
     "npm:@gotgenes/pi-subagents",
+    "npm:@inobit/pi-themes",
     "npm:@juicesharp/rpiv-web-tools",
     "npm:@narumitw/pi-btw",
     "npm:@narumitw/pi-lsp",
-    "npm:@narumitw/pi-tool",
-    "npm:@narumitw/pi-usage",
     "npm:@pi-archimedes/notify",
     "npm:@pi-archimedes/todo",
     "npm:@schovest/pi-goal",
     "npm:@sting8k/pi-vcc",
-    "npm:@victor-software-house/pi-curated-themes",
+    "npm:@tmustier/pi-usage-extension",
     "npm:@xynogen/pix-optimizer"
   ],
   "npmCommand": [
@@ -45,9 +43,12 @@
   "editorPaddingX": 0,
   "quietStartup": "header",
   "codemode": {
-    "mode": "only"
+    "mode": "only",
+    "inlineBudget": 6000
   },
-  "archimedes.notify": { "delayMs": 10000 },
+  "archimedes.notify": {
+    "delayMs": 10000
+  },
   "enabledModels": [
     "<provider1>/<model1>",
     "<provider2>/<model2>",
