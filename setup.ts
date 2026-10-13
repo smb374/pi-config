@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// Sets up pi, herdr, and herdr's pi integration from this repo.
+// Sets up pi, herdr, herdr's pi integration, and codebase-memory-mcp from this repo.
 // Usage: bun setup.ts [--values values.json]
 import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -92,6 +92,19 @@ async function setupHerdr() {
   run(["herdr", "integration", "install", "pi"]);
 }
 
+// Official installer with --skip-config: the binary only, no agent config (extensions/cbmem.ts wires it into pi).
+async function setupCbm() {
+  const bin = join(homedir(), ".local", "bin");
+  if (existsSync(join(bin, "codebase-memory-mcp"))) return;
+  const script = join(mkdtempSync(join(tmpdir(), "cbm-")), "install.sh");
+  const res = await fetch("https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh");
+  if (!res.ok) throw new Error(`codebase-memory-mcp install.sh download failed: ${res.status}`);
+  await Bun.write(script, res);
+  console.log(`codebase-memory-mcp is missing. Installer saved to ${script}`);
+  if (!confirm("Run it with bash?")) throw new Error("codebase-memory-mcp install declined");
+  run(["bash", script, `--dir=${bin}`, "--skip-config"]);
+}
+
 if (import.meta.main) {
   const i = process.argv.indexOf("--values");
   const values = i > 0 ? JSON.parse(readFileSync(process.argv[i + 1], "utf8")) : {};
@@ -99,5 +112,6 @@ if (import.meta.main) {
   if (!Bun.which("pi")) run(["bun", "add", "-g", "@earendil-works/pi-coding-agent"]);
   writeSettings(values);
   await setupHerdr();
+  await setupCbm();
   console.log("Done. Start `herdr`, run `pi` in a pane, then `/login`.");
 }

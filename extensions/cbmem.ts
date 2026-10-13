@@ -2,7 +2,8 @@
 // Replaces the cbmem entry in mcp.json so that the model sees intent-named tools with prompt guidelines,
 // and so that subagents (which load extensions but not MCP) get the same tools.
 import { type ChildProcessWithoutNullStreams, execFile, spawn } from "node:child_process";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
+import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { promisify } from "node:util";
 
@@ -10,6 +11,8 @@ import { Type } from "@earendil-works/pi-ai";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const run = promisify(execFile);
+// Installed by setup.ts; full path so pi need not have ~/.local/bin on PATH.
+const BIN = join(homedir(), ".local", "bin", "codebase-memory-mcp");
 const AUTO_INDEX_MAX_FILES = 5000;
 
 type Pending = { resolve: (value: any) => void; reject: (error: Error) => void };
@@ -44,7 +47,7 @@ function request(method: string, params: object, signal?: AbortSignal): Promise<
 function start(): Promise<void> {
   if (ready) return ready;
   // Neutral cwd: the server auto-indexes its cwd on start. That races with index_repository and skips the file limit.
-  const child = spawn("codebase-memory-mcp", [], { cwd: tmpdir(), stdio: ["pipe", "pipe", "pipe"] });
+  const child = spawn(BIN, [], { cwd: tmpdir(), stdio: ["pipe", "pipe", "pipe"] });
   proc = child;
   child.stderr.resume();
   createInterface({ input: child.stdout }).on("line", (line) => {

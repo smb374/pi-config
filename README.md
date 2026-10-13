@@ -4,7 +4,7 @@ My [pi](https://github.com/earendil-works/pi) agent config. It lives in `~/.pi/a
 
 ## Set up
 
-Requires `bun`, `git`, and `sh` (Linux or macOS).
+Requires `bun`, `git`, `sh`, and `bash` (Linux or macOS).
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/setup.ts -o /tmp/setup.ts && bun /tmp/setup.ts
@@ -16,6 +16,7 @@ curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/setup.ts -o /
 2. Installs pi with `bun add -g` if `pi` is missing.
 3. Renders `templates/settings.json.mustache` into `settings.json`. It prompts for each field declared in a `{{! key: description | default=value }}` comment, prefilled from the current `settings.json`. Template keys win; keys you or pi added survive. Pass `--values values.json` to skip prompts.
 4. Installs [herdr](https://github.com/herdrdev/herdr) if it is missing or older than 0.9.3 (asks before running the official installer), then runs `herdr integration install pi`. That writes `extensions/herdr-agent-state.ts`, which herdr manages and Git ignores.
+5. Installs [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) to `~/.local/bin` if it is missing (asks before running the official installer). It passes `--skip-config`, so the installer configures no agents; `extensions/cbmem.ts` connects it to pi.
 
 Then start `herdr`, start `pi` inside a herdr pane (a pi outside herdr cannot delegate to agents), and log in with `/login`. Edit `enabledModels` (`provider/model` list) in `settings.json` by hand; see `extensions/loopback-mcp/README.md` for `loopbackMcp`.
 
