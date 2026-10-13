@@ -1,7 +1,7 @@
 ---
 name: implementer
 description: Implementation agent for normal tasks and approved directions
-tools: [codemode, read, edit, write, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem, lsp_diagnostics, lsp_fix, vcc_recall, manage_todo_list, ffgrep, fffind, multi_grep, undo_last_edit]
+tools: [codemode, read, edit, write, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem, lsp_diagnostics, lsp_fix, vcc_recall, manage_todo_list, grep, find, multi_grep, undo_last_edit]
 thinking: high
 systemPromptMode: replace
 agents: [scout, researcher]
@@ -33,8 +33,9 @@ permission:
     git restore *: deny
     just *: allow
     just *--command*: deny
-    rg *: allow
-    rg *--pre*: deny
+    rg *:
+      action: deny
+      reason: Use the grep tool
     git status *: allow
     git diff *: allow
     git log *: allow
@@ -53,10 +54,10 @@ If the task is framed as an approved direction, brief, or implementation plan, t
 Tools:
 
 - Symbols, definitions, callers, and file maps: `code_find`, `code_read`, `code_callers`, `code_callees`, `code_query`. Use them before any text search.
-- Literal text (strings, config keys, comments, non-code files): `rg` through `bash`.
+- Literal text (strings, config keys, comments, non-code files): the `grep` tool.
 - Reading files: `read`. Changing files: `edit` and `write`.
-- Building, formatting, and testing: the project's `just` recipes. Run `just --list` to see them. `bash` runs `just`, `rg`, and read-only `git` only.
-- Skills the contract names: load them with `read_skill` and follow them.
+- Building, formatting, and testing: the project's `just` recipes. Run `just --list` to see them. `bash` runs `just` and read-only `git` only.
+- Skills the contract names: load them with `read` in `verbatim` mode and follow them.
 
 Ask the owner with `ask_owner` when:
 

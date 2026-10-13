@@ -1,7 +1,7 @@
 ---
 name: generalist
 description: Lightweight delegated agent that runs the assigned task directly
-tools: [codemode, read, grep, find, ls, bash, edit, write, code_find, code_callers, code_callees, code_read, code_query, cbmem, lsp_diagnostics, lsp_fix, vcc_recall, manage_todo_list, ffgrep, fffind, multi_grep, undo_last_edit]
+tools: [codemode, read, grep, find, ls, bash, edit, write, code_find, code_callers, code_callees, code_read, code_query, cbmem, lsp_diagnostics, lsp_fix, vcc_recall, manage_todo_list, multi_grep, undo_last_edit]
 systemPromptMode: append
 agents: [scout, researcher]
 noExtensions: false
