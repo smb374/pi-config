@@ -1,9 +1,13 @@
+{{! defaultProvider: Main model provider (e.g. anthropic) | default=anthropic }}
+{{! defaultModel: Main model id | default=claude-opus-4-5 }}
+{{! defaultThinkingLevel: Thinking level (off|minimal|low|medium|high|xhigh) | default=high }}
+{{! subagentsDefaultProfile: Subagent profile from profiles/ | default=home }}
 {
-  "lastChangelogVersion": "0.85.1",
   "theme": "catppuccin-mocha",
-  "defaultProvider": "<provider>",
-  "defaultModel": "<model>",
-  "defaultThinkingLevel": "<level>",
+  "defaultProvider": "{{{defaultProvider}}}",
+  "defaultModel": "{{{defaultModel}}}",
+  "defaultThinkingLevel": "{{{defaultThinkingLevel}}}",
+  "subagentsDefaultProfile": "{{{subagentsDefaultProfile}}}",
   "defaultTools": [
     "+codemode"
   ],
@@ -39,7 +43,6 @@
   "markdown": {
     "mermaid": "streaming"
   },
-  "subagentsDefaultProfile": "<profile>",
   "editorPaddingX": 0,
   "quietStartup": "header",
   "codemode": {
@@ -49,9 +52,5 @@
   "archimedes.notify": {
     "delayMs": 10000
   },
-  "enabledModels": [
-    "<provider1>/<model1>",
-    "<provider2>/<model2>",
-    "<provider3>/<model3>"
-  ]
+  "enabledModels": []
 }

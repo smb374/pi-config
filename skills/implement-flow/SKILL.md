@@ -18,7 +18,7 @@ You are **main**. You talk to the user, prepare the contract, run the subagents,
 Subagent rules:
 
 - Never pass `model` to `subagent`. The active profile chooses models.
-- Spawn every subagent with `run_in_background: true`. Collect each result with `get_subagent_result` and `wait: true` before you act on it.
+- Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief is the only shared state.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 6).
 
@@ -89,7 +89,7 @@ This first worker, and a fresh worker that replaces a refused resume (step 6), d
 
 ## 6. Wait and answer
 
-Collect the worker's result. If it ended with an `ask_parent` question:
+Act on the worker's result when its notification arrives. If it ended with an `ask_parent` question:
 
 - Answer it yourself when the brief or the scout output already settles it.
 - Otherwise ask the user with `ask_user_question`. Record any new amendment in `brief.md`, and amend the upstream ticket as in step 3.
