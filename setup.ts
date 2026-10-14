@@ -7,6 +7,8 @@ import { join } from "node:path";
 
 const REPO = process.env.PI_CONFIG_REPO ?? "https://github.com/smb374/pi-config.git";
 const DIR = process.env.PI_CODING_AGENT_DIR ?? join(homedir(), ".pi", "agent");
+// Branch this copy of setup.ts installs; see BRANCHES.md.
+const BRANCH = "main";
 const HERDR_MIN = "0.9.3";
 
 const run = (cmd: string[], cwd?: string) => {
@@ -43,11 +45,14 @@ export function render(template: string, view: Record<string, string>, existing:
 }
 
 function syncRepo() {
-  if (existsSync(join(DIR, ".git"))) return run(["git", "pull", "--ff-only"], DIR);
+  if (existsSync(join(DIR, ".git"))) {
+    run(["git", "switch", BRANCH], DIR);
+    return run(["git", "pull", "--ff-only"], DIR);
+  }
   // ponytail: refuse to clone over a non-git dir (e.g. after a bare pi run); move it aside by hand.
   if (existsSync(DIR) && readdirSync(DIR).length)
     throw new Error(`${DIR} exists and is not a git clone; move it aside and rerun`);
-  run(["git", "clone", REPO, DIR]);
+  run(["git", "clone", "--branch", BRANCH, REPO, DIR]);
 }
 
 function writeSettings(values: Record<string, string>) {

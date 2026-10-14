@@ -2,6 +2,8 @@
 
 My [pi](https://github.com/earendil-works/pi) agent config. It lives in `~/.pi/agent`.
 
+This is the `main` branch: agents run on [pi-herdsman](https://www.npmjs.com/package/pi-herdsman) inside herdr. The `subagents` branch runs them on `@gotgenes/pi-subagents` instead. [`BRANCHES.md`](BRANCHES.md) lists the paths that differ between the branches.
+
 ## Set up
 
 Requires `bun`, `git`, `sh`, and `bash` (Linux or macOS).
@@ -12,7 +14,7 @@ curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/setup.ts -o /
 
 `setup.ts` does the following:
 
-1. Clones the repo into `~/.pi/agent`, or pulls if the clone exists. Set `PI_CONFIG_REPO` to use another remote.
+1. Clones the `main` branch into `~/.pi/agent`, or switches to it and pulls if the clone exists. Set `PI_CONFIG_REPO` to use another remote.
 2. Installs pi with `bun add -g` if `pi` is missing.
 3. Renders `templates/settings.json.mustache` into `settings.json`. It prompts for each field declared in a `{{! key: description | default=value }}` comment, prefilled from the current `settings.json`. Template keys win; keys you or pi added survive. Pass `--values values.json` to skip prompts.
 4. Installs [herdr](https://github.com/herdrdev/herdr) if it is missing or older than 0.9.3 (asks before running the official installer), then runs `herdr integration install pi`. That writes `extensions/herdr-agent-state.ts`, which herdr manages and Git ignores.
@@ -28,6 +30,7 @@ Rerun `bun setup.ts` to update. Check the template with `bun setup.check.ts`.
 
 | Path | What it does |
 | --- | --- |
+| `BRANCHES.md` | Paths that differ between `main` and `subagents`. |
 | `setup.ts` | Installer; `setup.check.ts` is its self-check. |
 | `templates/` | Mustache templates rendered by `setup.ts`. |
 | `AGENTS.md` | Global rules for the agent. |
