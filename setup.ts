@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// Sets up pi and codebase-memory-mcp from this repo's subagents branch.
+// Sets up pi and codebase-memory-mcp from this repo's main branch.
 // Usage: bun setup.ts [--values values.json]
 import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -8,7 +8,7 @@ import { join } from "node:path";
 const REPO = process.env.PI_CONFIG_REPO ?? "https://github.com/smb374/pi-config.git";
 const DIR = process.env.PI_CODING_AGENT_DIR ?? join(homedir(), ".pi", "agent");
 // Branch this copy of setup.ts installs; see BRANCHES.md.
-const BRANCH = "subagents";
+const BRANCH = "main";
 
 const run = (cmd: string[], cwd?: string) => {
   const { exitCode } = Bun.spawnSync(cmd, {
