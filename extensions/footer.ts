@@ -65,6 +65,12 @@ function tildePath(cwd: string): string {
 	return rel === "" ? "~" : rel.startsWith("..") || rel.startsWith(sep) ? cwd : `~${sep}${rel}`;
 }
 
+/** Fish-style: `~/src/work/proj` -> `~/s/w/proj`. Dot-dirs keep the dot: `.config` -> `.c`. */
+function shortPath(path: string): string {
+	const parts = path.split(sep);
+	return parts.map((p, i) => (i === parts.length - 1 || p === "~" ? p : p.slice(0, p.startsWith(".") ? 2 : 1))).join(sep);
+}
+
 // Keep SGR colours set by the extension; replace every other escape/control sequence with a space.
 const STATUS_TOKEN =
 	/(?:\x1b\[|\x9b)[0-?]*[ -/]*[@-~]|(?:\x1b[P\]X^_]|[\x90\x9d\x98\x9e\x9f])[\s\S]*?(?:\x07|\x1b\\|\x9c|$)|\x1b[@-Z\\_]|[\u0000-\u001f\u007f-\u009f]/g;
@@ -121,7 +127,8 @@ export function renderFooter(
 	const segs: Seg[] = [];
 	const cwd = tildePath(d.cwd);
 	const base = cwd.split(sep).filter(Boolean).at(-1) ?? cwd;
-	segs.push({ text: `${fg("mdLink", "@")} ${fg("accent", cwd)}`, compact: `${fg("mdLink", "@")} ${fg("accent", base)}`, priority: 9 });
+	// ponytail: abbreviated parents always; basename only when the line still overflows.
+	segs.push({ text: `${fg("mdLink", "@")} ${fg("accent", shortPath(cwd))}`, compact: `${fg("mdLink", "@")} ${fg("accent", base)}`, priority: 9 });
 	if (HOST) segs.push({ text: `${dim("h")} ${fg("accent", HOST)}`, priority: 1 });
 	if (d.git) {
 		const g = d.git;
