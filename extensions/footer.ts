@@ -132,13 +132,14 @@ export function renderFooter(
 	if (HOST) segs.push({ text: `${dim("h")} ${fg("accent", HOST)}`, priority: 1 });
 	if (d.git) {
 		const g = d.git;
-		const parts = [g.branch ? fg("mdLink", `* ${truncateToWidth(g.branch, 20, "...")}`) : fg("warning", "* HEAD")];
+		const branch = (b: string) => (g.branch ? fg("mdLink", `* ${b}`) : fg("warning", "* HEAD"));
 		const st = g.counts.map(([k, c, col]) => fg(col, `${k}${c}`));
 		if (g.ahead && g.behind) st.push(fg("warning", `^v${g.ahead}/${g.behind}`));
 		else if (g.ahead) st.push(fg("success", `^${g.ahead}`));
 		else if (g.behind) st.push(fg("warning", `v${g.behind}`));
-		if (st.length) parts.push(`${dim("[")}${st.join(" ")}${dim("]")}`);
-		segs.push({ text: parts.join(" "), priority: 3 });
+		const counts = st.length ? ` ${dim("[")}${st.join(" ")}${dim("]")}` : "";
+		// Full branch name; cap it at 20 columns only when line 1 overflows.
+		segs.push({ text: branch(g.branch ?? "") + counts, compact: branch(truncateToWidth(g.branch ?? "", 20, "...")) + counts, priority: 3 });
 	}
 	if (d.workingSince !== undefined)
 		segs.push({ text: `${fg("accent", "o")} ${dim("working")} ${fg("accent", fmtDuration(Date.now() - d.workingSince))}`, priority: 2 });
