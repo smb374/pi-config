@@ -100,6 +100,7 @@
       "find *": {"action": "deny", "reason": "Use the find tool"},
       "sed *": {"action": "deny", "reason": "Use the edit tool, or read for viewing"},
       "awk *": {"action": "deny", "reason": "Use read/grep, or a real script"},
+      "cat *": {"action": "deny", "reason": "Use read for single file, use multiple read for multiple files"},
       "echo *": {"action": "deny", "reason": "Write prose in your reply, not via echo"}
     }
   }
