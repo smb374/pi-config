@@ -1,15 +1,15 @@
 // Two-line footer with ASCII icons. Layout adapted from pi-open-tui (MIT, OldSuns):
 // https://github.com/OldSuns/pi-open-tui/blob/main/extensions/open-tui/footer.ts
-//   L1: @cwd h host *branch [git counts] timer          # [bar] pct · used/window
+//   L1: @cwd h host *branch [git counts] w worktree timer          # [bar] pct · used/window
 //   L2: M provider · model · ~effort    & ext statuses | ↑in ↓out c% | $cost
 //   L3: (ext statuses, right-aligned, only when they don't fit on L2)
 import { execFile } from "node:child_process";
 import { hostname } from "node:os";
-import { relative, sep } from "node:path";
+import { basename, relative, sep } from "node:path";
 import type { ExtensionAPI, ExtensionContext, Theme, ThemeColor } from "@earendil-works/pi-coding-agent";
 import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 
-type Git = { branch?: string; detached: boolean; counts: [string, number, ThemeColor][]; ahead: number; behind: number };
+type Git = { branch?: string; detached: boolean; counts: [string, number, ThemeColor][]; ahead: number; behind: number; worktree?: string };
 type Seg = { text: string; compact?: string; priority: number; right?: boolean };
 
 const HOST = hostname().split(".")[0] ?? "";
@@ -43,6 +43,16 @@ function readGit(cwd: string): Promise<Git | undefined> {
 			const color: Record<string, ThemeColor> = { "=": "error", x: "error", "!": "warning", r: "warning", A: "success", "?": "muted", S: "muted" };
 			g.counts = Object.entries(n).filter(([, c]) => c > 0).map(([k, c]) => [k, c, color[k]!]);
 			done(g);
+		}),
+	);
+}
+
+// Linked worktree: its git dir (.git/worktrees/<name>) differs from the common dir. Returns <name>.
+function readWorktree(cwd: string): Promise<string | undefined> {
+	return new Promise((done) =>
+		execFile("git", ["rev-parse", "--path-format=absolute", "--git-dir", "--git-common-dir"], { cwd, timeout: 2000 }, (err, out) => {
+			const [dir, common] = out.trim().split("\n");
+			done(err || !dir || dir === common ? undefined : basename(dir));
 		}),
 	);
 }
@@ -133,6 +143,7 @@ export function renderFooter(
 		const counts = st.length ? ` ${dim("[")}${st.join(" ")}${dim("]")}` : "";
 		// Full branch name; cap it at 20 columns only when line 1 overflows.
 		segs.push({ text: branch(g.branch ?? "") + counts, compact: branch(truncateToWidth(g.branch ?? "", 20, "...")) + counts, priority: 3 });
+		if (g.worktree) segs.push({ text: `${dim("w")} ${fg("accent", g.worktree)}`, priority: 2 });
 	}
 	if (d.workingSince !== undefined)
 		segs.push({ text: `${fg("accent", "o")} ${dim("working")} ${fg("accent", fmtDuration(Date.now() - d.workingSince))}`, priority: 2 });
@@ -190,7 +201,8 @@ export default function (pi: ExtensionAPI) {
 	const refreshGit = async () => {
 		const ctx = refreshCtx;
 		if (!ctx) return;
-		git = await readGit(ctx.cwd);
+		const [g, wt] = await Promise.all([readGit(ctx.cwd), readWorktree(ctx.cwd)]);
+		git = g && { ...g, worktree: wt };
 		render?.();
 	};
 

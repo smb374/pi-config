@@ -73,25 +73,56 @@ function writeSettings(values: Record<string, string>) {
   console.log("Wrote", path);
 }
 
+const BIN = join(homedir(), ".local", "bin");
+
+// Downloads an official installer, shows where it is saved, and runs it with bash after a confirm.
+async function installer(name: string, url: string, args: string[] = [], env: Record<string, string> = {}) {
+  const script = join(mkdtempSync(join(tmpdir(), "pi-setup-")), "install.sh");
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${name} installer download failed: ${res.status}`);
+  await Bun.write(script, res);
+  console.log(`${name} is missing. Installer saved to ${script}`);
+  if (!confirm("Run it?")) throw new Error(`${name} install declined`);
+  const { exitCode } = Bun.spawnSync(["bash", script, ...args], { stdio: ["inherit", "inherit", "inherit"], env: { ...process.env, ...env } });
+  if (exitCode !== 0) throw new Error(`${name} installer failed (${exitCode})`);
+}
+
+// Pi-Bolt (AOT-compiled pi) where a build exists, else pi on bun. The JIT build keeps bun:ffi
+// extensions (@ff-labs/pi-fff) fast. ponytail: musl Linux and Intel macOS fall back to bun.
+const BOLT = { "linux-x64": "x64-jit", "linux-arm64": "arm64-jit", "darwin-arm64": "arm64-jit" }[`${process.platform}-${process.arch}`];
+async function setupPi() {
+  if (!BOLT) return Bun.which("pi") || run(["bun", "add", "-g", "@earendil-works/pi-coding-agent"]);
+  if (Bun.which("pi-bolt") || existsSync(join(BIN, "pi-bolt"))) return;
+  await installer("pi-bolt", "https://pi-bolt.opensec.in/install.sh", [], {
+    PIBOLT_VARIANT: BOLT,
+    PIBOLT_BIN_DIR: BIN,
+    PIBOLT_EXTENSIONS: "no", // opensec-pi-subagents would clash with @gotgenes/pi-subagents
+    PIBOLT_NO_START: "1",
+  });
+}
+
 // Official installer with --skip-config: the binary only, no agent config (extensions/cbmem.ts wires it into pi).
 async function setupCbm() {
-  const bin = join(homedir(), ".local", "bin");
-  if (existsSync(join(bin, "codebase-memory-mcp"))) return;
-  const script = join(mkdtempSync(join(tmpdir(), "cbm-")), "install.sh");
-  const res = await fetch("https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh");
-  if (!res.ok) throw new Error(`codebase-memory-mcp install.sh download failed: ${res.status}`);
-  await Bun.write(script, res);
-  console.log(`codebase-memory-mcp is missing. Installer saved to ${script}`);
-  if (!confirm("Run it with bash?")) throw new Error("codebase-memory-mcp install declined");
-  run(["bash", script, `--dir=${bin}`, "--skip-config"]);
+  if (existsSync(join(BIN, "codebase-memory-mcp"))) return;
+  await installer("codebase-memory-mcp", "https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh", [`--dir=${BIN}`, "--skip-config"]);
+}
+
+// Worktrunk (`wt`) for git worktrees. Flat install into BIN; the installer leaves shell rc files alone.
+async function setupWt() {
+  if (Bun.which("wt") || existsSync(join(BIN, "wt"))) return;
+  await installer("worktrunk", "https://github.com/max-sixty/worktrunk/releases/latest/download/worktrunk-installer.sh", [], {
+    WORKTRUNK_UNMANAGED_INSTALL: BIN,
+  });
+  console.log("Optional: run `wt config shell install` so `wt switch` can change directories.");
 }
 
 if (import.meta.main) {
   const i = process.argv.indexOf("--values");
   const values = i > 0 ? JSON.parse(readFileSync(process.argv[i + 1], "utf8")) : {};
   syncRepo();
-  if (!Bun.which("pi")) run(["bun", "add", "-g", "@earendil-works/pi-coding-agent"]);
+  await setupPi();
   writeSettings(values);
   await setupCbm();
-  console.log("Done. Run `pi`, then `/login`.");
+  await setupWt();
+  console.log(`Done. Run \`${BOLT ? "pi-bolt" : "pi"}\`, then \`/login\`.`);
 }

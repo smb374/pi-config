@@ -1,6 +1,6 @@
 ---
 name: codebase-memory
-description: "Advanced use of the code_* graph tools (code_find, code_callers, code_callees, code_read, code_query, cbmem). Applies to: Cypher queries, graph query syntax, edge types, dead code, fan-in, fan-out, exhaustive or negative claims, index coverage, paging, subagent handoff with graph findings."
+description: "Read before you call cbmem or code_query. Advanced use of the code_* graph tools (code_find, code_callers, code_callees, code_read, code_query, cbmem). Applies to: Cypher queries, graph query syntax, edge types, dead code, fan-in, fan-out, exhaustive or negative claims, index coverage, stale index, paging, subagent handoff with graph findings."
 ---
 
 # Code graph — advanced use
@@ -35,6 +35,7 @@ The `code_*` tools and `cbmem` resolve the project from the git root and index s
 2. Outbound traces miss cross-service callers. Use `cbmem` `trace_path` with `direction: "both"`.
 3. `search_graph` with `relationship: "HTTP_CALLS"` filters nodes by degree. Use `code_query` to see the edges.
 4. Add a Cypher `LIMIT` to broad `code_query` queries.
+5. The index refreshes by itself: the server watches files while it runs, and the first code_* call in a session reindexes when HEAD moved after the last index. If results still disagree with the files (a symbol you can `read` is missing, or line ranges are off), call `cbmem` `index_repository` `{repo_path: <git root>, mode: "moderate"}` once, then retry.
 
 ## Cypher examples
 ```

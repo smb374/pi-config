@@ -102,7 +102,18 @@ async function resolveProject(cwd: string, signal: AbortSignal | undefined, noti
 
   const list = await call("list_projects", { format: "json", limit: 500 }, signal);
   const hit = (list.structuredContent?.projects ?? []).find((p: any) => p.root_path === root);
-  if (hit) return projects.set(root, hit.name), hit.name as string;
+  if (hit) {
+    // ponytail: the server's watcher only sees edits while it runs. Once per session, reindex
+    // (incremental) when HEAD moved (pull, checkout, reset, commit) after the last index.
+    const status = text(await call("index_status", { project: hit.name }, signal));
+    const indexedAt = Date.parse(status.match(/indexed_at: (\S+)/)?.[1] ?? "") || 0;
+    const moved = await run("git", ["reflog", "-1", "--format=%ct"], { cwd: root }).then((r) => Number(r.stdout) * 1000, () => 0);
+    if (moved > indexedAt) {
+      notify(`cbmem: HEAD moved since the last index; reindexing ${root}…`);
+      await call("index_repository", { repo_path: root, mode: "moderate" }, signal);
+    }
+    return projects.set(root, hit.name), hit.name as string;
+  }
 
   const files = (await run("git", ["ls-files"], { cwd: root, maxBuffer: 256 * 1024 * 1024 })).stdout
     .split("\n")
@@ -237,7 +248,10 @@ export default function (pi: ExtensionAPI) {
     "Code Query",
     "Run a read-only Cypher query on the code graph: multi-hop paths, edges, aggregates. Nodes: Function, Method, Class, File, … Edges: CALLS, IMPORTS, INHERITS, HTTP_CALLS, … Add LIMIT to broad queries.",
     "Run a Cypher query on the code graph for edges, multi-hop paths, and aggregates",
-    ["Use code_query when code_find/code_callers/code_callees cannot express the question. Call cbmem with tool get_graph_schema to see labels and edge types."],
+    [
+      "Use code_query when code_find/code_callers/code_callees cannot express the question. Call cbmem with tool get_graph_schema to see labels and edge types.",
+      "Before you call code_query or cbmem, read the codebase-memory skill.",
+    ],
     Type.Object({
       query: Type.String({ description: "Cypher, e.g. MATCH (a)-[:CALLS]->(b) WHERE a.name = 'main' RETURN b.name LIMIT 20" }),
       max_rows: Type.Optional(Type.Integer({ description: "Visible rows. Default 200." })),
@@ -251,6 +265,7 @@ export default function (pi: ExtensionAPI) {
     "Call any codebase-memory tool with raw arguments. `project` is filled from the current git root when omitted. Tools: get_architecture (overview, layers, hotspots), get_file_outline (symbols in one file), detect_changes (impact of the git diff), search_code (graph-ranked text search), check_index_coverage (verify cited paths), get_graph_schema, index_status, list_projects, index_repository, plus the full-parameter forms of trace_path, search_graph, get_code_snippet, query_graph.",
     "Other code-graph tools: architecture, file outline, change impact, coverage, schema, indexing",
     [
+      "Before you call cbmem, read the codebase-memory skill.",
       "Use cbmem get_architecture for a repo or directory overview, get_file_outline for the symbols in one file, and detect_changes for the impact of local changes.",
       "Before an exhaustive or negative claim from the graph (no callers, dead code, full impact), call cbmem check_index_coverage with the cited paths, and read the reported gaps.",
     ],

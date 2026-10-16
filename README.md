@@ -15,11 +15,12 @@ curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/setup.ts -o /
 `setup.ts` does the following:
 
 1. Clones the `main` branch into `~/.pi/agent`, or switches to it and pulls if the clone exists. Set `PI_CONFIG_REPO` to use another remote.
-2. Installs pi with `bun add -g` if `pi` is missing.
+2. Installs [Pi-Bolt](https://github.com/opensec-git/Pi-Bolt) (the JIT build, so `bun:ffi` extensions such as pi-fff stay fast) on Linux x64/arm64 and Apple-silicon macOS if `pi-bolt` is missing. It asks before it runs the official installer and declines OpenSec's optional extensions. On other platforms it installs pi with `bun add -g` if `pi` is missing.
 3. Renders `templates/settings.json.mustache` into `settings.json`. It prompts for each field declared in a `{{! key: description | default=value }}` comment, prefilled from the current `settings.json`. Template keys win; keys you or pi added survive. Pass `--values values.json` to skip prompts.
 4. Installs [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) to `~/.local/bin` if it is missing (asks before running the official installer). It passes `--skip-config`, so the installer configures no agents; `extensions/cbmem.ts` connects it to pi.
+5. Installs [Worktrunk](https://worktrunk.dev) (`wt`) to `~/.local/bin` if `wt` is missing (asks first). Run `wt config shell install` yourself if you want `wt switch` to change directories.
 
-Then start `pi` and log in with `/login`. Edit `enabledModels` (`provider/model` list) in `settings.json` by hand; see `extensions/loopback-mcp/README.md` for `loopbackMcp`.
+Then start `pi-bolt` (or `pi`) and log in with `/login`. Edit `enabledModels` (`provider/model` list) in `settings.json` by hand; see `extensions/loopback-mcp/README.md` for `loopbackMcp`.
 
 Rerun `bun setup.ts` to update. Check the template with `bun setup.check.ts`.
 
@@ -39,6 +40,7 @@ Rerun `bun setup.ts` to update. Check the template with `bun setup.check.ts`.
 | `skills/` | Local skills. |
 | `mcp.json` | MCP servers. |
 | `pi-lsp.json` | LSP servers for `lsp_diagnostics`. |
+| `flake.nix` | Nix dev shell (flake-parts) with `typescript-language-server` for `pi-lsp.json`: `nix develop`. |
 | `extensions/pi-permission-system/config.json` | Tool permission rules. |
 
 Git ignores secrets and local state: `settings.json`, `auth.json`, `.env`, `sessions/`, and `mcp*` (except `mcp.json`).
