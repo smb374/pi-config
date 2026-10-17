@@ -36,10 +36,12 @@ Rerun `bun setup.ts` to update. Check the template with `bun setup.check.ts`.
 | `AGENTS.md` | Global rules for the agent. |
 | `agents/` | Subagent definitions. |
 | `profiles/` | Model profiles for subagents (`/subagents:profile:use <name>`). |
-| `extensions/` | Local extensions. `footer.ts` is the two-line ASCII footer. |
+| `extensions/` | Local extensions: `footer.ts` (two-line ASCII footer), `ask/` (`ask_user_question`), `cbmem.ts` (code-graph tools over codebase-memory-mcp), `jev-gate.ts` (Jev authorizer for bash asks), `subagent-profiles.ts` (`/subagents:profile:use`), `loopback-mcp/` (see its README). |
 | `skills/` | Local skills. |
 | `mcp.json` | MCP servers. |
 | `pi-lsp.json` | LSP servers for `lsp_diagnostics`. |
+| `subagents.json` | pi-subagents settings. |
+| `pi-fff.json`, `pi-vcc-config.json`, `pix.json` | Settings for pi-fff, pi-vcc, and pix-optimizer. |
 | `flake.nix` | Nix dev shell (flake-parts) with `typescript-language-server` for `pi-lsp.json`: `nix develop`. |
 | `extensions/pi-permission-system/config.json` | Tool permission rules. |
 

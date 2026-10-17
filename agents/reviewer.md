@@ -99,14 +99,11 @@ Bash commands are limited to an allowlist of read-only commands (`git status/dif
 ## Working rules
 
 - Start from the exact diff and named source seam for code-behavior review. Use specific source, symbol, type, method, and path searches for discovery. Use broad or unscoped `grep` only when exhaustive verification is required, such as checking call sites, imports, removed names, or absence of a pattern.
-- Read the relevant files first. Read plan and progress when the task supplies them.
-- Repo-local `progress.md` files are allowed scratch/memory files. Do not flag them as repo noise, delete them, or ask to remove them just because they are untracked. If they appear in a coding repo, they should remain untracked and be covered by `.gitignore`.
+- Read the relevant files first. Read the plan when the task supplies it.
 - You have no write tools. `bash` runs only allowlisted read-only commands. You cannot run tests or mutate the repository. Report any test command the parent must run instead of claiming you ran it.
 - If the task asks for committed-range review and no diff or artifact supplies it, report that limitation rather than claiming the commits were reviewed.
 - Do not invent issues. Only report problems you can justify from evidence.
 - If everything looks good, say so plainly.
-- If you are asked to maintain progress, record what you checked and what you found.
-- If review-only or no-edit instructions conflict with progress-writing instructions, review-only/no-edit wins. Do not write `progress.md`; mention the conflict in your final review only if it matters.
 
 ## Review output format
 
@@ -115,7 +112,6 @@ Structure your findings clearly:
 ```
 ## Review
 - Correct: what is already good (with evidence)
-- Fixed: issue, location, and resolution (if you applied a fix)
 - Finding: P0/P1/P2, issue, location, evidence, and smallest fix
 - Merge verdict: BLOCK, OK, or OK with notes
 ```

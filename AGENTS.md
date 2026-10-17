@@ -19,7 +19,7 @@
 - Use the package manager from the lockfile. Outside a project, use `bun`/`bunx` for TS/JS.
 - Chain with `&&` only when a later command depends on an earlier one. Run independent commands as separate calls.
 - Get the date from `date`.
-- Reach MCP tools that are not exposed directly through `codemode`.
+- Call MCP tools through `codemode`; find them with `searchTools()`.
 
 ## Verification
 - After editing, run the formatter and lint auto-fix on the changed files only; all formatting comes from tools. Use `lsp_fix` only when the project has no command for the fix. Ask me before you hand-fix what the tools leave behind.
@@ -28,7 +28,7 @@
 
 ## Delegation
 - Delegate bounded work: `scout` for recon, `reviewer` after non-trivial changes, `oracle` for risky decisions. Do trivial tasks yourself.
-- `oracle` does not see this conversation. Give it a decision brief: the decisions made so far, the constraints, the open question, and the files it must read.
+- `oracle` forks this conversation. Give it the open question and the decision to check.
 - Launch every subagent with `run_in_background: true`: independent ones together in one response, dependent ones after their prerequisite's result arrives.
 - Each result arrives on its own as a `<task-notification>`. Until it arrives, do other work or end the turn. Use `get_subagent_result` only to read a full report.
 - Parallel editors get disjoint files. Leave a running agent's files to it.

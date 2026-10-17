@@ -1,22 +1,22 @@
 ---
 name: plan-ticket-impl
-description: "Turn one ticket into a literal implementation plan with cited behavior, named tests, a file scope, a budget, and a Builder contract, for /implement to run in a fresh context."
+description: "Turn one ticket into a literal implementation plan with cited behavior, named tests, a file scope, a budget, and a Builder contract, for /skill:implement-flow to run in a fresh context."
 disable-model-invocation: true
 ---
 
 # Plan Ticket Implementation
 
-Turn **one ticket** into an **implementation plan**. The builder is `/implement` in a fresh context window. It may be a weaker model than you, and it cannot derive missing behavior. Write everything it needs into the plan.
+Turn **one ticket** into an **implementation plan**. The builder is `/skill:implement-flow` in a fresh context window. It may be a weaker model than you, and it cannot derive missing behavior. Write everything it needs into the plan.
 
 The plan is self-contained. The builder never reads this skill, so every build-time rule goes into the plan through the Builder contract.
 
-The issue tracker should have been given to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`.
+The issue tracker should have been given to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/skill:setup-matt-pocock-skills`.
 
 ## Core principles
 
 1. **Stop and report.** Stopping and reporting is always a correct outcome. Inventing behavior, sequences, or expected values is not.
 2. **Literal verification.** Every gate is checkable by comparison against a concrete artifact written in the plan. Never write "behavior remains correct", "semantics are preserved", or "traces remain exact".
-3. **One ticket, one plan.** When the ticket cannot fit the project's ticket-sizing budget, stop. Tell the user to split the ticket with `/to-tickets`. Do not split it inside the plan.
+3. **One ticket, one plan.** When the ticket cannot fit the project's ticket-sizing budget, stop. Tell the user to split the ticket with `/skill:to-tickets`. Do not split it inside the plan.
 4. **Green tree after the plan runs.** Never defer a failure.
 
 ## Process
@@ -48,7 +48,7 @@ Completion criterion: each of the five items is established or listed under **Op
 
 ### 3. Agree the seams and tests
 
-Propose the seams under test and the named tests, each with a one-line summary of its artifact. Ask the user to confirm them. This is the "pre-agreed seams" step that `/implement` and `/tdd` expect.
+Propose the seams under test and the named tests, each with a one-line summary of its artifact. Ask the user to confirm them. This is the "pre-agreed seams" step that `/skill:implement-flow` and the tdd skill expect.
 
 Naming tests up front is not horizontal slicing. The builder still writes them one red → green slice at a time, in the order of the Action items. The expected values come from cited references, not from imagined behavior.
 
@@ -67,8 +67,7 @@ Completion criterion: every required section is complete, and every test name un
 Tell the user:
 
 - The plan's Builder contract binds the build. The plan and its citations are the builder's only authority.
-- Start the build in a fresh context with `/implement <plan path>`.
-- Pass the plan path to `/code-review` as the spec.
+- Start the build in a fresh context with `/skill:implement-flow <plan path>`.
 
 ## Plan template
 

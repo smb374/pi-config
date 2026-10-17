@@ -53,7 +53,7 @@ Tools:
 - Literal text (strings, config keys, comments, non-code files): `rg` through `bash`.
 - Reading files: `read`. Changing files: `edit` and `write`.
 - Building, formatting, and testing: the project's `just` recipes. Run `just --list` to see them. `bash` runs `just`, `rg`, and read-only `git` only.
-- Skills the contract names: load them with `read_skill` and follow them.
+- Skills the contract names: load them with `read` and follow them.
 
 Ask the parent with `ask_parent`, then end your turn, when:
 

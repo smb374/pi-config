@@ -24,7 +24,7 @@ Subagent rules:
 
 ## 1. Prepare
 
-1. Fetch the ticket through `docs/agents/issue-tracker.md`, with its comments and parent spec. If that file is missing, tell the user to run `/setup-matt-pocock-skills` and stop.
+1. Fetch the ticket through `docs/agents/issue-tracker.md`, with its comments and parent spec. If that file is missing, tell the user to run `/skill:setup-matt-pocock-skills` and stop.
 2. Record the base: `git rev-parse HEAD`. Require a clean tree: `git status --porcelain` prints nothing. If it prints anything, tell the user and stop; their own edits would enter the worker's diff and the review.
 3. Set the brief directory: `/tmp/<project>-<ticket>/`, where `<project>` is the repo directory name.
 4. Run `just --list`. Confirm `just` recipes exist for format, typecheck, a single test (taking the test name as an argument), and the full test suite. The worker can run only `just`, so each check must be a `just` recipe; never substitute a raw command. If one is missing, name it and ask the user to add it to the Justfile. Stop until they do.
@@ -77,7 +77,7 @@ Spawn `worker` with this prompt, filled in:
 ```text
 Implement ticket <ticket>. Your contract is <brief-dir>/brief.md. Read it first.
 
-Load the tdd skill with read_skill and follow it at the seams the brief names.
+Load the tdd skill with `read` and follow it at the seams the brief names.
 For each new test: write it, run it alone with `<single-test recipe> <test name>`, and see it fail before you change implementation code. Put that failing output in your report. If you add no new test, say so in the report.
 
 Run <format recipe> and <typecheck recipe> as you go, and <full-suite recipe> once at the end.
