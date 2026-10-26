@@ -24,3 +24,4 @@ extensions/herdr-agent-state.ts
 pi-herdsman/
 usage-extension-cache.json
 .direnv/
+.research/
