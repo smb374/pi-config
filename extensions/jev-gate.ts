@@ -29,8 +29,8 @@ const DENY_REASON = "Blocked by Jev: high-risk and outside the current task. Ask
 
 // Policy thresholds. `risk` is the expected level index on RISK_LEVELS (0-3).
 // Allow is risk-based; onTask only gates deny, because user prompts rarely name the agent's steps.
-const ALLOW_MAX_RISK = 0.2;
-const ALLOW_MIN_CONFIDENCE = 0.9;
+const ALLOW_MAX_RISK = 0.25;
+const ALLOW_MIN_CONFIDENCE = 0.75;
 const ALLOW_MAX_FLAG = 0.2;
 const DENY_MIN_RISK = 2.5;
 const DENY_MAX_ON_TASK = 0.3;
@@ -371,7 +371,7 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("before_agent_start", (event, c) => {
     ctx = c;
-    prompts = [event.prompt, ...prompts].slice(0, TASK_PROMPTS);
+    if (typeof event.prompt === "string") prompts = [event.prompt, ...prompts].slice(0, TASK_PROMPTS);
     commands.clear();
   });
 

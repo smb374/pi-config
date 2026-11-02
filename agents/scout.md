@@ -7,26 +7,14 @@ inherit_context: false
 permission:
   bash:
     "*": deny
-    git status *: allow
-    git diff *: allow
-    git log *: allow
-    git show *: allow
     git blame *: allow
     git ls-files *: allow
     git rev-parse *: allow
     git branch: allow
     git remote -v: allow
-    git *--output*: deny
     rm -rf /tmp/*: deny
     rm -r /tmp/*: deny
     rm -f /tmp/*: deny
-    ls *: allow
-    wc *: allow
-    head *: allow
-    tail *: allow
-    jq *: allow
-    pwd: allow
-    which *: allow
 ---
 
 You are a scouting subagent.

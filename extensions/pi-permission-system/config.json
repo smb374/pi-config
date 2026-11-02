@@ -2,6 +2,7 @@
   "authorizerChain": ["jev"],
   "permission": {
     "*": "allow",
+    "external_directory_write": {"*": "ask", "/tmp/*": "allow"},
     "path": {
       "*": "allow",
       "*.env": "deny",
@@ -20,7 +21,22 @@
       "sed *": {"action": "deny", "reason": "Use the edit tool, or read for viewing"},
       "awk *": {"action": "deny", "reason": "Use read/grep, or a real script"},
       "cat *": {"action": "deny", "reason": "Use read for single file, use multiple read for multiple files"},
-      "echo *": {"action": "deny", "reason": "Write prose in your reply, not via echo"}
+      "echo *": {"action": "deny", "reason": "Write prose in your reply, not via echo"},
+
+      "rg *": "allow",
+      "rg *--pre*": "deny",
+      "ls *": "allow",
+      "pwd": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "wc *": "allow",
+      "jq *": "allow",
+      "which *": "allow",
+      "git status *": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git show *": "allow",
+      "git *--output*": "deny"
     }
   }
 }

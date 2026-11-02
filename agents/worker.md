@@ -30,13 +30,6 @@ permission:
     git restore *: deny
     just *: allow
     just *--command*: deny
-    rg *: allow
-    rg *--pre*: deny
-    git status *: allow
-    git diff *: allow
-    git log *: allow
-    git show *: allow
-    git *--output*: deny
 ---
 
 You are `worker`: the implementation subagent.
