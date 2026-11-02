@@ -335,6 +335,8 @@ export default function (pi: ExtensionAPI) {
       requestId: details.requestId,
       mode: MODE,
       wouldBe: outcome,
+      command: command.slice(0, 500),
+      thresholds: { ALLOW_MAX_RISK, ALLOW_MIN_CONFIDENCE, ALLOW_MAX_FLAG, DENY_MIN_RISK, DENY_MAX_ON_TASK },
       allowBlocked: allowBlocked ? "shell_comment" : null,
       commandSource,
       latencyMs,
