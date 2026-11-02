@@ -6,7 +6,7 @@
     "model": "github-copilot/gpt-6-luna"
   },
   "researcher": {
-    "model": "github-copilot/claude-opus-5.5"
+    "model": "github-copilot/claude-sonnet-5.5"
   },
   "worker": {
     "model": "github-copilot/claude-sonnet-5.5"
