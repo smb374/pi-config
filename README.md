@@ -36,7 +36,7 @@ Rerun `bun setup.ts` to update. Check the template with `bun setup.check.ts`.
 | `AGENTS.md` | Global rules for the agent. |
 | `agents/` | Subagent definitions. |
 | `profiles/` | Model profiles for subagents (`/subagents:profile:use <name>`). |
-| `extensions/` | Local extensions: `footer.ts` (two-line ASCII footer), `ask/` (`ask_user_question`), `cbmem.ts` (code-graph tools over codebase-memory-mcp), `jev-gate.ts` (Jev authorizer for bash asks), `subagent-profiles.ts` (`/subagents:profile:use`), `loopback-mcp/` (see its README). |
+| `extensions/` | Local extensions: `footer.ts` (two-line ASCII footer), `ask/` (`ask_user_question`), `cbmem.ts` (code-graph tools over codebase-memory-mcp), `jev-gate/` (Jev authorizer for bash asks; self-check: `bun extensions/jev-gate/check.ts`), `subagent-profiles.ts` (`/subagents:profile:use`), `loopback-mcp/` (see its README). |
 | `skills/` | Local skills. |
 | `mcp.json` | MCP servers. |
 | `pi-lsp.json` | LSP servers for `lsp_diagnostics`. |
