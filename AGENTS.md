@@ -27,8 +27,8 @@
 
 ## Verification
 
-- After editing, run the formatter and lint auto-fix on the changed files only; all formatting comes from tools. Use `lsp_fix` only when the project has no command for the fix. Ask me before you hand-fix what the tools leave behind.
-- Done means green: format → lint auto-fix → typecheck → test all pass, rerun after every fix. `lsp_diagnostics` is in-edit feedback, never the gate.
+- After editing, run the formatter and lint auto-fix on the changed files only; all formatting comes from tools. Ask me before you hand-fix what the tools leave behind.
+- Done means green: format → lint auto-fix → typecheck → test all pass, rerun after every fix.
 - Claim only what you ran. Report anything you could not run as unverified.
 
 ## Delegation

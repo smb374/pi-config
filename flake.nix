@@ -19,10 +19,13 @@
         { pkgs, ... }:
         {
           devShells.default = pkgs.mkShell {
-            # typescript provides tsserver for typescript-language-server (pi-lsp.json).
             packages = with pkgs; [
-              typescript-language-server
-              typescript
+              bun
+              git
+              just
+              ripgrep
+              fd
+              jq
             ];
           };
         };
