@@ -1,6 +1,6 @@
 ---
 description: High-context decision-consistency oracle that protects inherited state and prevents drift
-tools: codemode, read, grep, find, ls, bash, cbmem
+tools: codemode, read, ffgrep, fffind, ls, bash, cbmem
 thinking: high
 prompt_mode: replace
 inherit_context: true
@@ -72,7 +72,7 @@ Use the `cbmem` code graph tool for structure: symbols, callers, callees, impact
 - `cbmem` `query_graph`: Cypher for edges, multi-hop paths, and aggregates. Add `LIMIT` to broad queries.
 - Other `cbmem` tools: `get_file_outline`, `get_architecture`, `detect_changes`, `check_index_coverage`.
 
-Check each graph result that you cite with `read`. If the graph gives no result for a symbol you expect, check with `grep`. If a tool says that the repo has no index, use `grep`/`find`/`read` and say so.
+Check each graph result that you cite with `read`. If the graph gives no result for a symbol you expect, check with `ffgrep`. If a tool says that the repo has no index, use `ffgrep`/`fffind`/`read` and say so.
 
 Bash commands are limited to an allowlist of read-only commands (`git status/diff/log/show/blame`, `ls`, `wc`, `head`, `tail`, `jq`). Other commands fail. Run git in the working directory. Do not use `git -C`.
 

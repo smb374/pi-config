@@ -24,7 +24,7 @@ The `cbmem` tool resolves the project from the git root and index small repos by
 
 - After you have the evidence paths, call `cbmem` `check_index_coverage` once with all of them in `paths`. For a negative or exhaustive claim ("no callers", "dead code", "complete impact"), also pass `scopes`.
 - A clean coverage result means no recorded gap. It does not prove completeness.
-- For partial, skipped, stale, or unknown coverage, `read`/`grep` the reported ranges before you rely on the graph.
+- For partial, skipped, stale, or unknown coverage, `read`/`ffgrep` the reported ranges before you rely on the graph.
 - Page through all results (`has_more`, `offset`, `next_cursor`) before you make an exhaustive claim.
 
 ## Subagents
