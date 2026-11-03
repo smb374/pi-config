@@ -19,6 +19,8 @@ fff/*
 .envrc
 trust.json
 node_modules/
+extensions/rtk.ts
+extensions/.rtk-agents
 cache/*
 extensions/herdr-agent-state.ts
 usage-extension-cache.json

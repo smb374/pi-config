@@ -132,6 +132,20 @@ async function setupWt() {
   console.log("Optional: run `wt config shell install` so `wt switch` can change directories.");
 }
 
+// RTK: reinstall via the official installer when the latest release tag differs from `rtk --version`,
+// then (re)install its bundled pi extension (extensions/rtk.ts, git-ignored).
+async function setupRtk() {
+  const rtk = join(BIN, "rtk");
+  const res = await fetch("https://github.com/rtk-ai/rtk/releases/latest", { redirect: "manual" });
+  const latest = res.headers.get("location")?.split("/").pop()?.replace(/^v/, "");
+  const have = existsSync(rtk) ? Bun.spawnSync([rtk, "--version"]).stdout.toString().trim().split(" ").pop() : "";
+  if (have !== latest)
+    await installer("rtk", "https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh", [], {
+      RTK_INSTALL_DIR: BIN,
+    });
+  run([rtk, "init", "--agent", "pi", "--global", "--auto-patch"]);
+}
+
 if (import.meta.main) {
   const i = process.argv.indexOf("--values");
   const values = i > 0 ? JSON.parse(readFileSync(process.argv[i + 1], "utf8")) : {};
@@ -140,5 +154,6 @@ if (import.meta.main) {
   writeSettings(values);
   await setupCbm();
   await setupWt();
+  await setupRtk();
   console.log(`Done. Run \`${BOLT ? "pi-bolt" : "pi"}\`, then \`/login\`.`);
 }
