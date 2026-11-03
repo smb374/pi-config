@@ -2,9 +2,6 @@
   "scout": {
     "model": "openai/gpt-6-luna"
   },
-  "delegate": {
-    "model": "openai/gpt-6-luna"
-  },
   "researcher": {
     "model": "openai/gpt-6-sol"
   },

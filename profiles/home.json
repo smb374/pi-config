@@ -2,9 +2,6 @@
   "scout": {
     "model": "commandcode/claude-haiku-5-5"
   },
-  "delegate": {
-    "model": "commandcode/claude-haiku-5-5"
-  },
   "researcher": {
     "model": "commandcode/claude-haiku-5-5"
   },

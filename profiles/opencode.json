@@ -2,9 +2,6 @@
   "scout": {
     "model": "opencode-go/deepseek-v4.1-flash"
   },
-  "delegate": {
-    "model": "opencode-go/deepseek-v4.1-flash"
-  },
   "researcher": {
     "model": "opencode-go/glm-5.3-flash"
   },

@@ -2,9 +2,6 @@
   "scout": {
     "model": "commandcode/deepseek/deepseek-v4.1-flash"
   },
-  "delegate": {
-    "model": "commandcode/deepseek/deepseek-v4.1-flash"
-  },
   "researcher": {
     "model": "commandcode/z-ai/glm-5.3-flash"
   },
