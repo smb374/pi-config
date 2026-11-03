@@ -6,10 +6,10 @@
     "model": "commandcode/gpt-6-luna"
   },
   "worker": {
-    "model": "anthropic/claude-sonnet-5-5"
+    "model": "commandcode/deepseek/deepseek-v4.1-flash"
   },
   "reviewer": {
-    "model": "anthropic/claude-opus-5-5"
+    "model": "anthropic/claude-sonnet-5-5"
   },
   "oracle": {
     "model": "anthropic/claude-opus-5-5"
