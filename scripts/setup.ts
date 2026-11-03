@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // Sets up pi and codebase-memory-mcp from this repo's main branch.
-// Usage: bun setup.ts [--values values.json]
+// Usage: bun scripts/setup.ts [--values values.json]
 import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";

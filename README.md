@@ -7,10 +7,10 @@ My [pi](https://github.com/earendil-works/pi) agent config. It lives in `~/.pi/a
 Requires `bun`, `git`, and `bash` (Linux or macOS).
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/setup.ts -o /tmp/setup.ts && bun /tmp/setup.ts
+curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/install.sh | bash
 ```
 
-`setup.ts` does the following:
+`install.sh` downloads `scripts/setup.ts` and runs it with bun. `setup.ts` does the following:
 
 1. Clones the `main` branch into `~/.pi/agent`, or switches to it and pulls if the clone exists. Set `PI_CONFIG_REPO` to use another remote.
 2. Installs [Pi-Bolt](https://github.com/opensec-git/Pi-Bolt) (the JIT build, so `bun:ffi` extensions such as pi-fff stay fast) on Linux x64/arm64 and Apple-silicon macOS if `pi-bolt` is missing. It asks before it runs the official installer and declines OpenSec's optional extensions. On other platforms it installs pi with `bun add -g` if `pi` is missing.
@@ -20,7 +20,7 @@ curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/setup.ts -o /
 
 Then start `pi-bolt` (or `pi`) and log in with `/login`. Edit `enabledModels` (`provider/model` list) in `settings.json` by hand; see `extensions/loopback-mcp/README.md` for `loopbackMcp`.
 
-Rerun `bun setup.ts` to update. Develop with `just` (`just --list`); `just check` runs format, lint, typecheck, and tests. Install dev dependencies with `bun install`.
+Rerun the install command (or `just setup`) to update. Develop with `just` (`just --list`); `just check` runs format, lint, typecheck, and tests. Install dev dependencies with `bun install`.
 
 `extensions/footer/` replaces pi's footer. Do not add packages that set their own footer (for example `@yorch/pi-statusbar`), or one will override the other.
 
@@ -28,8 +28,9 @@ Rerun `bun setup.ts` to update. Develop with `just` (`just --list`); `just check
 
 | Path                                                      | What it does                                                                                                                                                                                                                                                                                                             |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `setup.ts`                                                | Installer; `setup.test.ts` is its test.                                                                                                                                                                                                                                                                                  |
-| `templates/`                                              | Mustache templates rendered by `setup.ts`.                                                                                                                                                                                                                                                                               |
+| `install.sh`                                              | Downloads `scripts/setup.ts` and runs it with bun.                                                                                                                                                                                                                                                                       |
+| `scripts/`                                                | `setup.ts` installer and its test, `setup.test.ts`.                                                                                                                                                                                                                                                                      |
+| `templates/`                                              | Mustache templates rendered by `scripts/setup.ts`.                                                                                                                                                                                                                                                                       |
 | `AGENTS.md`                                               | Global rules for the agent.                                                                                                                                                                                                                                                                                              |
 | `agents/`                                                 | Subagent definitions.                                                                                                                                                                                                                                                                                                    |
 | `profiles/`                                               | Model profiles for subagents (`/subagents:profile:use <name>`).                                                                                                                                                                                                                                                          |

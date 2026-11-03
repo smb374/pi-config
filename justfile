@@ -16,4 +16,4 @@ test:
 check: fmt lint typecheck test
 
 setup:
-    bun setup.ts
+    bun scripts/setup.ts

@@ -11,7 +11,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 
 const run = promisify(execFile);
-// Installed by setup.ts; full path so pi need not have ~/.local/bin on PATH.
+// Installed by scripts/setup.ts; full path so pi need not have ~/.local/bin on PATH.
 const BIN = join(homedir(), ".local", "bin", "codebase-memory-mcp");
 const AUTO_INDEX_MAX_FILES = 5000;
 

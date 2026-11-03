@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { fields, render } from "./setup.ts";
 
 test("settings template fields and render", () => {
-  const t = readFileSync(new URL("templates/settings.json.mustache", import.meta.url), "utf8");
+  const t = readFileSync(new URL("../templates/settings.json.mustache", import.meta.url), "utf8");
   assert.deepEqual(
     fields(t).map((f) => f.key),
     ["defaultProvider", "defaultModel", "defaultThinkingLevel", "subagentsDefaultProfile"],
