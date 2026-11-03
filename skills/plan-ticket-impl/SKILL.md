@@ -36,7 +36,7 @@ Establish each item below, or record the gap under **Open questions**. Write onl
 1. **The code that exists.** Read the files the ticket touches. Name only paths you confirmed exist. Mark a path for a file that does not exist yet as `(new)`.
 2. **The real verification commands.**
    - Read them from the project's build config, CI definition, or documented instructions. Record the literal command lines.
-   - A command that you derived from the toolchain, not read from the project, is *unconfirmed*. Label it `(unconfirmed)` where the plan defines it, and list it under **Open questions**.
+   - A command that you derived from the toolchain, not read from the project, is _unconfirmed_. Label it `(unconfirmed)` where the plan defines it, and list it under **Open questions**.
    - A gate command must not change the working tree. Use a check mode (`--check`, `--dry-run`, `-l`). A formatter in write mode cannot fail, so it verifies nothing.
 3. **The test conventions.** Find where tests live, how they are named, and which harness and assertion style the project uses.
 4. **The acceptance criteria.** Take them from the ticket. Rewrite each vague criterion as a literal, or list it under **Open questions**.
@@ -183,22 +183,21 @@ Report in this form:
 Keep the report short. It exists so a reviewer can find the risky parts without reading the whole diff.
 
 ### Project specifics
-
 ```
 
 ## Verification artifacts
 
 Use the project's artifact forms when its standards name them. Otherwise, pick the form that fits the work. Write the artifact in full, so a reviewer checks by comparison, not by deriving correctness again.
 
-| Kind of work | Artifact |
-| --- | --- |
-| State machines and protocols | A step-by-step sequence, or a table of states and transitions |
-| APIs and functions | Exact inputs → exact expected outputs and side effects |
-| UI and UX | Concrete before and after observations, or acceptance checks |
-| Data and persistence | The schema plus example rows, or the migration outcome |
-| Timing and ordering | An ordered timeline, or a table keyed by step or event |
-| Refactors | The exact test names and their current expected artifacts, written in full, plus each new invariant |
-| Everything else | Named exact inputs and exact expected outputs |
+| Kind of work                 | Artifact                                                                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------- |
+| State machines and protocols | A step-by-step sequence, or a table of states and transitions                                       |
+| APIs and functions           | Exact inputs → exact expected outputs and side effects                                              |
+| UI and UX                    | Concrete before and after observations, or acceptance checks                                        |
+| Data and persistence         | The schema plus example rows, or the migration outcome                                              |
+| Timing and ordering          | An ordered timeline, or a table keyed by step or event                                              |
+| Refactors                    | The exact test names and their current expected artifacts, written in full, plus each new invariant |
+| Everything else              | Named exact inputs and exact expected outputs                                                       |
 
 ## Output style
 

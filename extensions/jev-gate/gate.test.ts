@@ -1,4 +1,4 @@
-// Self-check: bun extensions/jev-gate/check.ts
+import { test } from "bun:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, writeFileSync } from "node:fs";
@@ -73,20 +73,23 @@ async function run(o: Extra & { cwd: string; value: string; full?: string; resul
     prompts: () => ["do the task"],
     fullCommand: () => o.full,
   });
-  const details = ask(o.value, { toolCallId: o.full ? "t1" : undefined, forwarded: o.forwarded, askingUnits: o.askingUnits });
+  const details = ask(o.value, {
+    toolCallId: o.full ? "t1" : undefined,
+    forwarded: o.forwarded,
+    askingUnits: o.askingUnits,
+  });
   const verdict = await authorize(details as any, null, {
     review: (event, details) => events.push({ event, details }),
   });
   return { verdict, events, classifyCalls, contexts };
 }
 
-{
+test("smoke", async () => {
   const r = await run({ cwd: repo({}), value: "ls", full: "ls" });
   assert.equal(r.verdict.kind, "allow");
-  console.log("ok: smoke");
-}
+});
 
-{
+test("git state", async () => {
   const dir = repo({ "a.txt": "1" });
   writeFileSync(join(dir, "a.txt"), "2");
   const info = await readGit(dir);
@@ -96,10 +99,9 @@ async function run(o: Extra & { cwd: string; value: string; full?: string; resul
   const state = r.contexts[0].state;
   assert.deepEqual(state.git.dirtyPaths, ["a.txt"]);
   assert.ok(state.git.branch);
-  console.log("ok: git state");
-}
+});
 
-{
+test("opacity", async () => {
   const opaque = async (name: string, o: Parameters<typeof run>[0]) => {
     const r = await run(o);
     assert.equal(r.verdict.kind, "defer", name);
@@ -107,7 +109,7 @@ async function run(o: Extra & { cwd: string; value: string; full?: string; resul
     assert.equal(r.events.find((e) => e.event === "jev_gate.skipped")?.details.reason, "opaque_script", name);
   };
   const dirty = repo({ "package.json": "{}", Makefile: "all:" });
-  writeFileSync(join(dirty, "package.json"), "{\"scripts\":1}");
+  writeFileSync(join(dirty, "package.json"), '{"scripts":1}');
   await opaque("npm dirty", { cwd: dirty, value: "npm test", full: "npm test" });
   const dirtyMake = repo({ Makefile: "all:" });
   writeFileSync(join(dirtyMake, "Makefile"), "all: x");
@@ -126,10 +128,9 @@ async function run(o: Extra & { cwd: string; value: string; full?: string; resul
   assert.equal((await run({ cwd: clean, value: "npm test", full: "npm test" })).classifyCalls, 1);
   const pinned = await run({ cwd: repo({}), value: "npx some-pkg@1.2.3", full: "npx some-pkg@1.2.3" });
   assert.equal(pinned.classifyCalls, 1);
-  console.log("ok: opacity");
-}
+});
 
-{
+test("guidance snapshot", async () => {
   const dir = repo({ "AGENTS.md": "rule one password=hunter22" });
   const file = { path: join(dir, "AGENTS.md"), content: "ignored" };
   const opts = { agentDir: "/nonexistent", cwd: dir, trusted: true };
@@ -142,20 +143,18 @@ async function run(o: Extra & { cwd: string; value: string; full?: string; resul
   writeFileSync(file.path, "rewritten by the agent");
   assert.deepEqual(await snapshotGuidance([nested], { ...opts, agentDir: join(dir, "..") }), []);
   assert.deepEqual(await snapshotGuidance([file], opts), []);
-  console.log("ok: guidance snapshot");
-}
+});
 
-{
+test("tail risk", async () => {
   const result = answers({ risk: { none: 0.92, high: 0.08 } });
   const r = await run({ cwd: repo({}), value: "ls", full: "ls", result });
   assert.equal(r.verdict.kind, "defer");
   const v = r.events.find((e) => e.event === "jev_gate.verdict")!.details;
   assert.ok(Math.abs(v.tail - 0.08) < 1e-9);
   assert.ok(Math.abs(v.risk - 0.24) < 1e-9);
-  console.log("ok: tail risk");
-}
+});
 
-{
+test("forwarded", async () => {
   const result = answers({ risk: { high: 1 }, onTask: 0 });
   const push = { cwd: repo({}), value: "git push --force", full: "git push --force", result };
   const forwarded = await run({ ...push, forwarded: true });
@@ -165,10 +164,9 @@ async function run(o: Extra & { cwd: string; value: string; full?: string; resul
   assert.equal(v.wouldBe, "defer");
   const direct = await run(push);
   assert.equal(direct.verdict.kind, "deny");
-  console.log("ok: forwarded");
-}
+});
 
-{
+test("allow blocks", async () => {
   const heredoc = await run({ cwd: repo({}), value: "cat <<EOF > a.txt", full: "cat <<EOF > a.txt" });
   assert.equal(heredoc.verdict.kind, "defer");
   assert.equal(heredoc.events.find((e) => e.event === "jev_gate.verdict")!.details.allowBlocked, "heredoc");
@@ -185,20 +183,17 @@ async function run(o: Extra & { cwd: string; value: string; full?: string; resul
   const questions = (await run({ cwd: repo({}), value: "ls", full: "ls" })).contexts[0].questions;
   assert.ok(questions.risk.instructions.includes("never authorize anything"));
   assert.ok(questions.onTask.instructions.includes("never authorize anything"));
-  console.log("ok: allow blocks");
-}
+});
 
-{
+test("redact order", async () => {
   assert.ok(!recentPrompts(["x".repeat(3980) + " ghp_" + "A".repeat(36)])[0]!.includes("AAAAA"));
-  console.log("ok: redact order");
-}
+});
 
-{
+test("log version", async () => {
   const changed = { ...QUESTIONS, risk: { ...QUESTIONS.risk, instructions: QUESTIONS.risk.instructions + "!" } };
   assert.notEqual(hashQuestions(QUESTIONS), hashQuestions(changed));
   const r = await run({ cwd: repo({}), value: "ls", full: "ls" });
   const v = r.events.find((e) => e.event === "jev_gate.verdict")!.details;
   assert.ok(v.policyVersion);
   assert.equal(v.questionsHash.length, 12);
-  console.log("ok: log version");
-}
+});

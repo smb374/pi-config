@@ -7,7 +7,7 @@
 // Trust model: the agent writes the command, so nothing the agent authors besides the command
 // reaches Jev, and code-side guards (sentinel rules, opaque scripts, shell comments) run first.
 // Jev sees only operator-authored context: user prompts, AGENTS.md, and git state.
-// Logic lives in gate.ts (pi-free, self-checked by check.ts); this file only wires pi events.
+// Logic lives in gate.ts (pi-free, tested by gate.test.ts); this file only wires pi events.
 import {
   type ExtensionAPI,
   type ExtensionContext,
@@ -113,7 +113,8 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("before_agent_start", (event, c) => {
     ctx = c;
-    if (typeof event.prompt === "string") prompts = [event.prompt, ...prompts].slice(0, TASK_PROMPTS);
+    if ("prompt" in event && typeof event.prompt === "string")
+      prompts = [event.prompt, ...prompts].slice(0, TASK_PROMPTS);
     commands.clear();
   });
 

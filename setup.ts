@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // Sets up pi and codebase-memory-mcp from this repo's main branch.
 // Usage: bun setup.ts [--values values.json]
-import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -20,14 +20,16 @@ const run = (cmd: string[], cwd?: string) => {
 
 // Fields come from `{{! key: description | default=value }}` comments in the template.
 export function fields(template: string) {
-  return [...template.matchAll(/\{\{!\s*([\w.]+):\s*(.*?)(?:\s*\|\s*default=(.*?))?\s*\}\}/g)].map(([, key, desc, def]) => ({
-    key,
-    desc,
-    def: def ?? "",
-  }));
+  return [...template.matchAll(/\{\{!\s*([\w.]+):\s*(.*?)(?:\s*\|\s*default=(.*?))?\s*\}\}/g)].map(
+    ([, key, desc, def]) => ({
+      key,
+      desc,
+      def: def ?? "",
+    }),
+  );
 }
 
-// Renders with `bunx mustache` (no package.json in the config dir), then merges over `existing`:
+// Renders with `bunx mustache` (not a dependency), then merges over `existing`:
 // template keys win, extra keys survive, and an empty template array keeps the existing value.
 export function render(template: string, view: Record<string, string>, existing: Record<string, unknown> = {}) {
   const tmp = mkdtempSync(join(tmpdir(), "pi-setup-"));
@@ -83,13 +85,18 @@ async function installer(name: string, url: string, args: string[] = [], env: Re
   await Bun.write(script, res);
   console.log(`${name} is missing. Installer saved to ${script}`);
   if (!confirm("Run it?")) throw new Error(`${name} install declined`);
-  const { exitCode } = Bun.spawnSync(["bash", script, ...args], { stdio: ["inherit", "inherit", "inherit"], env: { ...process.env, ...env } });
+  const { exitCode } = Bun.spawnSync(["bash", script, ...args], {
+    stdio: ["inherit", "inherit", "inherit"],
+    env: { ...process.env, ...env },
+  });
   if (exitCode !== 0) throw new Error(`${name} installer failed (${exitCode})`);
 }
 
 // Pi-Bolt (AOT-compiled pi) where a build exists, else pi on bun. The JIT build keeps bun:ffi
 // extensions (@ff-labs/pi-fff) fast. ponytail: musl Linux and Intel macOS fall back to bun.
-const BOLT = { "linux-x64": "x64-jit", "linux-arm64": "arm64-jit", "darwin-arm64": "arm64-jit" }[`${process.platform}-${process.arch}`];
+const BOLT = (
+  { "linux-x64": "x64-jit", "linux-arm64": "arm64-jit", "darwin-arm64": "arm64-jit" } as Record<string, string>
+)[`${process.platform}-${process.arch}`];
 async function setupPi() {
   if (!BOLT) return Bun.which("pi") || run(["bun", "add", "-g", "@earendil-works/pi-coding-agent"]);
   if (Bun.which("pi-bolt") || existsSync(join(BIN, "pi-bolt"))) return;
@@ -101,18 +108,27 @@ async function setupPi() {
   });
 }
 
-// Official installer with --skip-config: the binary only, no agent config (extensions/cbmem.ts wires it into pi).
+// Official installer with --skip-config: the binary only, no agent config (extensions/cbmem/index.ts wires it into pi).
 async function setupCbm() {
   if (existsSync(join(BIN, "codebase-memory-mcp"))) return;
-  await installer("codebase-memory-mcp", "https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh", [`--dir=${BIN}`, "--skip-config"]);
+  await installer(
+    "codebase-memory-mcp",
+    "https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh",
+    [`--dir=${BIN}`, "--skip-config"],
+  );
 }
 
 // Worktrunk (`wt`) for git worktrees. Flat install into BIN; the installer leaves shell rc files alone.
 async function setupWt() {
   if (Bun.which("wt") || existsSync(join(BIN, "wt"))) return;
-  await installer("worktrunk", "https://github.com/max-sixty/worktrunk/releases/latest/download/worktrunk-installer.sh", [], {
-    WORKTRUNK_UNMANAGED_INSTALL: BIN,
-  });
+  await installer(
+    "worktrunk",
+    "https://github.com/max-sixty/worktrunk/releases/latest/download/worktrunk-installer.sh",
+    [],
+    {
+      WORKTRUNK_UNMANAGED_INSTALL: BIN,
+    },
+  );
   console.log("Optional: run `wt config shell install` so `wt switch` can change directories.");
 }
 

@@ -1,5 +1,5 @@
 // Pi-free core of the Jev authorizer: policy, guards, context, and the authorizer factory.
-// Imports only node: modules so check.ts can run under bun. See index.ts for wiring and trust model.
+// Imports only node: modules so gate.test.ts can run under bun. See index.ts for wiring and trust model.
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { basename, dirname, relative, resolve } from "node:path";
@@ -56,7 +56,9 @@ const FLAGS: Record<string, { instructions: string; true: string; false: string 
   },
   discardsWork: {
     instructions:
-      "Can `command` discard work that cannot be regenerated? `git` describes uncommitted changes in `cwd` when known. `git.dirtyPaths` lists the files with uncommitted changes (the first " + DIRTY_PATHS_MAX + "; `truncated` is true when there are more).",
+      "Can `command` discard work that cannot be regenerated? `git` describes uncommitted changes in `cwd` when known. `git.dirtyPaths` lists the files with uncommitted changes (the first " +
+      DIRTY_PATHS_MAX +
+      "; `truncated` is true when there are more).",
     true: "Discards uncommitted changes, resets or cleans the working tree, or deletes files that are not regenerable build output or caches",
     false: "Nothing that cannot be regenerated is lost",
   },
@@ -82,14 +84,19 @@ export const QUESTIONS = {
   risk: {
     type: "choice",
     instructions:
-      "How much irreversible damage or data exposure could running `command` cause in `cwd`? `askedUnit` is the part that needs approval; `executedUnit`, when set, is what actually runs. `operatorGuidance` describes what is normal for this operator and project." + AGENT_PROSE,
+      "How much irreversible damage or data exposure could running `command` cause in `cwd`? `askedUnit` is the part that needs approval; `executedUnit`, when set, is what actually runs. `operatorGuidance` describes what is normal for this operator and project." +
+      AGENT_PROSE,
     criteria: RISK_LEVELS,
   },
   onTask: {
     type: "bool",
     instructions:
-      "Does running `command` directly serve the work the user asked for in `recentUserPrompts` (newest first; later prompts may just confirm or continue earlier ones)? A null or empty list means the task is unknown." + AGENT_PROSE,
-    criteria: { true: "Clearly part of the task", false: "Unrelated to the task, goes beyond it, or the task is unknown" },
+      "Does running `command` directly serve the work the user asked for in `recentUserPrompts` (newest first; later prompts may just confirm or continue earlier ones)? A null or empty list means the task is unknown." +
+      AGENT_PROSE,
+    criteria: {
+      true: "Clearly part of the task",
+      false: "Unrelated to the task, goes beyond it, or the task is unknown",
+    },
   },
   ...FLAG_QUESTIONS,
 };
@@ -141,8 +148,24 @@ export type AuthorizerDeps = {
 // ── Code-side guards ────────────────────────────────────────────────────────
 
 const INTERPRETERS = new Set([
-  "bash", "sh", "zsh", "dash", "ksh", "fish", "python", "python3", "node", "bun", "deno",
-  "ruby", "perl", "php", "lua", "tsx", "ts-node", "Rscript",
+  "bash",
+  "sh",
+  "zsh",
+  "dash",
+  "ksh",
+  "fish",
+  "python",
+  "python3",
+  "node",
+  "bun",
+  "deno",
+  "ruby",
+  "perl",
+  "php",
+  "lua",
+  "tsx",
+  "ts-node",
+  "Rscript",
 ]);
 const INLINE_FLAGS = new Set(["-c", "-e", "--eval", "-p", "--print"]);
 
@@ -160,7 +183,13 @@ const RUNNERS: Record<string, string[]> = {
 };
 // Package downloaders: [program, subcommand or null]. They run fetched code, so only an exact pinned version passes.
 const DOWNLOADERS: [string, string | null][] = [
-  ["npx", null], ["bunx", null], ["uvx", null], ["pnpm", "dlx"], ["yarn", "dlx"], ["bun", "x"], ["pipx", "run"],
+  ["npx", null],
+  ["bunx", null],
+  ["uvx", null],
+  ["pnpm", "dlx"],
+  ["yarn", "dlx"],
+  ["bun", "x"],
+  ["pipx", "run"],
 ];
 const PINNED = /(@|==)\d+\.\d+\.\d+/;
 
@@ -269,7 +298,9 @@ export async function readGit(cwd: string): Promise<GitInfo | null> {
   const header = lines[0]?.startsWith("## ") ? lines.shift()!.slice(3) : "";
   const branch = header.startsWith("No commits yet on ")
     ? header.slice("No commits yet on ".length)
-    : header.startsWith("HEAD (no branch)") ? null : header.split("...")[0]!.split(" ")[0]!;
+    : header.startsWith("HEAD (no branch)")
+      ? null
+      : header.split("...")[0]!.split(" ")[0]!;
   const aheadOfUpstream = Number(/\[ahead (\d+)/.exec(header)?.[1] ?? 0);
   const paths = lines.map((line) => {
     const path = line.slice(3);
@@ -429,7 +460,11 @@ export function createAuthorizer(deps: AuthorizerDeps) {
     const forwarded = request.requester.forwarded || details.forwarding !== undefined;
     const allowBlocked = !full
       ? "ask_unit_only"
-      : hasShellComment(command) ? "shell_comment" : command.includes("<<") ? "heredoc" : null;
+      : hasShellComment(command)
+        ? "shell_comment"
+        : command.includes("<<")
+          ? "heredoc"
+          : null;
     const started = Date.now();
     const judgment = await judge(details, command, cwd, gitInfo, forwarded);
     const latencyMs = Date.now() - started;

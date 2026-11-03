@@ -3,9 +3,9 @@ import path from "node:path";
 
 import {
   CONFIG_DIR_NAME,
-  getAgentDir,
   type ExtensionAPI,
   type ExtensionContext,
+  getAgentDir,
   type ToolInfo,
 } from "@earendil-works/pi-coding-agent";
 
@@ -32,7 +32,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && !Array.isArray(value) && typeof value === "object";
 }
 
-function validateProfile(value: unknown): Validation {
+export function validateProfile(value: unknown): Validation {
   if (!isRecord(value) || Object.keys(value).length === 0)
     return { ok: false, error: "must contain at least one selector" };
 
@@ -40,21 +40,16 @@ function validateProfile(value: unknown): Validation {
   const selectors = new Set<string>();
   for (const [selector, entry] of Object.entries(value)) {
     const folded = selector.toLocaleLowerCase();
-    if (selectors.has(folded))
-      return { ok: false, error: `selector '${selector}' collides case-insensitively` };
+    if (selectors.has(folded)) return { ok: false, error: `selector '${selector}' collides case-insensitively` };
     selectors.add(folded);
 
-    if (!isRecord(entry))
-      return { ok: false, error: `selector '${selector}' must contain an object` };
+    if (!isRecord(entry)) return { ok: false, error: `selector '${selector}' must contain an object` };
     for (const key of Object.keys(entry))
       if (key !== "model" && key !== "thinking")
         return { ok: false, error: `selector '${selector}' has an unknown field '${key}'` };
     if (typeof entry.model !== "string" || !MODEL.test(entry.model))
       return { ok: false, error: `selector '${selector}' model must be provider/model-id` };
-    if (
-      entry.thinking !== undefined &&
-      !(typeof entry.thinking === "string" && THINKING.has(entry.thinking))
-    )
+    if (entry.thinking !== undefined && !(typeof entry.thinking === "string" && THINKING.has(entry.thinking)))
       return { ok: false, error: `selector '${selector}' has an invalid thinking value` };
 
     profile[selector] =
@@ -65,10 +60,7 @@ function validateProfile(value: unknown): Validation {
   return { ok: true, value: profile };
 }
 
-async function readDirectory(
-  directory: string,
-  origin: ProfileFile["origin"],
-): Promise<ProfileFile[]> {
+async function readDirectory(directory: string, origin: ProfileFile["origin"]): Promise<ProfileFile[]> {
   let names: string[];
   try {
     names = await readdir(directory);
@@ -135,23 +127,16 @@ function upstreamAvailable(tools: ToolInfo[]): boolean {
   const parameters: unknown = tools.find(({ name }) => name === "subagent")?.parameters;
   const properties: unknown = isRecord(parameters) ? parameters.properties : undefined;
   if (!isRecord(properties)) return false;
-  return ["subagent_type", "model", "thinking", "resume"].every((field) =>
-    Object.hasOwn(properties, field),
-  );
+  return ["subagent_type", "model", "thinking", "resume"].every((field) => Object.hasOwn(properties, field));
 }
 
 /** Resolve a profile name into an Active profile, or an error message. */
-async function load(
-  name: string,
-  ctx: ExtensionContext,
-  tools: ToolInfo[],
-): Promise<Active | string> {
+async function load(name: string, ctx: ExtensionContext, tools: ToolInfo[]): Promise<Active | string> {
   if (!upstreamAvailable(tools)) return "a compatible subagent tool is not loaded";
 
   const found = (await discover(ctx)).find((candidate) => candidate.name === name);
   if (found === undefined) return "the profile was not found";
-  if (found.profile === undefined)
-    return `the profile is invalid: ${found.error ?? "unknown error"}`;
+  if (found.profile === undefined) return `the profile is invalid: ${found.error ?? "unknown error"}`;
 
   const available = ctx.modelRegistry.getAvailable();
   for (const { model } of Object.values(found.profile)) {
@@ -176,14 +161,10 @@ type SubagentInput = {
   resume?: unknown;
 };
 
-function injectProfile(input: SubagentInput, active: Active | undefined): void {
+export function injectProfile(input: SubagentInput, active: Active | undefined): void {
   const blank = (value: unknown) => typeof value === "string" && value.trim() === "";
   const subagentType = input.subagent_type;
-  if (
-    active === undefined ||
-    (input.resume !== undefined && !blank(input.resume)) ||
-    typeof subagentType !== "string"
-  )
+  if (active === undefined || (input.resume !== undefined && !blank(input.resume)) || typeof subagentType !== "string")
     return;
 
   const entry = Object.entries(active.profile).find(
@@ -219,10 +200,7 @@ export default function extension(pi: ExtensionAPI): void {
 
     const result = await load(name, ctx, pi.getAllTools());
     if (typeof result === "string")
-      ctx.ui.notify(
-        `Model Profile '${name}' was not loaded: ${result}. The profile is off.`,
-        "warning",
-      );
+      ctx.ui.notify(`Model Profile '${name}' was not loaded: ${result}. The profile is off.`, "warning");
     else active = result;
   });
 
@@ -262,17 +240,13 @@ export default function extension(pi: ExtensionAPI): void {
 
         if (command === "list") {
           const profiles = await discover(ctx);
-          ctx.ui.notify(
-            profiles.length === 0 ? "No Model Profiles." : profiles.map(profileText).join("\n"),
-            "info",
-          );
+          ctx.ui.notify(profiles.length === 0 ? "No Model Profiles." : profiles.map(profileText).join("\n"), "info");
           return;
         }
 
         if (command === "show") {
           const profile = (await discover(ctx)).find((candidate) => candidate.name === name);
-          if (profile === undefined)
-            ctx.ui.notify(`subagents:profile:show: '${name}' was not found.`, "error");
+          if (profile === undefined) ctx.ui.notify(`subagents:profile:show: '${name}' was not found.`, "error");
           else ctx.ui.notify(`${profileText(profile)}\n${profile.content ?? ""}`, "info");
           return;
         }

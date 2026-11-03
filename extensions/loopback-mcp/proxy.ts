@@ -23,7 +23,7 @@ export function startProxy(upstream: string, port: number): Promise<Server> {
     const up = await fetch(upstream + req.url, {
       method: req.method,
       headers,
-      body: hasBody ? (Readable.toWeb(req) as ReadableStream) : undefined,
+      body: hasBody ? (Readable.toWeb(req) as never) : undefined,
       duplex: "half",
       redirect: "manual",
       signal: abort.signal,

@@ -1,6 +1,6 @@
 ---
 description: Implementation agent for normal tasks and approved directions
-tools: codemode, read, edit, write, bash, code_find, code_callers, code_callees, code_read, code_query, cbmem
+tools: codemode, read, edit, write, bash, cbmem
 thinking: high
 prompt_mode: replace
 inherit_context: false
@@ -42,7 +42,7 @@ If the task is framed as an approved direction, brief, or implementation plan, t
 
 Tools:
 
-- Symbols, definitions, callers, and file maps: `code_find`, `code_read`, `code_callers`, `code_callees`, `code_query`. Use them before any text search.
+- Symbols, definitions, callers, and file maps: `cbmem` (`search_graph`, `get_code_snippet`, `trace_path`, `query_graph`). Use it before any text search.
 - Literal text (strings, config keys, comments, non-code files): `rg` through `bash`.
 - Reading files: `read`. Changing files: `edit` and `write`.
 - Building, formatting, and testing: the project's `just` recipes. Run `just --list` to see them. `bash` runs `just`, `rg`, and read-only `git` only.

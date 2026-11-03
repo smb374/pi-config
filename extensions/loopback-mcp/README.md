@@ -29,11 +29,11 @@ This extension starts a proxy on `127.0.0.1` for each configured server. The pro
 
 ## Settings
 
-| Field | Required | Meaning |
-|---|---|---|
-| `url` | yes | The MCP endpoint of the server, http or https. |
-| `port` | yes | The loopback port of the proxy. Use a different port for each server. |
-| other fields | no | Pi gets them as in `mcpServers`: `description`, `exposure`, `toolExposure`, `timeout`, and others. Pi checks them. |
+| Field        | Required | Meaning                                                                                                            |
+| ------------ | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| `url`        | yes      | The MCP endpoint of the server, http or https.                                                                     |
+| `port`       | yes      | The loopback port of the proxy. Use a different port for each server.                                              |
+| other fields | no       | Pi gets them as in `mcpServers`: `description`, `exposure`, `toolExposure`, `timeout`, and others. Pi checks them. |
 
 Do not change `port` after you sign in. Pi keys OAuth credentials by server URL, so a new port needs a new sign-in.
 
@@ -49,14 +49,14 @@ With the default `codemode` exposure, the model does not see the tools directly.
 - Write "MCP" in the prompt, for example "use the cci-notes MCP". Then the model goes to codemode.
 - Set `"exposure": "direct"` to declare the tools to the model directly. This costs context on each request.
 
-## Check
+## Test
 
 ```sh
 # Offline part only: a client that disconnects in the middle of a stream must not crash the process.
-node ~/.pi/agent/extensions/loopback-mcp/check.ts
+bun test extensions/loopback-mcp
 
-# Also check the metadata rewrite against a real server. Needs the VPN and a free port.
-node ~/.pi/agent/extensions/loopback-mcp/check.ts http://10.102.135.31:8080/mcp 8082
+# Also check the metadata rewrite against a real server. Needs the VPN and a free port (LOOPBACK_PORT, default 8081).
+LOOPBACK_URL=http://10.102.135.31:8080/mcp LOOPBACK_PORT=8082 bun test extensions/loopback-mcp
 ```
 
 ## Limits
@@ -68,5 +68,5 @@ node ~/.pi/agent/extensions/loopback-mcp/check.ts http://10.102.135.31:8080/mcp 
 ## Files
 
 - `index.ts`: reads `loopbackMcp`, starts the proxies, and registers the servers. Pi loads only this file.
-- `proxy.ts`: the proxy. It does not import pi, so `check.ts` runs without pi.
-- `check.ts`: the self-check.
+- `proxy.ts`: the proxy. It does not import pi, so `live.test.ts` runs without pi.
+- `live.test.ts`: the tests. The upstream part is skipped unless `LOOPBACK_URL` is set.

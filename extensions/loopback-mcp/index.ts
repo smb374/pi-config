@@ -7,7 +7,7 @@ import { readFile } from "node:fs/promises";
 import type { Server } from "node:http";
 import path from "node:path";
 
-import { getAgentDir, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { type ExtensionAPI, getAgentDir } from "@earendil-works/pi-coding-agent";
 
 import { startProxy } from "./proxy.ts";
 
@@ -26,7 +26,8 @@ async function readEntries(): Promise<Entry[]> {
   }
   const config = settings[SETTING];
   if (config === undefined) return [];
-  if (typeof config !== "object" || config === null) throw new Error(`${SETTING} must map server names to { url, port }`);
+  if (typeof config !== "object" || config === null)
+    throw new Error(`${SETTING} must map server names to { url, port }`);
   return Object.entries(config).map(([name, value]) => {
     const { url, port, ...rest } = (value ?? {}) as { url?: unknown; port?: unknown };
     if (!NAME.test(name)) throw new Error(`${SETTING}.${name}: name must match ${NAME}`);

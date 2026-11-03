@@ -2,15 +2,15 @@
 
 Authorizer link `jev` for pi-permission-system. It answers bash `ask` requests with the Jev classifier: **allow**, **deny**, or **defer** (hand the ask to the user). Defer is the fail-safe: every failure, unknown, and missing value ends in defer.
 
-Enable with `"authorizerChain": ["jev"]` in `extensions/pi-permission-system/config.json`. Check with `bun extensions/jev-gate/check.ts`.
+Enable with `"authorizerChain": ["jev"]` in `extensions/pi-permission-system/config.json`. Test with `bun test extensions/jev-gate`.
 
 ## Files
 
-| File | Holds |
-| --- | --- |
-| `index.ts` | Pi event wiring and `MODE` (`live` acts on verdicts, `shadow` always defers and logs). The only file that imports `@earendil-works/pi-coding-agent`. |
-| `gate.ts` | All logic: guards, context, questions, policy, `createAuthorizer`. Imports only `node:` modules. |
-| `check.ts` | Self-check; one `ok:` line per behaviour. |
+| File           | Holds                                                                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.ts`     | Pi event wiring and `MODE` (`live` acts on verdicts, `shadow` always defers and logs). The only file that imports `@earendil-works/pi-coding-agent`. |
+| `gate.ts`      | All logic: guards, context, questions, policy, `createAuthorizer`. Imports only `node:` modules.                                                     |
+| `gate.test.ts` | `bun:test` tests; one test per behaviour.                                                                                                            |
 
 ## Trust model
 

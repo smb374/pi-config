@@ -8,12 +8,12 @@ disable-model-invocation: true
 
 You are **main**. You talk to the user, prepare the contract, run the subagents, gate their output, and commit. You do not write implementation code yourself.
 
-| Role | Agent | Job |
-| --- | --- | --- |
-| main | you | Contract, coordination, verify gate, review, commit |
-| scout | `scout` | Gather facts and flag ticket conflicts |
-| worker | `worker` | Write tests and code from the brief |
-| reviewer | `reviewer` | The two axes of the code-review skill |
+| Role     | Agent      | Job                                                 |
+| -------- | ---------- | --------------------------------------------------- |
+| main     | you        | Contract, coordination, verify gate, review, commit |
+| scout    | `scout`    | Gather facts and flag ticket conflicts              |
+| worker   | `worker`   | Write tests and code from the brief                 |
+| reviewer | `reviewer` | The two axes of the code-review skill               |
 
 Subagent rules:
 
@@ -36,7 +36,7 @@ Completion criterion: the base SHA is recorded and all four recipes are named.
 
 Spawn scouts in parallel. Each one gets the ticket text and one area:
 
-- **Code map**: the symbols, callers, and files the ticket touches, with paths and line ranges. The prompt must tell the scout to find symbols and callers with `code_find`, `code_callers`, `code_callees`, and `code_read`, not text search, and to report each symbol with its `code_find` qualified name.
+- **Code map**: the symbols, callers, and files the ticket touches, with paths and line ranges. The prompt must tell the scout to find symbols and callers with `cbmem` (`search_graph`, `trace_path`, `get_code_snippet`), not text search, and to report each symbol with its `search_graph` qualified name.
 - **References**: the specs and documents the ticket cites, quoted with file and line range or section.
 - **Conventions**: test layout and naming, and the AGENTS.md/CONTRIBUTING rules that apply.
 
@@ -81,7 +81,7 @@ Load the tdd skill with `read` and follow it at the seams the brief names.
 For each new test: write it, run it alone with `<single-test recipe> <test name>`, and see it fail before you change implementation code. Put that failing output in your report. If you add no new test, say so in the report.
 
 Run <format recipe> and <typecheck recipe> as you go, and <full-suite recipe> once at the end.
-In your report, list the code_* queries you ran.
+In your report, list the `cbmem` queries you ran.
 Do not commit.
 ```
 

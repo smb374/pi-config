@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.4",
+    "@earendil-works/pi-coding-agent": "^1.5.0",
+    "@earendil-works/pi-tui": "^1.5.0",
+    "@types/bun": "^1.4.4",
+    "typebox": "^1.4.3",
+    "typescript": "^7.0.2"
+  }
+}

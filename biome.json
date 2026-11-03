@@ -1,0 +1,30 @@
+{
+  "files": {
+    "includes": [
+      "**",
+      "!**/sessions",
+      "!**/npm",
+      "!**/cache",
+      "!**/state",
+      "!**/node_modules",
+      "!**/fff",
+      "!**/.research",
+      "!**/.direnv",
+      "!**/*.json",
+      "!**/*.md"
+    ]
+  },
+  "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 120 },
+  "javascript": { "formatter": { "quoteStyle": "double" } },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noControlCharactersInRegex": "off",
+        "noAssignInExpressions": "off"
+      }
+    }
+  }
+}

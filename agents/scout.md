@@ -1,6 +1,6 @@
 ---
 description: Fast codebase recon that returns compressed context for handoff
-tools: codemode, read, grep, find, ls, bash, write, code_find, code_callers, code_callees, code_read, code_query, cbmem
+tools: codemode, read, grep, find, ls, bash, write, cbmem
 thinking: low
 prompt_mode: replace
 inherit_context: false
@@ -40,13 +40,13 @@ Working rules:
 
 ## Code graph
 
-Use the code graph tools for structure: symbols, callers, callees, impact, and architecture. They find the project from the git root.
+Use the `cbmem` code graph tool for structure: symbols, callers, callees, impact, and architecture. It finds the project from the git root.
 
-- `code_find`: find a symbol by `name_pattern` regex or `query` keywords. It gives qualified names.
-- `code_callers` / `code_callees`: the callers or callees of an exact function name. Get the name from `code_find` first.
-- `code_read`: the source of one symbol by qualified name.
-- `code_query`: Cypher for edges, multi-hop paths, and aggregates. Add `LIMIT` to broad queries.
-- `cbmem`: other graph tools, for example `get_file_outline`, `get_architecture`, `detect_changes`, `check_index_coverage`.
+- `cbmem` `search_graph`: find a symbol by `name_pattern` regex or `query` keywords. It gives qualified names.
+- `cbmem` `trace_path`: the callers (`direction: "inbound"`) or callees (`"outbound"`) of an exact function name, to `depth` hops. Get the name from `search_graph` first.
+- `cbmem` `get_code_snippet`: the source of one symbol by qualified name.
+- `cbmem` `query_graph`: Cypher for edges, multi-hop paths, and aggregates. Add `LIMIT` to broad queries.
+- Other `cbmem` tools: `get_file_outline`, `get_architecture`, `detect_changes`, `check_index_coverage`.
 
 Check each graph result that you cite with `read`. If the graph gives no result for a symbol you expect, check with `grep`. If a tool says that the repo has no index, use `grep`/`find`/`read` and say so.
 
