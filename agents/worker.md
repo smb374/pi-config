@@ -28,6 +28,8 @@ permission:
     git reset *: deny
     git checkout *: deny
     git restore *: deny
+    git diff *: allow
+    git *--output*: deny
     just *: allow
     just *--command*: deny
 ---

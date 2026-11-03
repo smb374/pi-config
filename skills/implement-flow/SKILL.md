@@ -22,6 +22,7 @@ Subagent rules:
 - Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief is the only shared state.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 6).
+- A **snapshot** is the tree's change set as a file: run `git add -N` on every untracked file (`git status --porcelain`, lines starting `??`), then write the output of `git diff <base>` to `<brief-dir>/diff.patch`, overwriting it. Reviewers and fresh workers read this file; the reviewers cannot run `git diff`.
 
 ## 1. Prepare
 
@@ -94,7 +95,7 @@ Act on the worker's result when its notification arrives. If it ended with an `a
 
 - Answer it yourself when the brief or the scout output already settles it.
 - Otherwise ask the user with `ask_user_question`. Record any new amendment in `brief.md`, and amend the upstream ticket as in step 3.
-- Resume the worker with the answer. If the resume is refused, spawn a fresh worker with the step 5 prompt plus: the question, the answer, and the note `Partial work is in the tree: run git diff <base>.`
+- Resume the worker with the answer. If the resume is refused, take a snapshot and spawn a fresh worker with the step 5 prompt plus: the question, the answer, and the note `Partial work is in the tree: read <brief-dir>/diff.patch.`
 
 If the worker's status is `steered` or `aborted`, it hit `max_turns`: go to **Max turns** below.
 
@@ -104,7 +105,7 @@ Completion criterion: the worker's status is `completed`, its question (if any) 
 
 ## 7. Verify gate
 
-1. Run `git add -N` on every untracked file the worker created (`git status --porcelain`, lines starting `??`), so `git diff <base>` shows them.
+1. Take a snapshot, so `diff.patch` and `git diff <base>` show the worker's new files.
 2. Run `git diff <base> --name-only`. Every listed file must be in the brief's Scope. A file outside Scope is a **Big** finding (step 9).
 3. Run the format recipe, then the typecheck and full-suite recipes, yourself.
 
@@ -114,16 +115,14 @@ Completion criterion: all recipes exit 0.
 
 ## 8. Review
 
-Run the code-review skill with these overrides. The fixed point is the base SHA and the spec is `<brief-dir>/brief.md`. The code under review is the uncommitted tree, so `git diff <base>` replaces `git diff <base>...HEAD` and there is no commit list.
+Use the code-review skill for its axis definitions only: the spec and standards sources (its steps 2–3, with the smell baseline) and the brief for each axis (its step 4). Skip its fixed-point and spawn mechanics; main spawns the reviewers below. The spec is `<brief-dir>/brief.md`, and the code under review is `<brief-dir>/diff.patch` from step 7, in place of any `git diff` or commit list.
 
-1. **Write the diff.** Write the output of `git diff <base>` to `<brief-dir>/diff.patch`, overwriting it on every run of this step. Reviewers cannot run `git diff`; they read this file.
-2. **Run the reviewers.** Spawn the `reviewer` agent once per axis. Each gets the path of `diff.patch`, and the instruction to mark every finding `certain` or `uncertain`:
+1. **Run the reviewers.** Spawn the `reviewer` agent once per axis. Each gets the path of `diff.patch`, its axis brief from the code-review skill, and the instruction to mark every finding `certain` or `uncertain`:
    - Spec axis: also the brief's Acceptance criteria and Test seams, and the verify-gate output from step 7. The reviewer checks each criterion from these inputs, and reads other files only when a criterion cannot be checked otherwise. It names each such file and the criterion in its report.
-   - Standards axis: also the brief's Conventions section, which is the rule source.
-3. **Escalate.** Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
+   - Standards axis: also the brief's Conventions section, which is the rule source, and the smell baseline pasted in full.
+2. **Escalate.** Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
    - A finding is marked `uncertain`.
    - A finding qualifies as **Big** (step 9).
-   - The `reviewer` read a file outside the diff.
    - `diff.patch` touches a path that matches the high-risk paths in the brief's Conventions (this triggers both axes).
    - The `reviewer` gave no report, or a report without the `certain`/`uncertain` marks.
 
@@ -138,7 +137,7 @@ When an axis has an `indepth-reviewer` report, use it in place of the `reviewer`
 Then classify the findings:
 
 - **Green** (no findings on either axis, or only judgement-call smells): go to step 10.
-- **Small**: every finding stays inside the brief's Acceptance criteria and its Scope files. Spawn a fresh worker with the step 5 prompt plus the findings, quoted, and `Your earlier work is in the tree: run git diff <base>.` Then return to step 6.
+- **Small**: every finding stays inside the brief's Acceptance criteria and its Scope files. Spawn a fresh worker with the step 5 prompt plus the findings, quoted, and `Your earlier work is in the tree: read <brief-dir>/diff.patch.` Then return to step 6.
 - **Big**: a finding changes ticket behavior, needs an amendment, touches a file outside Scope, or reports a missing requirement. Present it to the user with your recommendation, and stop.
 
 **Fix cap**: at most 2 fix workers per ticket, counting verify-gate and review triggers together. When a third would be needed, present the open findings to the user and stop.
