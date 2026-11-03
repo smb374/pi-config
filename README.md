@@ -2,8 +2,6 @@
 
 My [pi](https://github.com/earendil-works/pi) agent config. It lives in `~/.pi/agent`.
 
-This is the `main` branch: agents run on `@gotgenes/pi-subagents`. The `herdsman` branch runs them on [pi-herdsman](https://www.npmjs.com/package/pi-herdsman) inside herdr. [`BRANCHES.md`](BRANCHES.md) lists the paths that differ between the branches.
-
 ## Set up
 
 Requires `bun`, `git`, and `bash` (Linux or macOS).
@@ -30,7 +28,6 @@ Rerun `bun setup.ts` to update. Check the template with `bun setup.check.ts`.
 
 | Path | What it does |
 | --- | --- |
-| `BRANCHES.md` | Paths that differ between `herdsman` and `main`. |
 | `setup.ts` | Installer; `setup.check.ts` is its self-check. |
 | `templates/` | Mustache templates rendered by `setup.ts`. |
 | `AGENTS.md` | Global rules for the agent. |

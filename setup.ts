@@ -7,7 +7,7 @@ import { join } from "node:path";
 
 const REPO = process.env.PI_CONFIG_REPO ?? "https://github.com/smb374/pi-config.git";
 const DIR = process.env.PI_CODING_AGENT_DIR ?? join(homedir(), ".pi", "agent");
-// Branch this copy of setup.ts installs; see BRANCHES.md.
+// Branch this copy of setup.ts installs.
 const BRANCH = "main";
 
 const run = (cmd: string[], cwd?: string) => {
