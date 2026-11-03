@@ -11,6 +11,9 @@
   "reviewer": {
     "model": "opencode-go/glm-5.3"
   },
+  "indepth-reviewer": {
+    "model": "opencode-go/glm-5.3"
+  },
   "oracle": {
     "model": "opencode-go/glm-5.3"
   }

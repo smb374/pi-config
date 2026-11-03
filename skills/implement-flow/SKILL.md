@@ -8,12 +8,13 @@ disable-model-invocation: true
 
 You are **main**. You talk to the user, prepare the contract, run the subagents, gate their output, and commit. You do not write implementation code yourself.
 
-| Role     | Agent      | Job                                                 |
-| -------- | ---------- | --------------------------------------------------- |
-| main     | you        | Contract, coordination, verify gate, review, commit |
-| scout    | `scout`    | Gather facts and flag ticket conflicts              |
-| worker   | `worker`   | Write tests and code from the brief                 |
-| reviewer | `reviewer` | The two axes of the code-review skill               |
+| Role             | Agent              | Job                                                      |
+| ---------------- | ------------------ | -------------------------------------------------------- |
+| main             | you                | Contract, coordination, verify gate, review, commit      |
+| scout            | `scout`            | Gather facts and flag ticket conflicts                   |
+| worker           | `worker`           | Write tests and code from the brief                      |
+| reviewer         | `reviewer`         | The two axes of the code-review skill (default)          |
+| indepth-reviewer | `indepth-reviewer` | Re-review one axis on escalation (step 8)                |
 
 Subagent rules:
 
@@ -38,7 +39,7 @@ Spawn scouts in parallel. Each one gets the ticket text and one area:
 
 - **Code map**: the symbols, callers, and files the ticket touches, with paths and line ranges. The prompt must tell the scout to find symbols and callers with `cbmem` (`search_graph`, `trace_path`, `get_code_snippet`), not text search, and to report each symbol with its `search_graph` qualified name.
 - **References**: the specs and documents the ticket cites, quoted with file and line range or section.
-- **Conventions**: test layout and naming, and the AGENTS.md/CONTRIBUTING rules that apply.
+- **Conventions**: test layout and naming, the AGENTS.md/CONTRIBUTING rules that apply, and the high-risk paths the project names.
 
 Every scout also reports **conflicts** in its area: places where the ticket contradicts the code or a reference, ambiguities, and missing sources, each with evidence.
 
@@ -64,7 +65,7 @@ Write `<brief-dir>/brief.md`:
 - Scope: the files to change or create, each marked `(new)` or `(modified)`.
 - Test seams: each seam under test and the named tests, with expected values from cited references.
 - References: the scout quotes, with citations.
-- Conventions: the four `just` recipes, and the project rules that apply.
+- Conventions: the four `just` recipes, the project rules that apply, and the high-risk paths (globs) if the project defines any.
 
 With a plan file from `plan-ticket-impl`, write only the Ticket, Acceptance criteria, Base SHA, and Conventions sections, and link the plan. Its Scope, Behavior specification, and Tests to add sections replace this brief's Scope, Test seams, and References.
 
@@ -113,14 +114,28 @@ Completion criterion: all recipes exit 0.
 
 ## 8. Review
 
-Run the code-review skill with these overrides:
+Run the code-review skill with these overrides. The fixed point is the base SHA and the spec is `<brief-dir>/brief.md`. The code under review is the uncommitted tree, so `git diff <base>` replaces `git diff <base>...HEAD` and there is no commit list.
 
-- The fixed point is the base SHA. Review the uncommitted tree: use `git diff <base>` in place of `git diff <base>...HEAD`; there is no commit list.
-- The spec is `<brief-dir>/brief.md`.
+1. **Write the diff.** Write the output of `git diff <base>` to `<brief-dir>/diff.patch`, overwriting it on every run of this step. Reviewers cannot run `git diff`; they read this file.
+2. **Run the reviewers.** Spawn the `reviewer` agent once per axis. Each gets the path of `diff.patch`, and the instruction to mark every finding `certain` or `uncertain`:
+   - Spec axis: also the brief's Acceptance criteria and Test seams, and the verify-gate output from step 7. The reviewer checks each criterion from these inputs, and reads other files only when a criterion cannot be checked otherwise. It names each such file and the criterion in its report.
+   - Standards axis: also the brief's Conventions section, which is the rule source.
+3. **Escalate.** Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
+   - A finding is marked `uncertain`.
+   - A finding qualifies as **Big** (step 9).
+   - The `reviewer` read a file outside the diff.
+   - `diff.patch` touches a path that matches the high-risk paths in the brief's Conventions (this triggers both axes).
+   - The `reviewer` gave no report, or a report without the `certain`/`uncertain` marks.
 
-Completion criterion: both axis reports are collected.
+   It gets the same inputs as the `reviewer` on that axis, plus the `reviewer` report.
+
+Completion criterion: both axis reports are collected, and every triggered escalation has an `indepth-reviewer` report.
 
 ## 9. Decide
+
+When an axis has an `indepth-reviewer` report, use it in place of the `reviewer` report for that axis.
+
+Then classify the findings:
 
 - **Green** (no findings on either axis, or only judgement-call smells): go to step 10.
 - **Small**: every finding stays inside the brief's Acceptance criteria and its Scope files. Spawn a fresh worker with the step 5 prompt plus the findings, quoted, and `Your earlier work is in the tree: run git diff <base>.` Then return to step 6.
@@ -133,7 +148,7 @@ Completion criterion: both axis reports are collected.
 1. Stage the change: `git add` the Scope files and the new files.
 2. Commit with a message that follows the project's conventions and references the ticket.
 3. Delete the brief: `rm -rf <brief-dir>`.
-4. Report to the user: the commit SHA, files changed, the verify output, the review summary per axis, and every amendment made.
+4. Report to the user: the commit SHA, files changed, the verify output, the review summary per axis and which axes escalated to `indepth-reviewer`, with the trigger, and every amendment made.
 
 ## Max turns
 

@@ -9,6 +9,9 @@
     "model": "commandcode/z-ai/glm-5.3-flash"
   },
   "reviewer": {
+    "model": "commandcode/z-ai/glm-5.3-flash"
+  },
+  "indepth-reviewer": {
     "model": "commandcode/zai-org/GLM-5.3"
   },
   "oracle": {

@@ -3,13 +3,16 @@
     "model": "commandcode/gpt-6-luna"
   },
   "researcher": {
-    "model": "commandcode/gpt-6-luna"
+    "model": "anthropic/claude-sonnet-5-5"
   },
   "worker": {
-    "model": "commandcode/deepseek/deepseek-v4.1-flash"
+    "model": "anthropic/claude-sonnet-5-5"
   },
   "reviewer": {
     "model": "anthropic/claude-sonnet-5-5"
+  },
+  "indepth-reviewer": {
+    "model": "anthropic/claude-opus-5-5"
   },
   "oracle": {
     "model": "anthropic/claude-opus-5-5"
