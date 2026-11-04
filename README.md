@@ -17,7 +17,7 @@ curl -fsSL https://raw.githubusercontent.com/smb374/pi-config/main/install.sh | 
 3. Renders `templates/settings.json.mustache` into `settings.json`. It prompts for each field declared in a `{{! key: description | default=value }}` comment, prefilled from the current `settings.json`. Template keys win; keys you or pi added survive. Pass `--values values.json` to skip prompts.
 4. Installs [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) to `~/.local/bin` if it is missing (asks before running the official installer). It passes `--skip-config`, so the installer configures no agents; `extensions/cbmem/index.ts` connects it to pi.
 5. Installs [Worktrunk](https://worktrunk.dev) (`wt`) to `~/.local/bin` if `wt` is missing (asks first). Run `wt config shell install` yourself if you want `wt switch` to change directories.
-6. Installs [RTK](https://github.com/rtk-ai/rtk) to `~/.local/bin` when it is missing or older than the latest release (asks first), then runs `rtk init --agent pi --global` to install its bundled pi extension, `extensions/rtk.ts` (git-ignored).
+6. Installs [RTK](https://github.com/rtk-ai/rtk) to `~/.local/bin` when it is missing or older than the latest release (asks first), then runs `rtk init --agent pi --global --auto-patch` to install its bundled pi extension, `extensions/rtk.ts` (git-ignored).
 
 Then start `pi-bolt` (or `pi`) and log in with `/login`. Edit `enabledModels` (`provider/model` list) in `settings.json` by hand; see `extensions/loopback-mcp/README.md` for `loopbackMcp`.
 

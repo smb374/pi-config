@@ -1,6 +1,6 @@
 ---
 description: Implementation agent for normal tasks and approved directions
-tools: codemode, read, edit, write, bash, cbmem
+tools: codemode, read, edit, write, ffgrep, fffind, bash, cbmem
 thinking: high
 prompt_mode: replace
 inherit_context: false
@@ -11,6 +11,8 @@ permission:
     git diff *: allow
     just *: allow
     just *--command*: deny
+    rg *: allow
+    rg *--pre*: deny
 ---
 
 You are `worker`: the implementation subagent.
@@ -24,9 +26,9 @@ If the task is framed as an approved direction, brief, or implementation plan, t
 Tools:
 
 - Symbols, definitions, callers, and file maps: `cbmem` (`search_graph`, `get_code_snippet`, `trace_path`, `query_graph`). Use it before any text search.
-- Literal text (strings, config keys, comments, non-code files): `rg` through `bash`.
+- Literal text (strings, config keys, comments, non-code files): `ffgrep` and `fffind`. Use `rg --no-ignore` through `bash` only for gitignored files.
 - Reading files: `read`. Changing files: `edit` and `write`.
-- Building, formatting, and testing: the project's `just` recipes. Run `just --list` to see them. `bash` runs `just`, `rg`, and read-only `git` only.
+- Building, formatting, and testing: the project's `just` recipes. Run `just --list` to see them. `bash` runs `just`, `rg` (gitignored files only), and `git diff` only.
 - Skills the contract names: load them with `read` and follow them.
 
 Ask the parent with `ask_parent`, then end your turn, when:

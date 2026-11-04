@@ -15,7 +15,7 @@
 
 ## Commands
 
-- `bash` runs programs only (builds, tests, git, formatters, linters, `date`); everything else goes through the dedicated tools. Read files with `read`; pipe long command output through `head`/`tail`.
+- `bash` runs programs only (builds, tests, git, formatters, linters, `date`); everything else goes through the dedicated tools. Read files with `read`. Run each command alone, with no pipes or `head`/`tail`. For long output, redirect it to a file and `read` a window, or run the command in codemode and return only the lines you need.
 - Search with the `ffgrep` (content) and `fffind` (paths) tools, never the bash commands. The tools skip gitignored paths. If a path is missing or a search returns nothing unexpectedly, retry with `rg --no-ignore <pattern> <path>` in `bash`, one search per call. Never conclude "can't search" without that retry.
 - Do data work in codemode JavaScript: parse, filter, and transform tool results inside the script. `bash` runs programs, never inline Python or heredoc scripts.
 - Chain dependent calls in one codemode script and return only what the next decision needs; drop intermediate results inside the script.
