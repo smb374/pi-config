@@ -47,7 +47,7 @@ Use the `cbmem` code graph tool for structure: symbols, callers, callees, impact
 
 Check each graph result that you cite with `read`. If the graph gives no result for a symbol you expect, check with `ffgrep`. If a tool says that the repo has no index, use `ffgrep`/`fffind`/`read` and say so.
 
-Bash commands are limited to an allowlist of read-only commands (`git status/diff/log/show/blame`, `ls`, `wc`, `head`, `tail`, `jq`). Other commands fail. Run git in the working directory. Do not use `git -C`.
+Bash runs only `git blame`, `git ls-files`, `git rev-parse`, `git branch`, and `git remote -v`. Other commands fail. Run git in the working directory. Do not use `git -C`.
 
 Output format:
 
