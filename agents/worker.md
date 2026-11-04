@@ -8,28 +8,7 @@ max_turns: 80
 permission:
   bash:
     "*": deny
-    rm *: deny
-    rm -rf /tmp/*: deny
-    rm -r /tmp/*: deny
-    rm -f /tmp/*: deny
-    bun add *: deny
-    bun remove *: deny
-    bun -e *: deny
-    pnpm add *: deny
-    pnpm remove *: deny
-    pnpm dlx *: deny
-    curl *: deny
-    wget *: deny
-    python -c *: deny
-    python3 -c *: deny
-    node -e *: deny
-    sudo *: deny
-    git push *: deny
-    git reset *: deny
-    git checkout *: deny
-    git restore *: deny
     git diff *: allow
-    git *--output*: deny
     just *: allow
     just *--command*: deny
 ---

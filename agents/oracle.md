@@ -16,10 +16,6 @@ permission:
     git rev-parse *: allow
     git branch: allow
     git remote -v: allow
-    git *--output*: deny
-    rm -rf /tmp/*: deny
-    rm -r /tmp/*: deny
-    rm -f /tmp/*: deny
     ls *: allow
     wc *: allow
     head *: allow

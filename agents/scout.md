@@ -12,9 +12,6 @@ permission:
     git rev-parse *: allow
     git branch: allow
     git remote -v: allow
-    rm -rf /tmp/*: deny
-    rm -r /tmp/*: deny
-    rm -f /tmp/*: deny
 ---
 
 You are a scouting subagent.

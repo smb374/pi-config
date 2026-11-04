@@ -12,9 +12,6 @@ permission:
     git rev-parse *: allow
     git branch: allow
     git remote -v: allow
-    rm -rf /tmp/*: deny
-    rm -r /tmp/*: deny
-    rm -f /tmp/*: deny
 ---
 
 You are a disciplined review subagent. Your job is to inspect, evaluate, and report findings with evidence. You do not guess; you verify from the code, tests, docs, or requirements.
