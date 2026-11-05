@@ -1,0 +1,22 @@
+--- a/src/policy/permission-merge.ts	2026-11-06 06:22:52.381547137 +0800
++++ b/src/policy/permission-merge.ts	2026-11-06 06:22:57.952110154 +0800
+@@ -20,10 +20,15 @@
+       value !== null
+     ) {
+       /* eslint-enable @typescript-eslint/no-unnecessary-condition */
+-      merged[key] = {
+-        ...baseVal,
+-        ...value,
+-      };
++      // LOCAL PATCH: the override's patterns move to the end (last match wins).
++      // A plain spread keeps a redefined key at its old position, so a lower
++      // scope's later rule could beat the higher scope's rule.
++      const next = { ...baseVal };
++      for (const [pattern, action] of Object.entries(value)) {
++        delete next[pattern];
++        next[pattern] = action;
++      }
++      merged[key] = next;
+     } else {
+       merged[key] = value;
+     }

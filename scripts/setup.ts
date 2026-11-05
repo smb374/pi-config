@@ -1,7 +1,17 @@
 #!/usr/bin/env bun
 // Sets up pi and codebase-memory-mcp from this repo's main branch.
 // Usage: bun scripts/setup.ts [--values values.json]
-import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -146,6 +156,57 @@ async function setupRtk() {
   run([rtk, "init", "--agent", "pi", "--global", "--auto-patch"]);
 }
 
+// @gotgenes/pi-permission-system is not a settings.json package. Install the latest release, apply
+// patches/pi-permission-system/*.patch, run check.ts, and copy the result to extensions/pi-permission-system/.
+// Skips when version and patches are unchanged. Stops and keeps the old copy if a patch or the check fails.
+export function setupPermissionSystem() {
+  const name = "@gotgenes/pi-permission-system";
+  const src = join(DIR, "patches", "pi-permission-system");
+  const dest = join(DIR, "extensions", "pi-permission-system");
+  const patches = readdirSync(src)
+    .filter((f) => f.endsWith(".patch"))
+    .sort()
+    .map((f) => join(src, f));
+  const tmp = mkdtempSync(join(tmpdir(), "pi-setup-"));
+  try {
+    writeFileSync(join(tmp, "package.json"), '{"private":true}\n');
+    run(["bun", "add", `${name}@latest`], tmp);
+    const pkg = join(tmp, "node_modules", name);
+    const version = JSON.parse(readFileSync(join(pkg, "package.json"), "utf8")).version;
+    const hash = new Bun.CryptoHasher("sha256");
+    for (const p of patches) hash.update(readFileSync(p));
+    const stamp = `${version} ${hash.digest("hex")}`;
+    const stampFile = join(dest, ".version");
+    if (existsSync(stampFile) && readFileSync(stampFile, "utf8").trim() === stamp)
+      return console.log(`pi-permission-system is up to date: ${version}`);
+
+    // Stage: package files at the root, dependencies in node_modules/. Peers come from the host.
+    const stage = join(tmp, "stage");
+    renameSync(pkg, stage);
+    rmSync(join(tmp, "node_modules", "@earendil-works"), { recursive: true, force: true });
+    renameSync(join(tmp, "node_modules"), join(stage, "node_modules"));
+    for (const p of patches) {
+      try {
+        run(["git", "apply", p], stage);
+      } catch {
+        throw new Error(`${p} does not apply to ${name}@${version}; rebase it. Old copy kept.`);
+      }
+    }
+    run(["bun", join(src, "check.ts"), stage]);
+
+    // Swap in. Keep the user's config.json, logs/, and .gitignore.
+    mkdirSync(dest, { recursive: true });
+    for (const f of readdirSync(dest))
+      if (!["config.json", "logs", ".gitignore"].includes(f)) rmSync(join(dest, f), { recursive: true, force: true });
+    cpSync(stage, dest, { recursive: true, verbatimSymlinks: true });
+    writeFileSync(join(dest, ".gitignore"), "*\n!.gitignore\n!config.json\n");
+    writeFileSync(stampFile, `${stamp}\n`);
+    console.log(`Installed ${name}@${version} with ${patches.length} patch(es) to ${dest}`);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
 if (import.meta.main) {
   const i = process.argv.indexOf("--values");
   const values = i > 0 ? JSON.parse(readFileSync(process.argv[i + 1], "utf8")) : {};
@@ -155,5 +216,6 @@ if (import.meta.main) {
   await setupCbm();
   await setupWt();
   await setupRtk();
+  setupPermissionSystem();
   console.log(`Done. Run \`${BOLT ? "pi-bolt" : "pi"}\`, then \`/login\`.`);
 }

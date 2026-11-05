@@ -9,5 +9,6 @@
     "skipLibCheck": true,
     "types": ["bun"]
   },
-  "include": ["scripts/**/*.ts", "extensions/**/*.ts"]
+  "include": ["scripts/**/*.ts", "extensions/**/*.ts", "patches/**/*.ts"],
+  "exclude": ["extensions/pi-permission-system", "node_modules"]
 }

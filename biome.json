@@ -10,6 +10,7 @@
       "!**/fff",
       "!**/.research",
       "!**/.direnv",
+      "!**/extensions/pi-permission-system",
       "!**/*.json",
       "!**/*.md"
     ]
