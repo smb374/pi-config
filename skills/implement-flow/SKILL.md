@@ -22,7 +22,19 @@ Subagent rules:
 - Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief is the only shared state.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 6).
-- A **snapshot** is the tree's change set as a file: run `git add -N` on every untracked file (`git status --porcelain`, lines starting `??`), then write the output of `git diff <base>` to `<brief-dir>/diff.patch`, overwriting it. Reviewers and fresh workers read this file; the reviewers cannot run `git diff`.
+- A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Reviewers and fresh workers read it; the reviewers cannot run `git diff`. Take one with the **Snapshot procedure** below.
+
+## Snapshot procedure
+
+1. Run `git status --porcelain --untracked-files=all`. Collect the path of every line that starts with `??`.
+2. If there are any, run `git add -N -- <path>...` once with all of those paths. Intent-to-add makes new files show in the diff; staging stays in step 10.
+3. Run `git diff --no-color --no-ext-diff <base> --output=<brief-dir>/diff.patch`.
+   - Diff against `<base>`, so the patch holds the whole change set.
+   - `--output` overwrites the old file, so you need no shell redirect.
+   - `--no-color --no-ext-diff` keep the user's git config out of the patch.
+4. Run `git diff <base> --name-only`. Compare it with the files in the worker's report. On a mismatch, or an empty patch after the worker changed files, repeat from step 1.
+
+Completion criterion: `diff.patch` covers every file in `git diff <base> --name-only` and every file the worker reported. To change the patch, change the tree and take a new snapshot.
 
 ## 1. Prepare
 

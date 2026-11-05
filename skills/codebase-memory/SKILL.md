@@ -26,6 +26,7 @@ The `cbmem` tool resolves the project from the git root and index small repos by
 - A clean coverage result means no recorded gap. It does not prove completeness.
 - For partial, skipped, stale, or unknown coverage, `read`/`ffgrep` the reported ranges before you rely on the graph.
 - Page through all results (`has_more`, `offset`, `next_cursor`) before you make an exhaustive claim.
+- `read` each graph result that you cite. If the graph gives no result for a symbol you expect, check with `ffgrep`. If a tool says the repo has no index, use `ffgrep`/`fffind`/`read` and say so.
 
 ## Subagents
 

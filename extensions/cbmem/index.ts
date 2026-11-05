@@ -95,7 +95,7 @@ async function resolveProject(cwd: string, signal: AbortSignal | undefined, noti
   const root = await run("git", ["rev-parse", "--show-toplevel"], { cwd })
     .then((r) => r.stdout.trim())
     .catch(() => {
-      throw new Error(`${cwd} is not in a git repo. The code graph needs one. Use grep/find/read.`);
+      throw new Error(`${cwd} is not in a git repo. The code graph needs one. Use ffgrep/fffind/read.`);
     });
   const cached = projects.get(root);
   if (cached) return cached;
@@ -124,7 +124,7 @@ async function resolveProject(cwd: string, signal: AbortSignal | undefined, noti
   if (files > AUTO_INDEX_MAX_FILES)
     throw new Error(
       `${root} has no index and ${files} files (auto-index limit ${AUTO_INDEX_MAX_FILES}). ` +
-        `Ask the user with ask_user_question. On yes, call cbmem with tool "index_repository" and args {"repo_path":"${root}","mode":"moderate"}. Until then, use grep/find/read.`,
+        `Ask the user with ask_user_question. On yes, call cbmem with tool "index_repository" and args {"repo_path":"${root}","mode":"moderate"}. Until then, use ffgrep/fffind/read.`,
     );
   notify(`cbmem: indexing ${root} (${files} files)…`);
   await call("index_repository", { repo_path: root, mode: "moderate" }, signal);
@@ -169,9 +169,9 @@ export default function (pi: ExtensionAPI) {
     promptSnippet:
       "Code graph (search_graph, trace_path, get_code_snippet, query_graph, get_architecture, get_file_outline, detect_changes, ...)",
     promptGuidelines: [
-      "For any structural code question (where a symbol is defined, what exists, how code connects), use cbmem before grep, find, or read: search_graph to find symbols, trace_path for callers and callees, get_code_snippet to read one symbol instead of the whole file.",
-      "Use grep/find/read for literal text, config, docs, non-code files, and edits in files you already know.",
-      "If cbmem returns nothing for a symbol you expect, check with grep before you conclude that it does not exist.",
+      "For any structural code question (where a symbol is defined, what exists, how code connects), use cbmem before ffgrep, fffind, or read: search_graph to find symbols, trace_path for callers and callees, get_code_snippet to read one symbol instead of the whole file.",
+      "Use ffgrep/fffind/read for literal text, config, docs, non-code files, and edits in files you already know.",
+      "If cbmem returns nothing for a symbol you expect, check with ffgrep before you conclude that it does not exist.",
       "cbmem resolves the project from the current git root. Do not pass a project.",
       "Before you change a function signature or behavior, use cbmem trace_path with direction inbound to see the impact.",
       "Use cbmem query_graph when search_graph and trace_path cannot express the question. Call get_graph_schema to see labels and edge types.",

@@ -37,15 +37,7 @@ Working rules:
 
 ## Code graph
 
-Use the `cbmem` code graph tool for structure: symbols, callers, callees, impact, and architecture. It finds the project from the git root.
-
-- `cbmem` `search_graph`: find a symbol by `name_pattern` regex or `query` keywords. It gives qualified names.
-- `cbmem` `trace_path`: the callers (`direction: "inbound"`) or callees (`"outbound"`) of an exact function name, to `depth` hops. Get the name from `search_graph` first.
-- `cbmem` `get_code_snippet`: the source of one symbol by qualified name.
-- `cbmem` `query_graph`: Cypher for edges, multi-hop paths, and aggregates. Add `LIMIT` to broad queries.
-- Other `cbmem` tools: `get_file_outline`, `get_architecture`, `detect_changes`, `check_index_coverage`.
-
-Check each graph result that you cite with `read`. If the graph gives no result for a symbol you expect, check with `ffgrep`. If a tool says that the repo has no index, use `ffgrep`/`fffind`/`read` and say so.
+For structural questions (symbols, callers, callees, impact, architecture), use the `cbmem` tool. Before you call it, read the `codebase-memory` skill.
 
 Bash runs only `git blame`, `git ls-files`, `git rev-parse`, `git branch`, and `git remote -v`. Other commands fail. Run git in the working directory. Do not use `git -C`.
 
