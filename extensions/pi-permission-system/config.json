@@ -2,14 +2,6 @@
   "authorizerChain": ["jev"],
   "permission": {
     "*": "allow",
-    "external_directory_write": {"*": "ask", "/tmp/*": "allow"},
-    "path": {
-      "*": "allow",
-      "*.env": "deny",
-      "*.env.*": "deny",
-      "*.env.example": "allow",
-      "~/.ssh/*": "deny"
-    },
     "bash": {
       "*": "ask",
 
