@@ -22,7 +22,7 @@ Subagent rules:
 - Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief is the only shared state.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 6).
-- A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Reviewers and fresh workers read it; the reviewers cannot run `git diff`. Take one with the **Snapshot procedure** below.
+- A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Reviewers and fresh workers read it; it is the review target, and `git diff` only confirms the tree matches it. Take one with the **Snapshot procedure** below.
 
 ## Snapshot procedure
 

@@ -8,11 +8,15 @@ max_turns: 80
 permission:
   bash:
     "*": deny
+    git status *: allow
     git diff *: allow
+    git log *: allow
+    git show *: allow
     just *: allow
     just *--command*: deny
     rg *: allow
     rg *--pre*: deny
+    git *--output*: deny
 ---
 
 You are `worker`: the implementation subagent.
@@ -28,7 +32,7 @@ Tools:
 - Symbols, definitions, callers, and file maps: `cbmem` (`search_graph`, `get_code_snippet`, `trace_path`, `query_graph`). Use it before any text search. Before your first call, read the `codebase-memory` skill.
 - Literal text (strings, config keys, comments, non-code files): `ffgrep` and `fffind`. Use `rg --no-ignore` through `bash` only for gitignored files.
 - Reading files: `read`. Changing files: `edit` and `write`.
-- Building, formatting, and testing: the project's `just` recipes. Run `just --list` to see them. `bash` runs `just`, `rg` (gitignored files only), and `git diff` only.
+- Building, formatting, and testing: the project's `just` recipes. Run `just --list` to see them. `bash` runs `just`, `rg` (gitignored files only), and read-only `git status`, `git diff`, `git log`, and `git show`.
 - Skills the contract names: load them with `read` and follow them.
 
 Ask the parent with `ask_parent`, then end your turn, when:

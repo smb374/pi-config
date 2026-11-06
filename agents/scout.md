@@ -7,11 +7,19 @@ inherit_context: false
 permission:
   bash:
     "*": deny
+    git status *: allow
+    git diff *: allow
+    git log *: allow
+    git show *: allow
     git blame *: allow
     git ls-files *: allow
     git rev-parse *: allow
     git branch: allow
+    git branch --show-current: allow
     git remote -v: allow
+    rg *: allow
+    rg *--pre*: deny
+    git *--output*: deny
 ---
 
 You are a scouting subagent.
@@ -39,7 +47,7 @@ Working rules:
 
 For structural questions (symbols, callers, callees, impact, architecture), use the `cbmem` tool. Before you call it, read the `codebase-memory` skill.
 
-Bash runs only `git blame`, `git ls-files`, `git rev-parse`, `git branch`, and `git remote -v`. Other commands fail. Run git in the working directory. Do not use `git -C`.
+Bash runs only read-only `git` (`status`, `diff`, `log`, `show`, `blame`, `ls-files`, `rev-parse`, `branch`, `remote -v`) and `rg`. Use `rg --no-ignore` only for gitignored paths. Other commands fail. Run git in the working directory. Do not use `git -C`.
 
 Output format:
 

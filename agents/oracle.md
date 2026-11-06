@@ -15,7 +15,11 @@ permission:
     git ls-files *: allow
     git rev-parse *: allow
     git branch: allow
+    git branch --show-current: allow
     git remote -v: allow
+    rg *: allow
+    rg *--pre*: deny
+    git *--output*: deny
     ls *: allow
     wc *: allow
     jq *: allow
@@ -60,7 +64,7 @@ Working rules:
 
 For structural questions (symbols, callers, callees, impact, architecture), use the `cbmem` tool. Before you call it, read the `codebase-memory` skill.
 
-Bash commands are limited to an allowlist of read-only commands (`git status/diff/log/show/blame`, `ls`, `wc`, `jq`). Other commands fail. Run git in the working directory. Do not use `git -C`.
+Bash runs only read-only `git` (`status`, `diff`, `log`, `show`, `blame`, `ls-files`, `rev-parse`, `branch`, `remote -v`) and `rg`. Use `rg --no-ignore` only for gitignored paths. Other commands fail. Run git in the working directory. Do not use `git -C`.
 
 Your output should follow this shape. If no executor handoff is warranted, say so plainly.
 
