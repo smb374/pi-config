@@ -2,6 +2,32 @@
   "authorizerChain": ["jev"],
   "permission": {
     "*": "allow",
+    "path": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "~/.ssh/*": "deny",
+      "~/.aws/*": "deny",
+      "~/.gnupg/*": "deny",
+      "~/.pi/agent/auth.json": "deny"
+    },
+    "path_write": {
+      "*/pi-permission-system/config.json": {
+        "action": "deny",
+        "reason": "Policy file. Ask the user to edit it."
+      },
+      "*/agents/*.md": "ask"
+    },
+    "external_directory_read": {
+      "*": "ask",
+      "/tmp/*": "allow",
+      "~/Projects/*": "allow"
+    },
+    "external_directory_write": {
+      "*": "ask",
+      "/tmp/*": "allow"
+    },
     "bash": {
       "*": "ask",
 
