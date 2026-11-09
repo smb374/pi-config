@@ -1,5 +1,7 @@
 {
-  "authorizerChain": ["jev"],
+  "authorizerChain": [
+    "jev"
+  ],
   "permission": {
     "*": "allow",
     "path": {
@@ -30,24 +32,54 @@
     },
     "bash": {
       "*": "ask",
-
-      "grep *": {"action": "deny", "reason": "Use ffgrep to search file content. Use rg --no-ignore for gitignored files."},
-      "egrep *": {"action": "deny", "reason": "Use ffgrep to search file content. Use rg --no-ignore for gitignored files."},
-      "fgrep *": {"action": "deny", "reason": "Use ffgrep to search file content. Use rg --no-ignore for gitignored files."},
-      "git grep *": {"action": "deny", "reason": "Use ffgrep to search file content. Use rg --no-ignore for gitignored files."},
-      "find *": {"action": "deny", "reason": "Use fffind to find paths. Use fd or rg --files --no-ignore for gitignored files."},
-      "sed *": {"action": "deny", "reason": "Use edit to change a file. Use read to view it."},
-      "awk *": {"action": "deny", "reason": "Use ffgrep or read. For data work, write a codemode script."},
-      "cat *": {"action": "deny", "reason": "Use read. Read several files with parallel read calls."},
-      "echo *": {"action": "deny", "reason": "Write the text in your reply. Do not use echo."},
-      "head *": {"action": "deny", "reason": "Use read with offset and limit to slice a file. Run the command in codemode and return only the lines you need."},
-      "tail *": {"action": "deny", "reason": "Use read with offset and limit to slice a file. Run the command in codemode and return only the lines you need."},
-
+      "grep *": {
+        "action": "deny",
+        "reason": "Use ffgrep to search file content. Use rg --no-ignore for gitignored files."
+      },
+      "egrep *": {
+        "action": "deny",
+        "reason": "Use ffgrep to search file content. Use rg --no-ignore for gitignored files."
+      },
+      "fgrep *": {
+        "action": "deny",
+        "reason": "Use ffgrep to search file content. Use rg --no-ignore for gitignored files."
+      },
+      "git grep *": {
+        "action": "deny",
+        "reason": "Use ffgrep to search file content. Use rg --no-ignore for gitignored files."
+      },
+      "find *": {
+        "action": "deny",
+        "reason": "Use fffind to find paths. Use fd or rg --files --no-ignore for gitignored files."
+      },
+      "sed *": {
+        "action": "deny",
+        "reason": "Use edit to change a file. Use read to view it."
+      },
+      "awk *": {
+        "action": "deny",
+        "reason": "Use ffgrep or read. For data work, write a codemode script."
+      },
+      "cat *": {
+        "action": "deny",
+        "reason": "Use read. Read several files with parallel read calls."
+      },
+      "echo *": {
+        "action": "deny",
+        "reason": "Write the text in your reply. Do not use echo."
+      },
+      "head *": {
+        "action": "deny",
+        "reason": "Use read with offset and limit to slice a file. Run the command in codemode and return only the lines you need."
+      },
+      "tail *": {
+        "action": "deny",
+        "reason": "Use read with offset and limit to slice a file. Run the command in codemode and return only the lines you need."
+      },
       "rg *": "allow",
       "rg *--pre*": "deny",
       "fd *": "allow",
       "fd *--exec*": "deny",
-      "date": "allow",
       "date *": "allow",
       "ls *": "allow",
       "pwd": "allow",
@@ -62,8 +94,50 @@
       "git log *": "allow",
       "git show *": "allow",
       "git rev-parse *": "allow",
+      "git ls-files *": "allow",
+      "git blame *": "allow",
+      "git shortlog *": "allow",
+      "git describe *": "allow",
+      "git rev-list *": "allow",
+      "git cat-file *": "allow",
+      "git ls-tree *": "allow",
+      "git ls-remote *": "allow",
+      "git name-rev *": "allow",
+      "git merge-base *": "allow",
+      "git for-each-ref *": "allow",
+      "git show-ref *": "allow",
+      "git show-branch *": "allow",
+      "git diff-tree *": "allow",
+      "git range-diff *": "allow",
+      "git cherry *": "allow",
+      "git count-objects *": "allow",
+      "git check-ignore *": "allow",
+      "git check-attr *": "allow",
+      "git config --get *": "allow",
+      "git config --list": "allow",
+      "git config -l": "allow",
+      "git branch": "allow",
+      "git branch --list *": "allow",
+      "git branch -a": "allow",
+      "git branch -r": "allow",
+      "git branch --show-current": "allow",
+      "git tag": "allow",
+      "git tag --list *": "allow",
+      "git tag -l *": "allow",
+      "git remote": "allow",
+      "git remote -v": "allow",
+      "git remote show *": "allow",
+      "git stash list *": "allow",
+      "git stash show *": "allow",
+      "git worktree list *": "allow",
+      "git submodule status *": "allow",
+      "git version": "allow",
+      "git --version": "allow",
       "git *--output*": "deny",
-      "git diff *--output*": "allow"
+      "git -c *": "deny",
+      "git * -c *": "deny",
+      "git *--open-files-in-pager*": "deny",
+      "git *--exec-path*": "deny"
     }
   }
 }
