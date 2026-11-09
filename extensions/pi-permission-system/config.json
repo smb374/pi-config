@@ -63,7 +63,7 @@
       "git show *": "allow",
       "git rev-parse *": "allow",
       "git *--output*": "deny",
-      "git diff --output*": "allow"
+      "git diff *--output*": "allow"
     }
   }
 }
