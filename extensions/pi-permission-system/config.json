@@ -86,6 +86,7 @@
       "wc *": "allow",
       "jq *": "allow",
       "which *": "allow",
+      "just *": "allow",
       "gh label list *": "allow",
       "gh issue view *": "allow",
       "gh issue comment *": "allow",

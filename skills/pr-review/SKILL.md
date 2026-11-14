@@ -38,19 +38,20 @@ Completion criterion: `diff.patch` exists and is not empty, and you know whether
 
 Use the code-review skill for its axis definitions only: the spec and standards sources (its steps 2–3, with the smell baseline) and the brief for each axis (its step 4). Skip its fixed-point and spawn mechanics.
 
-1. **Spec source.** Find issue references in the PR body and commit messages (`Closes #n`). Fetch each through `docs/agents/issue-tracker.md`, with comments. If none exist, ask the user for the spec. If the user has none, skip the Spec axis and say so in the report.
-2. **Standards sources.** Find the repo files that document coding standards (its step 3). Take the baseline from the code-review skill and paste it in full.
-3. **High-risk paths.** Take them from the standards sources (globs). If the project names none, the list is empty.
+1. **Spec source.** Collect issue references from the PR body, the commit messages (`Closes #n`), and `headRefName`. Read `docs/agents/issue-tracker.md`. If it is missing or any fetch fails, tell the user (for a missing file: run `/skill:setup-matt-pocock-skills`) and stop; a partial brief gives a false green. Fetch each reference with its comments. If a reference is a spec, or the PR is opened on a spec, list **all** its children, open and closed, with the children operation in that file, and fetch each child's body and comments. If no references exist, ask the user for the spec. If the user has none, skip the Spec axis and say so in the report.
+2. **Ticket files.** Write `<brief-dir>/spec.md`: the spec text and the ticket list. Write `<brief-dir>/ticket-<n>.md` for every ticket: full text, comments, and amendments (a comment amendment overrides the body), then one literal, checkable line per acceptance criterion. Mark each ticket `claimed` (named in the PR body, commits, or branch name) or `not in this PR`.
+3. **Standards sources.** Find the repo files that document coding standards (its step 3). Take the baseline from the code-review skill and paste it in full.
+4. **High-risk paths.** Take them from the standards sources (globs). If the project names none, the list is empty.
 
-Write `<brief-dir>/brief.md`: PR title and body, the spec text, the standards file paths, the high-risk path globs, and the head-match result from step 1.4.
+Write `<brief-dir>/brief.md`: PR title and body, the paths of `spec.md` and the ticket files, the standards file paths, the high-risk path globs, and the head-match result from step 1.4.
 
-Completion criterion: `brief.md` is filled from fetched sources, with no guessed paths or values.
+Completion criterion: every ticket of the spec has a ticket file, and `brief.md` is filled from fetched sources, with no guessed paths or values.
 
 ## 3. Review
 
 Spawn the `reviewer` agent once per axis, both in the same response. Each gets the path of `diff.patch`, its axis brief from the code-review skill, and the instruction to mark every finding `certain` or `uncertain`:
 
-- Spec axis: also the spec text and `brief.md`. The reviewer checks each requirement from these inputs, and reads other files only when a requirement cannot be checked otherwise. It names each such file and the requirement in its report.
+- Spec axis: also `spec.md`, every ticket file, and `brief.md`. The reviewer checks each acceptance criterion of every `claimed` ticket, one by one. A `not in this PR` ticket is context only and never a finding. The reviewer reads other files only when a criterion cannot be checked otherwise. It names each such file and the criterion in its report.
 - Standards axis: also the standards file paths from `brief.md` and the smell baseline, pasted in full.
 
 ## 4. Escalate
@@ -58,7 +59,7 @@ Spawn the `reviewer` agent once per axis, both in the same response. Each gets t
 Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
 
 - A finding is marked `uncertain`.
-- A finding is **Big**: it reports a missing or wrong requirement, a behavior change nobody asked for, or a security or data-loss risk.
+- A finding is **Big**: a criterion of a `claimed` ticket is missing or wrong, a behavior change nobody asked for, or a security or data-loss risk.
 - `diff.patch` touches a path that matches a high-risk glob in `brief.md` (this triggers both axes).
 - The `reviewer` gave no report, or a report without the `certain`/`uncertain` marks.
 
@@ -68,6 +69,6 @@ Completion criterion: every triggered escalation has an `indepth-reviewer` repor
 
 ## 5. Report
 
-Present the findings under `## Spec` and `## Standards`. Do not merge or rerank them. For each axis give: the findings, `certain` or `uncertain`, any escalation trigger, and the worst finding. Note a skipped axis and its reason.
+Present the findings under `## Spec` and `## Standards`. Do not merge or rerank them. For each axis give: the findings, `certain` or `uncertain`, any escalation trigger, and the worst finding. List the `claimed` and the `not in this PR` tickets. Note a skipped axis and its reason.
 
 Then ask the user with `ask_user_question` whether to post the review. If yes, run `gh pr review <pr> --comment --body-file <brief-dir>/review.md`, with the report in that file. Never use `--approve` or `--request-changes`. Delete `<brief-dir>` at the end.
