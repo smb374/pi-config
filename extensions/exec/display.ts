@@ -1,7 +1,7 @@
 import { type ExecOutcome, resolveCwd } from "./run.ts";
 
 /** What the tool result carries for the renderer. `tail` is the last lines of the merged output. */
-export type ExecDetails = Omit<ExecOutcome, "text" | "isError">;
+export type ExecDetails = Partial<Omit<ExecOutcome, "text" | "isError" | "output">>;
 
 export const COLLAPSED_LINES = 5;
 export const EXPANDED_LINES = 20;

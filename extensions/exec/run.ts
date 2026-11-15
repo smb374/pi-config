@@ -18,25 +18,41 @@ export type ExecArgs = {
 
 export type Killed = "timeout" | "aborted";
 export type ExecOutcome = {
-  status?: number;
+  status: number;
   killed?: Killed;
   isError?: true;
   msg?: string;
+  /** What the model reads: the output, plus a status footer when the status is not 0 or exec killed the program. */
   text: string;
+  /** The merged output alone, for scripts. */
+  output: string;
+  /** Run time in seconds. */
+  seconds: number;
   /** The last output lines, for the display. */
   tail?: string[];
   /** The spill file, when the output was cut. */
   spill?: string;
 };
 
-/** "status N · T s", plus " · killed: <detail>" when exec killed the program. */
-function statusLine(status: number, started: number, killedDetail?: string): string {
-  return `status ${status} · ${elapsed(started)} s${killedDetail ? ` · killed: ${killedDetail}` : ""}`;
+/** Build the outcome. Status 0 is the output alone; otherwise a blank line and "Command exited with code N", then the msg. */
+function outcome(
+  o: Omit<ExecOutcome, "text" | "output" | "seconds"> & { output?: string },
+  started: number,
+): ExecOutcome {
+  const output = o.output ?? "";
+  const footer =
+    o.status === 0 && !o.msg ? "" : [`Command exited with code ${o.status}`, o.msg].filter(Boolean).join("\n");
+  const text = footer
+    ? output
+      ? `${output}${output.endsWith("\n") ? "\n" : "\n\n"}${footer}`
+      : footer
+    : output || "(no output)";
+  return { ...o, output, text, seconds: Number(elapsed(started)) };
 }
 
 /** Invalid input is status 127: nothing ran. */
 function invalid(msg: string, started: number): ExecOutcome {
-  return { status: 127, isError: true, msg, text: `${statusLine(127, started)}\n${msg}` };
+  return outcome({ status: 127, isError: true, msg }, started);
 }
 
 /** Returns "field: reason" for the first invalid field, else undefined. */
@@ -132,7 +148,7 @@ function shellHint(args: string[] = [], status: number): string | undefined {
 /** The program did not run (126/127): an error with a msg and the shell hint. */
 function notRun(status: number, msg: string, args: ExecArgs, started: number): ExecOutcome {
   const full = [msg, shellHint(args.args, status)].filter(Boolean).join("\n");
-  return { status, isError: true, msg: full, text: `${statusLine(status, started)}\n${full}` };
+  return outcome({ status, isError: true, msg: full }, started);
 }
 
 function elapsed(started: number): string {
@@ -324,28 +340,13 @@ export async function runExec(
       const merged = await output.finish();
       const tail = output.preview(EXPANDED_LINES);
       const spill = output.spillPath();
-      const body = merged ? `\n${merged}` : "";
       const hint = shellHint(args.args, status);
       if (!killed) {
-        return resolvePromise({
-          status,
-          msg: hint,
-          text: statusLine(status, started) + (hint ? `\n${hint}` : "") + body,
-          tail,
-          spill,
-        });
+        return resolvePromise(outcome({ status, msg: hint, output: merged, tail, spill }, started));
       }
       const detail = killed === "timeout" ? `timeout after ${timeoutSeconds} s` : "aborted";
       const msg = [`killed by exec: ${detail}`, hint].filter(Boolean).join("\n");
-      resolvePromise({
-        status,
-        killed,
-        isError: true,
-        msg,
-        text: `${statusLine(status, started, detail)}\n${msg}${body}`,
-        tail,
-        spill,
-      });
+      resolvePromise(outcome({ status, killed, isError: true, msg, output: merged, tail, spill }, started));
     });
   });
 }

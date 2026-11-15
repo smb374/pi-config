@@ -21,13 +21,35 @@ import { killAllGroups, liveGroupCount, runExec } from "./run.ts";
 test("exit 0 is status 0", async () => {
   const r = await runExec({ prg: "true" }, process.cwd());
   expect(r.status).toBe(0);
-  expect(r.text).toMatch(/^status 0 · \d+\.\d s$/);
+  expect(r.text).toBe("(no output)");
+  expect(r.output).toBe("");
+  expect(typeof r.seconds).toBe("number");
 });
 
 test("non-zero exit is data", async () => {
   const r = await runExec({ prg: "false" }, process.cwd());
   expect(r.status).toBe(1);
-  expect(r.text).toStartWith("status 1 · ");
+  expect(r.text).toBe("Command exited with code 1");
+});
+
+test("status 0: text is the output; non-zero: the output, a blank line, then the footer", async () => {
+  const ok = await runExec({ prg: "echo", args: ["hi"] }, process.cwd());
+  expect(ok.status).toBe(0);
+  expect(ok.text).toBe(ok.output);
+  const bad = await runExec({ prg: "sh", args: ["-c", "echo out; exit 3"] }, process.cwd());
+  expect(bad.output).toBe("out\n");
+  expect(bad.text).toBe("out\n\nCommand exited with code 3");
+});
+
+test("r.output never contains the footer", async () => {
+  for (const r of [
+    await runExec({ prg: "sh", args: ["-c", "echo out; exit 3"] }, process.cwd()),
+    await runExec({ prg: "no-such-prg-xyz" }, process.cwd()),
+    await runExec({ prg: "sleep", args: ["30"], timeout: 0.3 }, process.cwd()),
+  ]) {
+    expect(r.output).not.toContain("Command exited");
+    expect(r.text).toContain("Command exited with code");
+  }
 });
 
 test("a fatal signal is status 128+N", async () => {
@@ -37,28 +59,28 @@ test("a fatal signal is status 128+N", async () => {
 
 test("args are literal, not split or joined", async () => {
   const r = await runExec({ prg: "echo", args: ["a", "b"] }, process.cwd());
-  expect(r.text).toEndWith("\na b\n");
+  expect(r.text).toBe("a b\n");
   const spaced = await runExec({ prg: "echo", args: ["a  b"] }, process.cwd());
-  expect(spaced.text).toEndWith("\na  b\n");
+  expect(spaced.text).toBe("a  b\n");
 });
 
 test("a literal * is not expanded", async () => {
   const dir = mkdtempSync(join(tmpdir(), "exec-test-"));
   writeFileSync(join(dir, "file1"), "");
   const r = await runExec({ prg: "echo", args: ["*"] }, dir);
-  expect(r.text).toEndWith("\n*\n");
+  expect(r.text).toBe("*\n");
 });
 
 test("cwd defaults to the given directory", async () => {
   const dir = mkdtempSync(join(tmpdir(), "exec-test-"));
   const r = await runExec({ prg: "pwd", args: ["-P"] }, dir);
-  expect(r.text).toContain(`\n${realpathSync(dir)}\n`);
+  expect(r.text).toBe(`${realpathSync(dir)}\n`);
 });
 
 test("stdin is /dev/null", async () => {
   const r = await runExec({ prg: "cat" }, process.cwd());
   expect(r.status).toBe(0);
-  expect(r.text).not.toContain("\n");
+  expect(r.output).toBe("");
 });
 
 test("stdout and stderr are both in the text", async () => {
@@ -92,8 +114,7 @@ test.each([
   expect(r.isError).toBe(true);
   expect(r.msg).toStartWith(`${field}:`);
   expect(r.status).toBe(127);
-  expect(r.text).toMatch(/^status 127 · \d+\.\d s\n/);
-  expect(r.text).toEndWith(`\n${r.msg}`);
+  expect(r.text).toBe(`Command exited with code 127\n${r.msg}`);
 });
 
 test("cwd: ~ expands to HOME", async () => {
@@ -102,7 +123,7 @@ test("cwd: ~ expands to HOME", async () => {
   process.env.HOME = home;
   try {
     const r = await runExec({ prg: "pwd", args: ["-P"], cwd: "~" }, here);
-    expect(r.text).toContain(`\n${realpathSync(home)}\n`);
+    expect(r.text).toBe(`${realpathSync(home)}\n`);
   } finally {
     process.env.HOME = saved;
   }
@@ -112,14 +133,14 @@ test("cwd: a relative path resolves against the default cwd", async () => {
   const base = mkdtempSync(join(tmpdir(), "exec-test-"));
   mkdirSync(join(base, "sub"));
   const r = await runExec({ prg: "pwd", args: ["-P"], cwd: "sub" }, base);
-  expect(r.text).toContain(`\n${realpathSync(join(base, "sub"))}\n`);
+  expect(r.text).toBe(`${realpathSync(join(base, "sub"))}\n`);
 });
 
 test("unknown program is status 127 and an error", async () => {
   const r = await runExec({ prg: "no-such-prg-xyz" }, here);
   expect(r.status).toBe(127);
   expect(r.isError).toBe(true);
-  expect(r.text).toStartWith("status 127 · ");
+  expect(r.text).toStartWith("Command exited with code 127");
   expect(r.msg).toBe("program not found in PATH: no-such-prg-xyz");
   expect(r.text).toContain(`\n${r.msg}`);
 });
@@ -194,19 +215,19 @@ test("the lookup skips a non-executable file earlier in PATH", async () => {
 test("a caller PATH in env does not change the lookup", async () => {
   const r = await runExec({ prg: "echo", args: ["ok"], env: ["PATH=/no/such/dir"] }, here);
   expect(r.status).toBe(0);
-  expect(r.text).toEndWith("\nok\n");
+  expect(r.text).toBe("ok\n");
 });
 
 test("argv[0] is prg as given, not the absolute path", async () => {
   const r = await runExec({ prg: "sh", args: ["-c", "tr '\\0' ' ' < /proc/$$/cmdline"] }, here);
-  expect(r.text).toContain("\nsh -c ");
+  expect(r.text).toStartWith("sh -c ");
 });
 // Slice 3: env + stdin
 
 /** Runs printenv for one variable; returns its value line or undefined when unset. */
 async function envOf(name: string, env?: string[]): Promise<string | undefined> {
   const r = await runExec({ prg: "printenv", args: [name], env }, here);
-  return r.status === 0 ? r.text.split("\n")[1] : undefined;
+  return r.status === 0 ? r.text.split("\n")[0] : undefined;
 }
 
 test("the non-interactive overlay reaches the child", async () => {
@@ -259,7 +280,7 @@ test("an empty env value is set, not unset", async () => {
 test("stdin text is written as UTF-8, then closes", async () => {
   const r = await runExec({ prg: "cat", stdin: { text: "héllo ✓\n" } }, here);
   expect(r.status).toBe(0);
-  expect(r.text).toEndWith("\nhéllo ✓\n");
+  expect(r.text).toBe("héllo ✓\n");
 });
 
 test("stdin path streams a file, relative to cwd", async () => {
@@ -267,20 +288,20 @@ test("stdin path streams a file, relative to cwd", async () => {
   writeFileSync(join(dir, "in.txt"), "from-file\n");
   const r = await runExec({ prg: "cat", cwd: dir, stdin: { path: "in.txt" } }, here);
   expect(r.status).toBe(0);
-  expect(r.text).toEndWith("\nfrom-file\n");
+  expect(r.text).toBe("from-file\n");
 });
 
 test("stdin path is binary-safe", async () => {
   const dir = mkdtempSync(join(tmpdir(), "exec-test-"));
   writeFileSync(join(dir, "bin"), Buffer.from([0xff, 0xfe, 0x00, 0x01]));
   const r = await runExec({ prg: "wc", args: ["-c"], cwd: dir, stdin: { path: "bin" } }, here);
-  expect(r.text).toEndWith("\n4\n");
+  expect(r.text).toBe("4\n");
 });
 
 test("10 MB of stdin text into a child that exits early does not deadlock or throw", async () => {
   const r = await runExec({ prg: "head", args: ["-c1"], stdin: { text: "x".repeat(10 * 1024 * 1024) } }, here);
   expect(r.status).toBe(0);
-  expect(r.text).toEndWith("\nx");
+  expect(r.text).toBe("x");
 });
 
 test("10 MB of stdin path into a child that exits early does not deadlock or throw", async () => {
@@ -289,7 +310,7 @@ test("10 MB of stdin path into a child that exits early does not deadlock or thr
     writeFileSync(join(dir, "big"), "y".repeat(10 * 1024 * 1024));
     const r = await runExec({ prg: "head", args: ["-c1"], stdin: { path: join(dir, "big") } }, here);
     expect(r.status).toBe(0);
-    expect(r.text).toEndWith("\ny");
+    expect(r.text).toBe("y");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -320,15 +341,15 @@ test("a timeout kills the group with SIGTERM", async () => {
   expect(r.status).toBe(143);
   expect(r.isError).toBe(true);
   expect(r.msg).toContain("timeout");
-  expect(r.text).toMatch(/^status 143 · 0\.\d s · killed: timeout after 0\.5 s\n/);
-  expect(r.text).toContain(`\n${r.msg}`);
+  expect(r.msg).toBe("killed by exec: timeout after 0.5 s");
+  expect(r.text).toBe(`Command exited with code 143\n${r.msg}`);
 });
 
 test("a program that ignores SIGTERM gets SIGKILL after the grace period", async () => {
   const r = await runExec({ prg: "sh", args: ["-c", "trap '' TERM; sleep 30"], timeout: 1 }, here);
   expect(r.killed).toBe("timeout");
   expect(r.status).toBe(137);
-  expect(Number(/ · (\d+\.\d) s/.exec(r.text)?.[1])).toBeGreaterThanOrEqual(5.9);
+  expect(r.seconds).toBeGreaterThanOrEqual(5.9);
 }, 15000);
 
 test("the abort signal kills the group", async () => {
@@ -338,7 +359,8 @@ test("the abort signal kills the group", async () => {
   expect(r.killed).toBe("aborted");
   expect(r.status).toBe(143);
   expect(r.isError).toBe(true);
-  expect(r.text).toMatch(/^status 143 · \d+\.\d s · killed: aborted\n/);
+  expect(r.msg).toBe("killed by exec: aborted");
+  expect(r.text).toBe(`Command exited with code 143\n${r.msg}`);
 });
 
 test("an already aborted signal still kills the program", async () => {
@@ -386,7 +408,7 @@ test("a script whose shebang interpreter is missing is status 127, not a throw",
   const r = await runExec({ prg: file }, here);
   expect(r.status).toBe(127);
   expect(r.isError).toBe(true);
-  expect(r.text).toStartWith("status 127 · ");
+  expect(r.text).toStartWith("Command exited with code 127");
   expect(r.text).toContain(`\n${r.msg}`);
 });
 
@@ -401,15 +423,15 @@ test("a script whose shebang interpreter is not executable is status 126, not a 
   const r = await runExec({ prg: file }, here);
   expect(r.status).toBe(126);
   expect(r.isError).toBe(true);
-  expect(r.text).toStartWith("status 126 · ");
+  expect(r.text).toStartWith("Command exited with code 126");
 });
 
-test("a spawn error other than ENOENT or EACCES is status 126 with a status line", async () => {
+test("a spawn error other than ENOENT or EACCES is status 126 with the exit-code footer", async () => {
   // One 200 KB argument is over the kernel's 128 KiB per-argument limit: E2BIG.
   const r = await runExec({ prg: "true", args: ["x".repeat(200_000)] }, here);
   expect(r.status).toBe(126);
   expect(r.isError).toBe(true);
-  expect(r.text).toStartWith("status 126 · ");
+  expect(r.text).toStartWith("Command exited with code 126");
   expect(r.text).toContain(`\n${r.msg}`);
 });
 
@@ -423,7 +445,7 @@ test("stdin path may be a character device", async () => {
   const r = await runExec({ prg: "head", args: ["-c3"], stdin: { path: "/dev/zero" } }, here);
   expect(r.isError).toBeUndefined();
   expect(r.status).toBe(0);
-  expect(r.text).toEndWith("\n\0\0\0");
+  expect(r.text).toBe("\0\0\0");
 });
 
 test("stdin path: an early-exit child does not leak the file descriptor", async () => {
@@ -457,25 +479,25 @@ const seqText = (n: number) => Array.from({ length: n }, (_, i) => `${i + 1}\n`)
 
 test("stderr lines get the 2> prefix, in arrival order", async () => {
   const r = await runExec({ prg: "sh", args: ["-c", "echo a; sleep 0.2; echo b >&2; sleep 0.2; echo c"] }, here);
-  expect(r.text).toEndWith("\na\n2> b\nc\n");
+  expect(r.text).toBe("a\n2> b\nc\n");
 });
 
 test("with no stdout bytes, stderr lines have no prefix", async () => {
   const r = await runExec({ prg: "sh", args: ["-c", "echo err >&2"] }, here);
-  expect(r.text).toEndWith("\nerr\n");
+  expect(r.text).toBe("err\n");
   expect(r.text).not.toContain("2> ");
 });
 
 test("a partial line flushes at exit, without a newline", async () => {
   const r = await runExec({ prg: "printf", args: ["no-newline"] }, here);
-  expect(r.text).toEndWith("\nno-newline");
+  expect(r.text).toBe("no-newline");
   const mixed = await runExec({ prg: "sh", args: ["-c", "echo x; sleep 0.2; printf partial >&2"] }, here);
-  expect(mixed.text).toEndWith("\nx\n2> partial");
+  expect(mixed.text).toBe("x\n2> partial");
 });
 
 test("a line split across chunks is joined", async () => {
   const r = await runExec({ prg: "sh", args: ["-c", "printf ab; sleep 0.2; printf 'cd\\n'"] }, here);
-  expect(r.text).toEndWith("\nabcd\n");
+  expect(r.text).toBe("abcd\n");
 });
 
 test("small output makes no spill file", async () => {
@@ -488,7 +510,7 @@ test("small output makes no spill file", async () => {
 test("5000 lines: the tail, a cut line, and a spill file with the full output", async () => {
   const r = await runExec({ prg: "seq", args: ["5000"] }, here);
   const lines = r.text.split("\n");
-  expect(lines[1]).toBe("3001");
+  expect(lines[0]).toBe("3001");
   expect(lines.at(-2)).toBe("5000");
   expect(lines.at(-1)).toMatch(/^\[output cut: last 2000 of 5000 lines; full output: /);
   const path = SPILL.exec(r.text)?.[1] ?? "";
@@ -497,10 +519,12 @@ test("5000 lines: the tail, a cut line, and a spill file with the full output", 
   expect(statSync(path).mode & 0o777).toBe(0o600);
 });
 
-test("a cut with a killed status keeps the status line and msg first", async () => {
+test("a cut with a killed status keeps the output and the cut line, then the footer", async () => {
   const r = await runExec({ prg: "sh", args: ["-c", "seq 3000; sleep 30"], timeout: 1 }, here);
   expect(r.killed).toBe("timeout");
-  expect(r.text).toMatch(/^status 143 · .* · killed: timeout after 1 s\nkilled by exec: .*\n3000\n/s);
+  expect(r.text).toMatch(
+    /^1001\n.*\n3000\n\[output cut: last 2000 of 3000 lines; [^\n]*\]\n\nCommand exited with code 143\nkilled by exec: timeout after 1 s$/s,
+  );
   expect(r.text).toMatch(/\n\[output cut: last 2000 of 3000 lines; /);
 });
 
@@ -532,7 +556,7 @@ test("stderr-only output that fits only without prefixes is not cut and leaves n
   const r = await runExec({ prg: "sh", args: ["-c", `yes ${"1".repeat(25)} | head -n 1900 >&2`] }, here);
   expect(r.text).not.toContain("[output cut");
   expect(r.text).not.toContain("2> ");
-  expect(r.text.split("\n").length).toBe(1902);
+  expect(r.text.split("\n").length).toBe(1901);
   expect(spillFiles()).toEqual(before);
 });
 
@@ -569,7 +593,7 @@ test("stripPrefixes failure leaves no .tmp file", async () => {
 test("300000 lines keep only a tail but spill all of them", async () => {
   const r = await runExec({ prg: "seq", args: ["300000"] }, here);
   expect(r.text).toMatch(/\n\[output cut: last 2000 of 300000 lines; /);
-  expect(r.text.split("\n")[1]).toBe("298001");
+  expect(r.text.split("\n")[0]).toBe("298001");
   const spill = readFileSync(SPILL.exec(r.text)?.[1] ?? "", "utf8");
   expect(spill.startsWith("1\n2\n")).toBe(true);
   expect(spill.endsWith("\n300000\n")).toBe(true);
@@ -671,7 +695,7 @@ test.each(["*", "?", "|", ">", "<", "&&", ";", "$"])("hint: %s alone as an arg a
   expect(r.status).toBe(3);
   expect(r.isError).toBeUndefined();
   expect(r.msg).toBe(`no shell: "${char}" in args is a literal character`);
-  expect(r.text).toStartWith(`status 3 · `);
+  expect(r.text).toStartWith("Command exited with code 3");
   expect(r.text).toContain(`\n${r.msg}`);
 });
 
@@ -710,9 +734,14 @@ test("hint: non-zero status without a shell character gives no msg", async () =>
   expect(r.msg).toBeUndefined();
 });
 
-test("hint: the msg comes before the output", async () => {
+test("hint: the msg comes after the output", async () => {
   const r = await runExec({ prg: "sh", args: ["-c", "echo out\nexit 3", "*"] }, here);
-  expect(r.text.split("\n").slice(1)).toEqual(['no shell: "*" in args is a literal character', "out", ""]);
+  expect(r.text.split("\n")).toEqual([
+    "out",
+    "",
+    "Command exited with code 3",
+    'no shell: "*" in args is a literal character',
+  ]);
 });
 
 test("hint: the shell hint joins the killed msg", async () => {
@@ -851,7 +880,7 @@ test("the registered tool has the spec's prompt text", () => {
   expect(tool.promptGuidelines).toEqual([
     "exec: put the program in prg and each argument as one item in args. No shell parses them, so `|`, `>`, `&&`, `*`, `$VAR`, `~` and quotes are literal characters.",
     "exec: use cwd, env, stdin and timeout to set the directory, variables, input and time limit.",
-    "exec: status is the exit code. 126 and 127 mean the program did not run. 128+N means signal N ended it.",
+    "exec: on a non-zero status the output ends with `Command exited with code N`. 126 and 127 mean the program did not run. 128+N means signal N ended it.",
     'exec: output lines that start with "2> " are stderr.',
     "exec: when the output is cut, read the spill file named in the last line.",
   ]);
