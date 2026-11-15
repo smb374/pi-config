@@ -13,6 +13,7 @@ permission:
     git show *: allow
     git blame *: allow
     git ls-files *: allow
+    git ls-tree *: allow
     git rev-parse *: allow
     git branch: allow
     git branch --show-current: allow
