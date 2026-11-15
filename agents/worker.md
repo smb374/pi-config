@@ -1,7 +1,7 @@
 ---
 description: Implementation agent for normal tasks and approved directions
 tools: codemode, read, edit, write, ffgrep, fffind, bash, cbmem
-thinking: high
+thinking: medium
 prompt_mode: replace
 inherit_context: false
 max_turns: 80
