@@ -170,6 +170,7 @@ A stop (Big finding, fix cap, max turns, user rejection) keeps the brief directo
    - **Green** (no findings on either axis, or only judgement-call smells): run `gh pr ready`, then go to step 6.
    - **Big**: a **Big** finding as pr-review defines it (its step 4), a finding that touches a file outside the tickets' Scope, or a finding that needs an amendment. Present it to the user with your recommendation, and stop.
    - **Small**: every other finding. Spawn a fresh worker with the step 4.2 prompt (contract: `spec.md` plus the ticket files the findings touch) plus `Read <pr-brief-dir>/findings.md and <pr-brief-dir>/diff.patch.` Run steps 4.3 and 4.4 on its result, with the gate's `<base>` = HEAD. Make one commit `fix: review findings` that references the spec, and push it. Then run pr-review in caller mode again (a re-run), and repeat from item 3.
+   - **Scan items** (the `## Scan` section) are not findings. Never sort them into Green, Small, or Big. Scan items alone never start a fix worker, never count against the fix cap, and never block Green. When a Small fix worker runs, its prompt also says: `Fix the items in the ## Scan section of <pr-brief-dir>/findings.md, except comment-code mismatch items.` A `comment-code mismatch` item counts only through the Spec reviewer's finding, if it made one.
 
    **Fix cap**: at most 2 fix workers for the whole review. When a third would be needed, present the open findings to the user and stop.
 
@@ -177,7 +178,7 @@ Completion criterion: both axes are green on the latest pr-review pass, or the u
 
 ## 6. Report
 
-Report to the user: the PR link, the commit SHA per ticket, the fix commits, the verify output, the review summary per axis with any escalation trigger (from `<pr-brief-dir>/findings.md`), and every amendment. Then delete `<brief-dir>` and `<pr-brief-dir>`.
+Report to the user: the PR link, the commit SHA per ticket, the fix commits, the verify output, the review summary per axis with any escalation trigger (from `<pr-brief-dir>/findings.md`), the scan items that remain open in its `## Scan` section, and every amendment. Then delete `<brief-dir>` and `<pr-brief-dir>`.
 
 ## Max turns
 
