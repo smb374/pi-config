@@ -13,14 +13,15 @@ You are **main**. You talk to the user, prepare the contracts, run the subagents
 | main             | you                | Contracts, coordination, verify gate, review, commit     |
 | scout            | `scout`            | Gather facts and flag ticket conflicts                   |
 | worker           | `worker`           | Write tests and code from the brief                      |
-| reviewer         | `reviewer`         | The two axes of the code-review skill (default)          |
-| indepth-reviewer | `indepth-reviewer` | Re-review one axis on escalation (step 5)                |
+
+The pr-review skill spawns the reviewer agents (step 5). This skill does not.
 
 Terms:
 
 - **Spec base**: `git rev-parse HEAD` before the branch exists.
 - **Ticket base**: HEAD before that ticket's worker starts. It is `<base>` for that ticket's snapshot, gate, and brief.
 - **Brief directory** `<brief-dir>`: `/tmp/<project>-<spec>/`, where `<project>` is the repo directory name.
+- **PR brief directory** `<pr-brief-dir>`: the brief directory of pr-review, `/tmp/<project>-pr-<n>/`.
 
 Subagent rules:
 
@@ -28,7 +29,7 @@ Subagent rules:
 - Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief files are the only shared state.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 4.3).
-- A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Reviewers and fresh workers read it; it is the review target, and `git diff` only confirms the tree matches it. Take one with the **Snapshot procedure** below.
+- A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Fresh workers read it, and `git diff` only confirms the tree matches it. Take one with the **Snapshot procedure** below.
 
 ## Snapshot procedure
 
@@ -130,11 +131,11 @@ Completion criterion: the worker's status is `completed`, its question (if any) 
 
 1. Take a snapshot, so `diff.patch` and `git diff <base>` show the worker's new files.
 2. Run `git diff <base> --name-only`. Every listed file must be in the ticket's Scope. A file outside Scope is a **Big** finding (step 4.5).
-3. Run the format recipe, then the typecheck and full-suite recipes, yourself.
+3. Run the format recipe, then the typecheck and full-suite recipes, yourself. Save their output to `<brief-dir>/verify.txt`, in place of any older file.
 
 If any recipe fails, go to step 4.5 with the failure output as the finding.
 
-Completion criterion: all recipes exit 0. A passing gate is green; the ticket gets no per-ticket review.
+Completion criterion: all recipes exit 0, and `verify.txt` holds their output. A passing gate is green; the ticket gets no per-ticket review.
 
 ### 4.5 Fix
 
@@ -157,34 +158,26 @@ Completion criterion: after the last ticket, every ticket is committed, closed, 
 
 ### On any stop
 
-A stop (Big finding, fix cap, max turns, user rejection) keeps the brief directory and the closed tickets as they are. Tell the user to rerun this skill: step 1.3 skips the closed tickets, and the spec base is the parent of the branch's first ticket commit.
+A stop (Big finding, fix cap, max turns, user rejection) keeps the brief directory, `<pr-brief-dir>`, and the closed tickets as they are. Tell the user to rerun this skill: step 1.3 skips the closed tickets, and the spec base is the parent of the branch's first ticket commit.
 
 ## 5. PR review
 
-1. **Snapshot.** Take a snapshot with `<base>` = spec base. Rewrite the PR body with the `pr` skill, then run `gh pr ready`.
-2. **Axes.** Use the code-review skill for its axis definitions only: the spec and standards sources (its steps 2–3, with the smell baseline) and the brief for each axis (its step 4). Skip its fixed-point and spawn mechanics; main spawns the reviewers below. The spec source is the spec issue, every ticket's acceptance criteria, and all amendments. The code under review is `<brief-dir>/diff.patch`, in place of any `git diff` or commit list.
-3. **Run the reviewers.** Spawn the `reviewer` agent once per axis. Each gets the path of `diff.patch`, its axis brief from the code-review skill, and the instruction to mark every finding `certain` or `uncertain`:
-   - Spec axis: also every ticket's Acceptance criteria and Test seams, and the latest verify-gate output. The reviewer checks each criterion from these inputs, and reads other files only when a criterion cannot be checked otherwise. It names each such file and the criterion in its report.
-   - Standards axis: also `spec.md`'s Conventions section, which is the rule source, and the smell baseline pasted in full.
-4. **Escalate.** Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
-   - A finding is marked `uncertain`.
-   - A finding qualifies as **Big** (step 5.5).
-   - `diff.patch` touches a path that matches the high-risk paths in `spec.md`'s Conventions (this triggers both axes).
-   - The `reviewer` gave no report, or a report without the `certain`/`uncertain` marks.
-
-   It gets the same inputs as the `reviewer` on that axis, plus the `reviewer` report. When an axis has an `indepth-reviewer` report, use it in place of the `reviewer` report for that axis.
-5. **Decide.** Classify the findings:
-   - **Green** (no findings on either axis, or only judgement-call smells): go to step 6.
-   - **Small**: every finding stays inside the tickets' Acceptance criteria and Scope files. Spawn a fresh worker with the step 4.2 prompt (contract: `spec.md` plus the ticket files the findings touch) plus the findings, quoted, and `Your earlier work is in the tree: read <brief-dir>/diff.patch.` Run steps 4.3 and 4.4 on its result, with the gate's `<base>` = HEAD. Make one commit `fix: review findings` that references the spec, and push it. Then repeat from item 1 on the new snapshot.
-   - **Big**: a finding changes ticket behavior, needs an amendment, touches a file outside the tickets' Scope, or reports a missing requirement. Present it to the user with your recommendation, and stop.
+1. **PR body.** Rewrite the PR body with the `pr` skill. Do this before the first review, so pr-review sees the `claimed` tickets. Do not run `gh pr ready` here.
+2. **Review.** Load the pr-review skill with `read`. Run it in caller mode on the branch's PR. It writes its report to `<pr-brief-dir>/findings.md`. Pass these extras:
+   - Spec extras: `<brief-dir>/verify.txt`, and every `<brief-dir>/ticket-<n>.md` (for Scope and Test seams).
+   - Standards extras: `<brief-dir>/spec.md` (its Conventions section).
+3. **Decide.** Classify the findings in `<pr-brief-dir>/findings.md`:
+   - **Green** (no findings on either axis, or only judgement-call smells): run `gh pr ready`, then go to step 6.
+   - **Big**: a **Big** finding as pr-review defines it (its step 4), a finding that touches a file outside the tickets' Scope, or a finding that needs an amendment. Present it to the user with your recommendation, and stop.
+   - **Small**: every other finding. Spawn a fresh worker with the step 4.2 prompt (contract: `spec.md` plus the ticket files the findings touch) plus `Read <pr-brief-dir>/findings.md and <pr-brief-dir>/diff.patch.` Run steps 4.3 and 4.4 on its result, with the gate's `<base>` = HEAD. Make one commit `fix: review findings` that references the spec, and push it. Then run pr-review in caller mode again (a re-run), and repeat from item 3.
 
    **Fix cap**: at most 2 fix workers for the whole review. When a third would be needed, present the open findings to the user and stop.
 
-Completion criterion: both axes are green on the latest snapshot, or the user holds the open findings; every triggered escalation has an `indepth-reviewer` report.
+Completion criterion: both axes are green on the latest pr-review pass, or the user holds the open findings.
 
 ## 6. Report
 
-Report to the user: the PR link, the commit SHA per ticket, the fix commits, the verify output, the review summary per axis with any escalation trigger, and every amendment. Then delete the brief directory.
+Report to the user: the PR link, the commit SHA per ticket, the fix commits, the verify output, the review summary per axis with any escalation trigger (from `<pr-brief-dir>/findings.md`), and every amendment. Then delete `<brief-dir>` and `<pr-brief-dir>`.
 
 ## Max turns
 

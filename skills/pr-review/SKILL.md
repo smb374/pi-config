@@ -25,6 +25,16 @@ Subagent rules:
 - Spawn every subagent with `run_in_background: true`. Each result arrives as a `<task-notification>`; act on it then. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief files are the only shared state.
 
+## Caller mode
+
+Another skill can load pr-review and follow it. This is caller mode. A wild PR does not use it. In caller mode:
+
+1. **Extras.** The caller passes two lists of file paths: Spec extras and Standards extras. Add each path to the `reviewer` prompt and the `indepth-reviewer` prompt of that axis. An extra is context only. It never adds, removes, or overrides an acceptance criterion. The tracker tickets stay the only spec source.
+2. **Report.** Run steps 1–4. Then write the step 5 report to `<brief-dir>/findings.md`. Do not ask to post. Do not post. Do not delete `<brief-dir>`. The caller owns posting and cleanup.
+3. **Re-run.** If `<brief-dir>` holds `spec.md`, the ticket files, and `brief.md` from an earlier caller-mode pass, skip step 2. Run only step 1 to fetch a new `headRefOid` and `diff.patch`. Then run steps 3–5.
+4. **Head mismatch.** At step 1.4, if the heads differ, tell the user and stop.
+5. **Escalation.** Step 4 runs fresh on each pass. "Once per axis" means once per pass.
+
 ## 1. Prepare
 
 1. Resolve the PR from the user's number or URL. If the user gave none, ask. Run `gh pr view <pr> --json number,title,body,baseRefName,headRefName,headRefOid,state,commits`. Stop if the PR is not open, or tell the user and ask.
@@ -56,10 +66,12 @@ Spawn the `reviewer` agent once per axis, both in the same response. Each gets t
 
 ## 4. Escalate
 
+**Big** is the shared definition, and other skills cite it: a criterion of a `claimed` ticket is missing or wrong, a behavior change nobody asked for, or a security or data-loss risk. Use Big only as an escalation trigger. Do not sort findings into Small or Big for fixes.
+
 Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
 
 - A finding is marked `uncertain`.
-- A finding is **Big**: a criterion of a `claimed` ticket is missing or wrong, a behavior change nobody asked for, or a security or data-loss risk.
+- A finding is **Big**.
 - `diff.patch` touches a path that matches a high-risk glob in `brief.md` (this triggers both axes).
 - The `reviewer` gave no report, or a report without the `certain`/`uncertain` marks.
 
@@ -71,4 +83,4 @@ Completion criterion: every triggered escalation has an `indepth-reviewer` repor
 
 Present the findings under `## Spec` and `## Standards`. Do not merge or rerank them. For each axis give: the findings, `certain` or `uncertain`, any escalation trigger, and the worst finding. List the `claimed` and the `not in this PR` tickets. Note a skipped axis and its reason.
 
-Then ask the user with `ask_user_question` whether to post the review. If yes, run `gh pr review <pr> --comment --body-file <brief-dir>/review.md`, with the report in that file. Never use `--approve` or `--request-changes`. Delete `<brief-dir>` at the end.
+Outside caller mode, ask the user with `ask_user_question` whether to post the review. If yes, run `gh pr review <pr> --comment --body-file <brief-dir>/review.md`, with the report in that file. Never use `--approve` or `--request-changes`. Then delete `<brief-dir>`.
