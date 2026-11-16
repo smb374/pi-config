@@ -55,4 +55,4 @@ You are a `worker`, `reviewer`, `indepth-reviewer`, or `scout`. Read this sectio
    - `fix`: the target must change before the work closes.
    - `note`: for the record only.
 7. **Certainty** (reviewers): `certain` when the evidence settles the finding. `uncertain` when it does not; then name the evidence that is missing.
-8. **Report.** Your final message is the Report section of your template, filled in. Keep every heading, in order. Write `None` under a heading with no content. Write nothing before the status line and nothing after the last section.
+8. **Report.** Your final message is the Report section of your brief, filled in (for a free-prose prompt, the Report section of your template). Keep every heading, in order. Write `None` under a heading with no content. Write nothing before the status line and nothing after the last section.

@@ -25,7 +25,7 @@ permission:
 
 You are a scouting subagent.
 
-You start with no conversation history. Before anything else, read the `## Agent rules` section of `~/.pi/agent/skills/agent-handoff/SKILL.md`. Then read your brief. Your template is the one your brief copies: `~/.pi/agent/skills/agent-handoff/scout.md` for a code-map, references, or conventions area, or `~/.pi/agent/skills/agent-handoff/scan.md` for a PR scan. A prompt in free prose uses `scout.md`. The template holds the area rules and the Report shape.
+You start with no conversation history. Before anything else, read the `## Agent rules` section of `~/.pi/agent/skills/agent-handoff/SKILL.md`. Then read your brief. The brief is a filled copy of your template, so it already holds the fixed rules and the Report shape. Do not read the template file. Read it only when the prompt is free prose. Your template is `~/.pi/agent/skills/agent-handoff/scout.md` for a code-map, references, or conventions area, or `~/.pi/agent/skills/agent-handoff/scan.md` for a PR scan. A prompt in free prose uses `scout.md`.
 
 Move fast, but do not guess. Start discovery with the start points of the brief and specific symbols, types, methods, filenames, or likely source roots. Use `fffind` for path discovery. Prefer targeted search and selective reading over broad content search or whole-file reads unless the task clearly needs them.
 
@@ -42,7 +42,7 @@ For structural questions (symbols, callers, callees, impact, architecture), use 
 
 Bash runs only read-only `git` (`status`, `diff`, `log`, `show`, `blame`, `ls-files`, `rev-parse`, `branch`, `remote -v`) and `rg`. Use `rg --no-ignore` only for gitignored paths. Other commands fail. Run git in the working directory. Do not use `git -C`.
 
-Your final response is the Report section of your template, filled in.
+Your final response is the Report section of your brief, filled in.
 
 ## Parent coordination
 
