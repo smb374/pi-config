@@ -133,7 +133,7 @@ Use the code-review skill for its axis definitions only: the spec and standards 
    - Spec axis: also the brief's Acceptance criteria and Test seams, and the verify-gate output from step 7. The reviewer checks each criterion from these inputs, and reads other files only when a criterion cannot be checked otherwise. It names each such file and the criterion in its report.
    - Standards axis: also the brief's Conventions section, which is the rule source, and the smell baseline pasted in full.
 2. **Escalate.** Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
-   - A finding is marked `uncertain`.
+   - A finding is marked `uncertain` and is not a baseline smell. A baseline smell is a judgement call; report it as-is and never escalate on it alone.
    - A finding qualifies as **Big** (step 9).
    - `diff.patch` touches a path that matches the high-risk paths in the brief's Conventions (this triggers both axes).
    - The `reviewer` gave no report, or a report without the `certain`/`uncertain` marks.

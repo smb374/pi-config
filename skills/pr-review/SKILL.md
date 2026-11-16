@@ -87,7 +87,7 @@ Completion criterion: `scan.md` exists before the reviewers spawn.
 
 Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
 
-- A finding is marked `uncertain`.
+- A finding is marked `uncertain` and is not a baseline smell. A baseline smell is a judgement call; report it as-is and never escalate on it alone.
 - A finding is **Big**.
 - `diff.patch` touches a path that matches a high-risk glob in `brief.md` (this triggers both axes).
 - The `reviewer` gave no report, or a report without the `certain`/`uncertain` marks.
