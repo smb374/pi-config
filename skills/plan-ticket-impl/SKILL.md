@@ -62,7 +62,25 @@ Use the template below. Fill every heading. Omit **Out of scope** when it has no
 
 Completion criterion: every required section is complete, and every test name under **Tests to add** has a matching artifact under **Behavior specification**.
 
-### 5. Hand off
+### 5. Review the plan
+
+Read `~/.pi/agent/skills/agent-handoff/SKILL.md`, and follow its **Main: spawn with a brief** procedure. The brief directory is `/tmp/<project>-plan-<ticket-id>/`, where `<project>` is the repo directory name. Spawn with `run_in_background: true` and `inherit_context: false`. Do not pass `model`.
+
+1. Fill a reviewer brief: the template `reviewer.md` with the label `reviewer-plan-1`.
+   - Axis: `plan`.
+   - Target: Path is the plan path. Tree matches target is `yes`.
+   - Criteria: the acceptance criteria of the ticket, as `AC-1` … `AC-n`, under the ticket ID, marked `claimed`.
+   - Rules, Gate output, Skip, Decide, Prior report: None.
+2. Spawn `reviewer` with the brief. Only findings with severity `blocker` or `fix` count. When no counted finding exists, go to step 6.
+3. Fix each counted finding in the plan. When a fix needs a decision from the user, ask with `ask_user_question`.
+4. Copy the brief to the label `reviewer-plan-2`, and spawn one fresh `reviewer` with it.
+5. When counted findings remain after the second review, present them to the user and stop before Hand off.
+
+Delete the brief directory when you leave this step.
+
+Completion criterion: the latest plan review has no counted finding, or the user holds the open findings.
+
+### 6. Hand off
 
 Tell the user:
 
@@ -152,33 +170,20 @@ Authority order:
 2. The references this plan cites
 3. Nothing else
 
-Stop and report if the plan and a cited reference disagree.
-
-If the plan is silent or ambiguous, stop and report. Do not fill the gap.
-Do not change any file outside the Scope.
+If the plan is silent or ambiguous, ask the parent with `ask_parent`. Do not fill the gap.
+If the plan and a cited reference disagree, ask the parent with `ask_parent`.
+Do not change any file outside the Scope. When the work needs one, ask the parent with `ask_parent`.
 Add only the tests named in "Tests to add".
-Do not change any existing test outside "Existing tests permitted to change".
+Do not change any existing test outside "Existing tests permitted to change". When the work needs one, ask the parent with `ask_parent`.
 Never report the plan as passed with a failing gate. Never defer a failure.
-If the gate cannot pass within the limits below, stop and report the plan as failed.
 
-Stop and report when any of these occur:
+Report `status: failed`, and name each cause under Deviations, when any of these occur:
 - The verification gate fails twice for the same root cause.
 - The work would exceed the Budget.
-- The work would change a file outside the Scope.
-- The work would change an existing test not on the permitted list.
-- The plan does not specify behavior the implementation needs.
 - A gate command is missing or labeled unconfirmed.
-- The plan and a cited reference disagree.
 - A blocking ticket named in Current state has not landed.
 
-Report in this form:
-- Pass or fail
-- Files changed, with added and removed line counts
-- New tests added, by name
-- Existing test expectations changed, by name, each with a one-line justification
-- Output of the verification gate
-- Each deviation from the plan, and why
-- Each stop condition hit
+Report in the Report shape of `~/.pi/agent/skills/agent-handoff/worker.md`. Under Changes, give each changed existing test expectation its own line, with a one-line justification.
 
 Keep the report short. It exists so a reviewer can find the risky parts without reading the whole diff.
 

@@ -28,6 +28,8 @@ Subagent rules:
 - Never pass `model` to `subagent`. The active profile chooses models.
 - Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief files are the only shared state.
+- Spawn `scout` and `worker` through the agent-handoff skill. Read `~/.pi/agent/skills/agent-handoff/SKILL.md` once. For every spawn, follow its **Main: spawn with a brief** procedure: copy the template, fill it, spawn with `Brief: <path>`, then save and check the report. Each step below names the template and the label.
+- Keep every ID (`AC-n`, `C-n`, `SPEC-n`, `STD-n`, `SCAN-n`) unchanged in later briefs and in your report to the user. Where criteria of more than one ticket meet, write a criterion as `#<ticket> AC-n`.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 4.3).
 - A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Fresh workers read it, and `git diff` only confirms the tree matches it. Take one with the **Snapshot procedure** below.
 
@@ -39,7 +41,7 @@ Subagent rules:
    - Diff against `<base>`, so the patch holds the whole change set.
    - `--output` overwrites the old file, so you need no shell redirect.
    - `--no-color --no-ext-diff` keep the user's git config out of the patch.
-4. Run `git diff <base> --name-only`. Compare it with the files in the worker's report. On a mismatch, or an empty patch after the worker changed files, repeat from step 1.
+4. Run `git diff <base> --name-only`. Compare it with the files under Changes in the worker's report. On a mismatch, or an empty patch after the worker changed files, repeat from step 1.
 
 Completion criterion: `diff.patch` covers every file in `git diff <base> --name-only` and every file the worker reported. To change the patch, change the tree and take a new snapshot.
 
@@ -56,25 +58,23 @@ Completion criterion: the branch exists, the spec base is recorded, the ordered 
 
 ## 2. Scout
 
-Spawn scouts in parallel. Each one gets the spec text, the text of every child ticket, and one area:
+Spawn 3 scouts in parallel, one for each area: `code-map`, `references`, and `conventions`. Use the template `scout.md` with the label `scout-<area>`. Fill these fields:
 
-- **Code map**: the symbols, callers, and files the tickets touch, with paths and line ranges. The prompt must tell the scout to find symbols and callers with `cbmem` (`search_graph`, `trace_path`, `get_code_snippet`), not text search, and to report each symbol with its `search_graph` qualified name.
-- **References**: the specs and documents the tickets cite, quoted with file and line range or section.
-- **Conventions**: test layout and naming, the AGENTS.md/CONTRIBUTING rules that apply, and the high-risk paths the project names.
+- Area: the area.
+- Task: the spec text, and the text of every child ticket with its comments.
+- Start points: the paths and symbols the spec and the tickets name, or None.
 
-Every scout also reports **conflicts** in its area: places where a ticket contradicts the code, a reference, or another ticket, ambiguities, and missing sources, each with evidence.
+Write `<brief-dir>/spec.md` for your own use: the spec text, the spec base, the ordered ticket list, the shared References (from the references report), and the shared Project rules (the rules and the high-risk path globs from the conventions report). It is the source for the shared fields of each worker brief.
 
-Write `<brief-dir>/spec.md`: spec text, spec base, the ordered ticket list, and the shared References and Conventions (the four `just` recipes, the project rules that apply, the high-risk paths as globs if the project defines any).
-
-Completion criterion: every scout result is collected and `spec.md` is filled from scout output, with no guessed paths or values.
+Completion criterion: every scout report is saved and passes the report check, and `spec.md` is filled from the reports, with no guessed paths or values.
 
 ## 3. Amend
 
-If no scout reported a conflict, go to step 4.
+If no scout report lists a conflict under Conflicts, go to step 4.
 
-Otherwise, put each conflict to the user with `ask_user_question`: the evidence, and the amendment you recommend. Record each answer as an approved amendment. Stop if the user rejects the spec or a ticket.
+Otherwise, put each conflict (`C-n`) to the user with `ask_user_question`: the evidence, and the amendment you recommend. Record each answer as an approved amendment. Stop if the user rejects the spec or a ticket.
 
-Amend the upstream ticket through `docs/agents/issue-tracker.md` right after the user approves: rewrite the affected acceptance-criteria lines, and add an `Amendments` section that lists each amendment with its reason. Apply the same rule to every amendment approved later (steps 4.1 and 4.3). An amendment that touches later tickets also goes into their `ticket-<n>.md` (or `spec.md`) once it exists.
+Amend the upstream ticket through `docs/agents/issue-tracker.md` right after the user approves: rewrite the affected acceptance-criteria lines, and add an `Amendments` section that lists each amendment with its reason. Apply the same rule to every amendment approved later (steps 4.1 and 4.3). An amendment that touches a later ticket also goes into the Criteria of that ticket's worker brief (or into `spec.md`) once it exists.
 
 Completion criterion: every conflict has a recorded answer, and the upstream tickets show every approved amendment.
 
@@ -85,31 +85,24 @@ Run 4.1–4.6 for each ticket in order. Finish a ticket's commit before you star
 ### 4.1 Ticket brief
 
 1. Record the ticket base: `git rev-parse HEAD`.
-2. Spawn one code-map scout (as in step 2) for this ticket against the current HEAD, because earlier tickets changed the code. Route its conflicts through step 3.
-3. Fetch the ticket with its comments. Write `<brief-dir>/ticket-<n>.md`:
-   - Ticket: full text, and the approved amendments.
-   - Acceptance criteria: one literal, checkable line per criterion, from the ticket and the amendments.
-   - Base SHA: the ticket base.
-   - Scope: the files to change or create, each marked `(new)` or `(modified)`.
+2. Spawn one code-map scout for this ticket against the current HEAD, because earlier tickets changed the code. Use the template `scout.md` with the label `scout-code-map-t<n>`: Area `code-map`, Task the ticket text with its comments, Start points from the ticket. Route its conflicts through step 3.
+3. Fill the worker brief: the template `worker.md` with the label `worker-t<n>-1`. Every field holds its content; copy the shared fields from `spec.md`.
+   - Task: the ticket ID and one sentence.
+   - Base: the ticket base.
+   - Criteria: `AC-1` … `AC-n`, one literal, checkable line per criterion, from the ticket and the amendments.
+   - Scope: the files to change or create, from the `scout-code-map-t<n>` report.
    - Test seams: each seam under test and the named tests, with expected values from cited references.
-   - References: the scout quotes, with citations.
+   - Recipes: the four recipes from step 1.
+   - References: the quotes from `spec.md` that apply to this ticket.
+   - Project rules: the Project rules from `spec.md`.
+   - Skills: `~/.agents/skills/tdd/SKILL.md`.
+   - Plan, Prior work, Fix, Answers: None.
 
-Completion criterion: every section is filled from scout output, with no guessed paths or values.
+Completion criterion: the brief passes the `{{FILL` check, with no guessed paths or values.
 
 ### 4.2 Spawn the worker
 
-Spawn `worker` with this prompt, filled in:
-
-```text
-Implement ticket <ticket>. Your contract is <brief-dir>/spec.md and <brief-dir>/ticket-<n>.md. Read both first.
-
-Load the tdd skill with `read` and follow it at the seams the ticket file names.
-For each new test: write it, run it alone with `<single-test recipe> <test name>`, and see it fail before you change implementation code. Put that failing output in your report. If you add no new test, say so in the report.
-
-Run <format recipe> and <typecheck recipe> as you go, and <full-suite recipe> once at the end.
-In your report, list the `cbmem` queries you ran.
-Do not commit.
-```
+Spawn `worker` with the brief `worker-t<n>-1`.
 
 The first worker of a ticket, and a fresh worker that replaces a refused resume (step 4.3), do not count against the fix cap (step 4.5).
 
@@ -117,20 +110,22 @@ The first worker of a ticket, and a fresh worker that replaces a refused resume 
 
 Act on the worker's result when its notification arrives. If it ended with an `ask_parent` question:
 
-- Answer it yourself when the brief files or the scout output already settle it.
-- Otherwise ask the user with `ask_user_question`. Record any new amendment in `ticket-<n>.md` (or `spec.md`), and amend the upstream ticket as in step 3.
-- Resume the worker with the answer. If the resume is refused, take a snapshot and spawn a fresh worker with the step 4.2 prompt plus: the question, the answer, and the note `Partial work is in the tree: read <brief-dir>/diff.patch.`
+- Answer it yourself when the worker brief, `spec.md`, or the scout reports already settle it.
+- Otherwise ask the user with `ask_user_question`. Add any new amendment to the Criteria of the next worker brief (or to `spec.md`), and amend the upstream ticket as in step 3.
+- Resume the worker with the answer. If the resume is refused, take a snapshot. Copy the latest worker brief of the ticket to the next label `worker-t<n>-<k>`. Set Prior work to `<brief-dir>/diff.patch — replacement`, and add the question and the answer to Answers. Spawn a fresh worker with it.
 
-If the worker's status is `steered` or `aborted`, it hit `max_turns`: go to **Max turns** below.
+If the subagent status is `steered` or `aborted`, the worker hit `max_turns`: go to **Max turns** below.
 
-If the worker added implementation code under a test seam without failing output for that seam's tests, present the report to the user and stop. This rejection does not spawn a worker and does not count against the fix cap.
+If the report says `status: failed`, present the report to the user and stop.
 
-Completion criterion: the worker's status is `completed`, its question (if any) is answered, and every new test in its report has failing output.
+Check the Tests section of the report. Every test listed there needs a `red:` line. For `worker-t<n>-1`, every test under Test seams must also be listed there. If a check fails, present the report to the user and stop. This rejection does not spawn a worker and does not count against the fix cap.
+
+Completion criterion: the subagent status is `completed`, the report passes the report check with `status: done`, its question (if any) is answered, and the Tests check passes.
 
 ### 4.4 Verify gate
 
 1. Take a snapshot, so `diff.patch` and `git diff <base>` show the worker's new files.
-2. Run `git diff <base> --name-only`. Every listed file must be in the ticket's Scope. A file outside Scope is a **Big** finding (step 4.5).
+2. Run `git diff <base> --name-only`. Every listed file must be in the Scope of the ticket's worker brief. A file outside Scope is a **Big** finding (step 4.5).
 3. Run the format recipe, then the typecheck and full-suite recipes, yourself. Save their output to `<brief-dir>/verify.txt`, in place of any older file.
 
 If any recipe fails, go to step 4.5 with the failure output as the finding.
@@ -141,7 +136,7 @@ Completion criterion: all recipes exit 0, and `verify.txt` holds their output. A
 
 Classify each verify-gate finding:
 
-- **Small**: a recipe failure whose fix stays inside the ticket's Acceptance criteria and Scope files. Spawn a fresh worker with the step 4.2 prompt plus the failure output, quoted, and `Your earlier work is in the tree: read <brief-dir>/diff.patch.` Then return to step 4.3.
+- **Small**: a recipe failure whose fix stays inside the Criteria and the Scope of the ticket's worker brief. Copy the latest worker brief of the ticket to the next label `worker-t<n>-<k>`. Set Prior work to `<brief-dir>/diff.patch — fix`, and set Fix to the failure output, quoted. Spawn a fresh worker with it. Then return to step 4.3.
 - **Big**: a finding that changes ticket behavior, needs an amendment, touches a file outside Scope, or reports a missing requirement. Present it to the user with your recommendation, and stop.
 
 **Fix cap**: at most 2 fix workers per ticket. When a third would be needed, present the open findings to the user and stop.
@@ -163,14 +158,25 @@ A stop (Big finding, fix cap, max turns, user rejection) keeps the brief directo
 ## 5. PR review
 
 1. **PR body.** Rewrite the PR body with the `pr` skill. Do this before the first review, so pr-review sees the `claimed` tickets. Do not run `gh pr ready` here.
-2. **Review.** Load the pr-review skill with `read`. Run it in caller mode on the branch's PR. It writes its report to `<pr-brief-dir>/findings.md`. Pass these extras:
-   - Spec extras: `<brief-dir>/verify.txt`, and every `<brief-dir>/ticket-<n>.md` (for Scope and Test seams).
-   - Standards extras: `<brief-dir>/spec.md` (its Conventions section).
-3. **Decide.** Classify the findings in `<pr-brief-dir>/findings.md`:
-   - **Green** (no findings on either axis, or only judgement-call smells): run `gh pr ready`, then go to step 6.
-   - **Big**: a **Big** finding as pr-review defines it (its step 4), a finding that touches a file outside the tickets' Scope, or a finding that needs an amendment. Present it to the user with your recommendation, and stop.
-   - **Small**: every other finding. Spawn a fresh worker with the step 4.2 prompt (contract: `spec.md` plus the ticket files the findings touch) plus `Read <pr-brief-dir>/findings.md and <pr-brief-dir>/diff.patch.` Run steps 4.3 and 4.4 on its result, with the gate's `<base>` = HEAD. Make one commit `fix: review findings` that references the spec, and push it. Then run pr-review in caller mode again (a re-run), and repeat from item 3.
-   - **Scan items** (the `## Scan` section) are not findings. Never sort them into Green, Small, or Big. Scan items alone never start a fix worker, never count against the fix cap, and never block Green. When a Small fix worker runs, its prompt also says: `Fix the items in the ## Scan section of <pr-brief-dir>/findings.md, except comment-code mismatch items.` A `comment-code mismatch` item counts only through the Spec reviewer's finding, if it made one.
+2. **Review.** Load the pr-review skill with `read`. Run it in caller mode on the branch's PR. It writes its report to `<pr-brief-dir>/findings.md`. Pass these caller inputs:
+   - Gate output: `<brief-dir>/verify.txt`.
+   - Project rules: the Project rules from `spec.md`.
+3. **Decide.** Classify the findings in `<pr-brief-dir>/findings.md`. Only findings with severity `blocker` or `fix` count. A `note` finding never starts a fix.
+   - **Green** (no counted finding on either axis): run `gh pr ready`, then go to step 6.
+   - **Big**: a **Big** finding as pr-review defines it (its step 4), a finding whose location is outside the Scope of every ticket's worker brief, or a finding that needs an amendment. Present it to the user with your recommendation, and stop.
+   - **Small**: every other counted finding. Fill a worker brief: the template `worker.md` with the label `worker-review-<k>`.
+     - Task: fix the review findings of spec `<spec>`.
+     - Base: HEAD.
+     - Criteria: the criteria the findings cite, each as `#<ticket> AC-n`, copied from the worker briefs.
+     - Scope: the Scope lines of the worker briefs of the tickets that the findings touch.
+     - Test seams: None.
+     - Recipes, References, Project rules, Skills: as in step 4.1.
+     - Prior work: `<pr-brief-dir>/diff.patch — fix`.
+     - Fix: the counted findings, quoted in full with their IDs, and the items in the `## Scan` section of `findings.md` except the `comment-code mismatch` items, with their `SCAN-n` IDs.
+     - Plan, Answers: None.
+
+     Spawn a fresh worker with it. Run steps 4.3 and 4.4 on its result, with the gate's `<base>` = HEAD. Make one commit `fix: review findings` that references the spec, and push it. Then run pr-review in caller mode again (a re-run), and repeat from item 3.
+   - **Scan items** (the `## Scan` section) are not findings. Never sort them into Green, Small, or Big. Scan items alone never start a fix worker, never count against the fix cap, and never block Green. They enter a fix worker brief only through the Small item above. A `comment-code mismatch` item counts only through the Spec reviewer's finding, if it made one.
 
    **Fix cap**: at most 2 fix workers for the whole review. When a third would be needed, present the open findings to the user and stop.
 
