@@ -41,20 +41,20 @@ status: done | failed
 - <limitation from scan rule 6>
 
 ## Comments and docstrings
-- SCAN-<n> — <file:line> — <issue> — fix: <one line>
+- SCAN-<n>; <file:line>; <issue>; fix: <one line>
 
 ## Leftovers
-- SCAN-<n> — <file:line> — <issue> — fix: <one line>
+- SCAN-<n>; <file:line>; <issue>; fix: <one line>
 
 ## Docs consistency
-- SCAN-<n> — <file:line> — <stale mention of name> — fix: <one line>
+- SCAN-<n>; <file:line>; <stale mention of name>; fix: <one line>
 
 ## Typos
-- SCAN-<n> — <file:line> — <typo> — fix: <one line>
+- SCAN-<n>; <file:line>; <typo>; fix: <one line>
 
 ## Comment-code mismatch
-- SCAN-<n> — <file:line> — comment says: "<quote>" — code does: <behavior>
+- SCAN-<n>; <file:line>; comment says: "<quote>"; code does: <behavior>
 
 ## Lint rules skipped
-- <Leftovers rule> — <config file:line>
+- <Leftovers rule>; <config file:line>
 ```

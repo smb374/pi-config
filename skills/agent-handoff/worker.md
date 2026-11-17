@@ -14,11 +14,11 @@
 
 ## Scope
 
-{{FILL: one file per line: `path — new | modified`. Or `Plan §Scope`}}
+{{FILL: one file per line: `path; new | modified`. Or `Plan §Scope`}}
 
 ## Test seams
 
-{{FILL: one test per line: `seam → test name → expected value — citation`. Or `Plan §Tests to add`, or None}}
+{{FILL: one test per line: `seam → test name → expected value; citation`. Or `Plan §Tests to add`, or None}}
 
 ## Recipes
 
@@ -75,24 +75,24 @@
 status: done | failed
 
 ## Criteria
-- AC-1: done | not done — <test name or file:line>
+- AC-1: done | not done; <test name or file:line>
 
 ## Changes
-- <path> — new | modified — +<added> −<removed> — <reason>
+- <path>; new | modified; +<added> -<removed>; <reason>
 
 ## Tests
-- <test name> — <seam> — red: "<quoted failing line>" — green: yes | no
+- <test name>; <seam>; red: "<quoted failing line>"; green: yes | no
 
 ## Fix
-- <ID>: fixed | not fixed — <how, file:line>
+- <ID>: fixed | not fixed; <how, file:line>
 
 ## Gate
-- format: <recipe> — exit <n>
-- typecheck: <recipe> — exit <n>
-- full suite: <recipe> — exit <n> — "<summary line>"
+- format: <recipe>; exit <n>
+- typecheck: <recipe>; exit <n>
+- full suite: <recipe>; exit <n>; "<summary line>"
 
 ## Deviations
-- <deviation or stop cause> — <reason>
+- <deviation or stop cause>; <reason>
 ```
 
-Under Tests, write `None — <reason>` when you added no test.
+Under Tests, write `None; <reason>` when you added no test.

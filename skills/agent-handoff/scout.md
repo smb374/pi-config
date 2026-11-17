@@ -47,7 +47,7 @@ status: done | failed
 area: code-map | references | conventions
 
 ## Facts
-- <fact> — <qualified name | file:line | file §section>
+- <fact>; <qualified name | file:line | file §section>
 
 ## Conflicts
 - C-<n>: <conflict>
@@ -56,5 +56,5 @@ area: code-map | references | conventions
   - evidence: <file:line, quoted>
 
 ## Start here
-- <path> — <why another agent opens it first>
+- <path>; <why another agent opens it first>
 ```

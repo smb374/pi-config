@@ -30,6 +30,7 @@ All paths are under `~/.pi/agent/skills/agent-handoff/`.
    - The first line is the status line.
    - Every heading of the Report section is present, in the same order.
    - Every finding, fact, or conflict has its ID and every field the shape names.
+   - Reviewer reports: the Checks table has the template's header row. Every Basis is `check`, `unasked`, or `smell`. Every Result is `pass`, `fail`, or `unchecked`. A `fail` row names at least one finding ID. A `pass` or `unchecked` row has `-` as Finding. Every finding ID is in a row, and the `source:` of the finding equals the Check cell of that row.
 7. If the check fails, resume the same agent once with the list of missing parts. If the second report also fails the check:
    - worker: treat the report as `status: failed`;
    - reviewer: use the flow's escalation rule for a report that failed the check;
