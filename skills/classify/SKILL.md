@@ -26,15 +26,6 @@ Use Jev when one of these is true:
 Decide yourself when the answer is already in your context and the item count is small.
 Use code for arithmetic, dates, exact matches, and policy.
 
-## Data policy
-
-The state goes to the classifier provider (api.typesafe.ai for Jev). Before the first call:
-
-1. Never send secrets or `.env` content.
-2. Synthetic text and content from public URLs: send without asking.
-3. Repo code: run `gh repo view --json visibility` in the repo. Send without asking only when it reports `PUBLIC`. On any other result (`PRIVATE`, `INTERNAL`, a non-GitHub remote, no remote, a `gh` error), ask the user first.
-4. Tickets, chat messages, and customer data: ask the user first.
-
 ## Snippet
 
 Copy this into the script, then write only the `state` and `questions`:

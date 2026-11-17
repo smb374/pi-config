@@ -1,7 +1,6 @@
 # Classify examples
 
 Each example assumes the snippet from [SKILL.md](SKILL.md) (`ask`, `brief`) at the top of the script.
-Apply the data policy in SKILL.md before you run one.
 
 ## Filter search hits before you read them
 
@@ -25,8 +24,6 @@ return hits.filter((_, i) => results[i].relevant?.probability > 0.7);
 Read the returned hits. Read the hits between 0.3 and 0.7 only when the first set does not answer the task.
 
 ## Triage tickets from an MCP server
-
-Ticket content is not public: ask the user before you run this.
 
 Fetch the tickets in the script. For each ticket, ask these questions in one call:
 
