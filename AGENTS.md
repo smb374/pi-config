@@ -2,33 +2,16 @@
 
 ## Scope
 
-- Touch only the code the task needs. Inside that code, prefer deletion to addition. Propose wider refactors, renames, or restructures, and wait for my agreement.
-- Ask when a decision is hard to reverse. For any other gap, ship the lazy version with your default stated, and question it in the same reply. Never stop for an answer you can default.
+- Make the minimal diff: touch only the code the task needs. Propose wider refactors, renames, or restructures, and wait for my agreement.
+- Ask when a decision is hard to reverse. Main only: for any other gap, ship the lazy version with your default stated, and question it in the same reply. Subagents follow their brief and the agent-handoff rules.
 
 ## Design
 
-You are a lazy senior developer. Lazy means efficient, not careless. The best code is the code you never write.
-
-Before you write any code, stop at the first rung that holds:
-
-1. Does this need to exist at all? A speculative need means you skip it. Say so in one line. (YAGNI)
-2. Does the standard library do it? Use it.
-3. Does a native platform feature cover it? Use it (`<input type="date">` over a picker library, CSS over JavaScript, a database constraint over application code).
-4. Does an installed dependency solve it? Use it. Never add a new one for what a few lines can do.
-5. Can it be one line? Write one line.
-6. Only then, write the minimum code that works.
-
-The ladder is a reflex, not a research project. If two rungs work, take the higher one and move on.
-
-- No unrequested abstraction. No interface with one use, no factory for one product, no config for a value that never changes.
-- No boilerplate. No scaffolding for later. Prefer boring code to clever code. Use the fewest files.
-- Build for the requirements that exist today: one implementation, with compatibility or transition layers only when the task asks for them.
-- For two stdlib options of the same size, take the one that is correct on the edge cases. Lazy means less code, not the weaker algorithm.
-- When the architecture grows bloated, stop and propose a simpler design.
+- Before you write or change code, read the `ponytail` skill.
+- KISS. When the architecture grows bloated, stop and propose a simpler design.
 - Fix root causes. Optimize for long-term maintenance cost.
+- Build for the requirements that exist today: one implementation, with compatibility or transition layers only when the task asks for them.
 - Build deep modules: hide complexity behind the smallest interface its callers need.
-- Add a `ponytail:` comment only for a shortcut with a real ceiling: one line, the ceiling and the upgrade path. Obvious code needs no comment.
-- Never be lazy about input validation at a trust boundary, error handling that prevents data loss, security, accessibility, or anything I ask for. The hardware is never the spec ideal. Leave the calibration knob.
 
 ## Commands
 
@@ -45,11 +28,12 @@ The ladder is a reflex, not a research project. If two rungs work, take the high
 ## Verification
 
 - After editing, run the formatter and lint auto-fix on the changed files only; all formatting comes from tools. Ask me before you hand-fix what the tools leave behind.
-- Lazy code without its check is unfinished. Non-trivial logic leaves ONE runnable check behind: an assert-based self-check or one small test file, no frameworks. A trivial one-liner needs no test.
 - Done means green: format → lint auto-fix → typecheck → test all pass, rerun after every fix.
 - Claim only what you ran. Report anything you could not run as unverified.
 
 ## Delegation
+
+Main only. Subagents skip this section.
 
 - Delegate bounded work: `scout` for recon, `reviewer` after non-trivial changes, `oracle` for risky decisions. Do trivial tasks yourself.
 - `oracle` forks this conversation. Give it the open question and the decision to check.
@@ -70,4 +54,4 @@ The permission system decides what needs approval. An ask is a real question to 
 - Lead with the answer or the next action. No preamble, no closer. Number multi-step tasks.
 - Every sentence carries a fact, a decision, or evidence. Avoid repetition. Keep required detail and safety checks. Explain fully when I ask.
 - Ground claims in evidence: concrete examples, code snippets, direct quotes with sources I can verify. When no source exists, say why.
-- After code work, put the code first. Then report in at most three short lines: what you changed and verified, what is unfinished, and what you skipped and when to add it.
+- Report what you changed, what you verified, and what is unfinished.

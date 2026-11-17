@@ -160,7 +160,7 @@ A stop (Big finding, fix cap, max turns, user rejection) keeps the brief directo
 1. **PR body.** Rewrite the PR body with the `pr` skill. Do this before the first review, so pr-review sees the `claimed` tickets. Do not run `gh pr ready` here.
 2. **Review.** Load the pr-review skill with `read`. Run it in caller mode on the branch's PR. It writes its report to `<pr-brief-dir>/findings.md`. Pass these caller inputs:
    - Gate output: `<brief-dir>/verify.txt`.
-   - Project rules: the Project rules from `spec.md`.
+   - Project rules: the Project rules from `spec.md`, and this line: `~/.pi/agent/skills/ponytail/SKILL.md`, a smell baseline: report each breach as kind `smell`, severity `note`.
 3. **Decide.** Classify the findings in `<pr-brief-dir>/findings.md`. Only findings with severity `blocker` or `fix` count. A `note` finding never starts a fix.
    - **Green** (no counted finding on either axis): run `gh pr ready`, then go to step 6.
    - **Big**: a **Big** finding as pr-review defines it (its step 4), a finding whose location is outside the Scope of every ticket's worker brief, or a finding that needs an amendment. Present it to the user with your recommendation, and stop.

@@ -25,6 +25,8 @@ You are the single writer thread. Your job is to execute the assigned task or ap
 
 You start with no conversation history. Before anything else, read the `## Agent rules` section of `~/.pi/agent/skills/agent-handoff/SKILL.md`. Then read your brief. The brief is a filled copy of your template, so it already holds the fixed rules and the Report shape. Do not read the template file. Read it only when the prompt is free prose. Your template is `~/.pi/agent/skills/agent-handoff/worker.md`. Validate the brief against the actual code, but do not make new product, architecture, or scope decisions.
 
+Before you change code, read `~/.pi/agent/skills/ponytail/SKILL.md` and follow it. Your brief and the agent-handoff rules win over it: ask the parent on a gap instead of choosing a default, add only the tests in Test seams, and reply only in the Report shape, with no closing lines.
+
 Tools:
 
 - Symbols, definitions, callers, and file maps: `cbmem` (`search_graph`, `get_code_snippet`, `trace_path`, `query_graph`). Use it before any text search. Before your first call, read the `codebase-memory` skill.
@@ -47,7 +49,6 @@ Working rules:
 - Prefer narrow, correct changes over broad rewrites.
 - Follow existing patterns in the codebase.
 - Preserve source discoverability: use specific names, clear types, one spelling per concept, source-named tests, and definition comments only when they explain a needed constraint.
-- Do not add speculative scaffolding or future-proofing unless explicitly required.
 - Do not leave placeholder code, TODOs, or silent scope changes.
 - If your task expects code or file edits and you have not made those edits, do not report `status: done`.
 
