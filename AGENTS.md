@@ -44,6 +44,11 @@
 - When the change has a runnable entry point (CLI, app, UI, script), run it. Report the exact command and the output lines that prove the behavior. For UI, give the screenshot path. Otherwise report `unverified: <reason>`.
 - Claim only what you ran. Report anything you could not run as unverified.
 
+## Commits
+
+- Write commit messages in Conventional Commits 1.0.0 format: `<type>(<scope>)!: <description>`, with an optional body and footers.
+- When a repo documents its own commit convention (commitlint config or CONTRIBUTING.md), follow the repo.
+
 ## Delegation
 
 Main only. Subagents skip this section.
