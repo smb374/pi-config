@@ -25,6 +25,10 @@
 - Get the date from `date`.
 - Call MCP tools through `codemode`; find them with `searchTools()`.
 
+## Classifiers
+
+- Judge many items or large data (triage, filter, gate) with the `classify` skill in codemode; return only the verdicts.
+
 ## Verification
 
 - After editing, run the formatter and lint auto-fix on the changed files only; all formatting comes from tools. Ask me before you hand-fix what the tools leave behind.
