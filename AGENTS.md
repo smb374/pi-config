@@ -12,6 +12,14 @@
 - Fix root causes. Optimize for long-term maintenance cost.
 - Build for the requirements that exist today: one implementation, with compatibility or transition layers only when the task asks for them.
 - Build deep modules: hide complexity behind the smallest interface its callers need.
+- Comment only a why the code cannot show. Cite its source (spec, doc file:line, ADR, issue) when one exists. Never write a comment to justify a workaround; fix the root cause or ask.
+
+## Corrections
+
+- When I correct you, add a regression test for the corrected behavior in the same diff.
+- In the same reply, propose the lint rule, type, or API change that makes the error impossible. Give the concrete rule text. Add it only after I agree.
+- After I approve a new rule or ban, fix the existing violations in the same task, in a separate commit. Ask before you fix more than 20 sites.
+- Add a prose rule (AGENTS.md, skill, comment) only when no tool can enforce it.
 
 ## Commands
 
@@ -33,6 +41,7 @@
 
 - After editing, run the formatter and lint auto-fix on the changed files only; all formatting comes from tools. Ask me before you hand-fix what the tools leave behind.
 - Done means green: format → lint auto-fix → typecheck → test all pass, rerun after every fix.
+- When the change has a runnable entry point (CLI, app, UI, script), run it. Report the exact command and the output lines that prove the behavior. For UI, give the screenshot path. Otherwise report `unverified: <reason>`.
 - Claim only what you ran. Report anything you could not run as unverified.
 
 ## Delegation

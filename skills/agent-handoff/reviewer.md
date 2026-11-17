@@ -55,6 +55,7 @@
    - Finding: for a `fail` row, the IDs of its findings, comma-separated. For `pass` and `unchecked`, `-`.
    - Evidence: `file:line`, a short reason, or the command that an `unchecked` row needs. Quoted lines go in the finding.
    - Every finding has a row. The `source:` of the finding equals the Check cell of that row.
+10. A finding with severity `blocker` or `fix` has a `guard:` field. It names the cheapest check that would have caught the issue: `test`, `lint rule`, `type`, `api`, or `none`, then the concrete check in one line. Other findings have no `guard:` field.
 
 ## Axis rules (fixed)
 
@@ -128,6 +129,7 @@ verdict: pass | fail
   - evidence: <quoted line or output, tied to the location>
   - source: <the Check cell of its row>
   - fix: <the smallest fix>
+  - guard: test | lint rule | type | api | none; <the check> (blocker and fix only)
 
 ## Prior findings
 - <ID>: confirmed | refuted | revised; <evidence, and for revised the corrected claim>

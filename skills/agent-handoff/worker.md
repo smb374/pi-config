@@ -65,7 +65,7 @@
 4. Change only the files in Scope. Add only the tests in Test seams.
 5. For each new test: write it, run it alone with the single-test recipe, and see it fail before you change implementation code. Quote the failing line in the report.
 6. Run the format and typecheck recipes as you go. Run the full-suite recipe once at the end.
-7. When Fix is not None, fix each item and report each ID under Fix.
+7. When Fix is not None, fix each item and report each ID under Fix. When an item has `guard: test`, add that test too, as an exception to rule 4. Do not add any other guard. Report it under Fix as `guard proposed: <guard>`.
 8. Do not commit.
 9. Report `status: failed` when the gate cannot pass, or a stop condition of the plan occurs. Name the cause under Deviations.
 
@@ -84,7 +84,7 @@ status: done | failed
 - <test name>; <seam>; red: "<quoted failing line>"; green: yes | no
 
 ## Fix
-- <ID>: fixed | not fixed; <how, file:line>
+- <ID>: fixed | not fixed; <how, file:line>; guard: added <test name> | proposed <guard> | none
 
 ## Gate
 - format: <recipe>; exit <n>
