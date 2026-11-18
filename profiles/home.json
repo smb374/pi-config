@@ -1,12 +1,12 @@
 {
   "scout": {
-    "model": "commandcode/gpt-6-luna"
+    "model": "opencode-go/deepseek-v4.1-flash"
   },
   "researcher": {
     "model": "anthropic/claude-sonnet-5-5"
   },
   "worker": {
-    "model": "anthropic/claude-sonnet-5-5"
+    "model": "opencode-go/deepseek-v4.1-flash"
   },
   "reviewer": {
     "model": "anthropic/claude-sonnet-5-5"
