@@ -10,6 +10,9 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: "exec",
     label: "Exec",
+    // Inactive until a permission guard exists: no bash rule, path rule, or Jev review sees exec calls.
+    // Opt in with `--tools +exec` or "+exec" in defaultTools.
+    defaultActive: false,
     description: "Run one program with prg and args, no shell. Waits for exit.",
     promptSnippet: "Run one program with prg and args, no shell. Waits for exit.",
     promptGuidelines: [
