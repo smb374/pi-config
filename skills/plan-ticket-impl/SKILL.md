@@ -10,7 +10,7 @@ Turn **one ticket** into an **implementation plan**. The builder is `/skill:impl
 
 The plan is self-contained. The builder never reads this skill, so every build-time rule goes into the plan through the Builder contract.
 
-The issue tracker should have been given to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/skill:setup-matt-pocock-skills`.
+The issue tracker should have been given to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/skill:setup-project`.
 
 ## Core principles
 
@@ -25,7 +25,7 @@ The issue tracker should have been given to you. If `docs/agents/issue-tracker.m
 
 1. Fetch the ticket through `docs/agents/issue-tracker.md`. The user passes a path or an issue number. Read its body, its comments, and its parent spec.
 2. Read the project's `AGENTS.md` and every standards file it names. Take the plan directory, the ticket-sizing budget, and the verification artifact forms from them.
-3. Read `CONTEXT.md` and the ADRs in the area the ticket touches, if they exist. Use the glossary terms.
+3. Read `GLOSSARY.md` and the ADRs in the area the ticket touches, if they exist. Use the glossary terms.
 
 If `AGENTS.md` does not name a plan directory, ask the user where plans live. Do not pick one.
 
@@ -209,7 +209,7 @@ Use the project's artifact forms when its standards name them. Otherwise, pick t
 Write for a weaker model that implements exactly what is written, and no more.
 
 - Write one instruction per sentence.
-- Use one term per concept. Take the term from `CONTEXT.md` or the code, and reuse it every time. A synonym reads as a second concept.
+- Use one term per concept. Take the term from `GLOSSARY.md` or the code, and reuse it every time. A synonym reads as a second concept.
 - Use the imperative and the active voice: "Return an error when a successor exists."
 - Replace each vague quantifier (`several`, `various`, `as appropriate`, `if needed`, `etc.`) with the list or the number.
 - Make every pronoun refer to the nearest noun before it. If it cannot, repeat the noun.

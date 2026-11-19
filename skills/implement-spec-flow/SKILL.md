@@ -47,7 +47,7 @@ Completion criterion: `diff.patch` covers every file in `git diff <base> --name-
 
 ## 1. Prepare
 
-1. Fetch the spec issue through `docs/agents/issue-tracker.md`, with its comments. If that file is missing, tell the user to run `/skill:setup-matt-pocock-skills` and stop.
+1. Fetch the spec issue through `docs/agents/issue-tracker.md`, with its comments. If that file is missing, tell the user to run `/skill:setup-project` and stop.
 2. List the spec's open children and their block edges with the wayfinding operations in that file (children, blocking). If it defines neither, tell the user to add them and stop.
 3. Order the children topologically; break ties by map order. Skip closed children. Stop before any work, and tell the user, when a cycle exists, a ticket has an open blocker outside the spec, or a ticket has another assignee.
 4. Require a clean tree: `git status --porcelain` prints nothing. If it prints anything, tell the user and stop; their own edits would enter the worker's diff and the review.
@@ -157,10 +157,10 @@ A stop (Big finding, fix cap, max turns, user rejection) keeps the brief directo
 
 ## 5. PR review
 
-1. **PR body.** Rewrite the PR body with the `pr` skill. Do this before the first review, so pr-review sees the `claimed` tickets. Do not run `gh pr ready` here.
+1. **PR body.** Rewrite the PR body with the `pr-writer` skill. Do this before the first review, so pr-review sees the `claimed` tickets. Do not run `gh pr ready` here.
 2. **Review.** Load the pr-review skill with `read`. Run it in caller mode on the branch's PR. It writes its report to `<pr-brief-dir>/findings.md`. Pass these caller inputs:
    - Gate output: `<brief-dir>/verify.txt`.
-   - Project rules: the Project rules from `spec.md`, and this line: `~/.pi/agent/skills/ponytail/SKILL.md`, a smell baseline: report each breach as kind `smell`, severity `note`.
+   - Project rules: the Project rules from `spec.md`, and this line: `~/.agents/skills/ponytail/SKILL.md`, a smell baseline: report each breach as kind `smell`, severity `note`.
 3. **Decide.** Classify the findings in `<pr-brief-dir>/findings.md`. Only findings with severity `blocker` or `fix` count. A `note` finding never starts a fix.
    - **Green** (no counted finding on either axis): run `gh pr ready`, then go to step 6.
    - **Big**: a **Big** finding as pr-review defines it (its step 4), a finding whose location is outside the Scope of every ticket's worker brief, or a finding that needs an amendment. Present it to the user with your recommendation, and stop.

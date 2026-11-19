@@ -11,8 +11,7 @@ description: >
 Jev answers typed questions about JSON state: `choice`, `score`, or `bool`. It writes no prose.
 Jev makes the judgments; code in the script makes the decision.
 
-This skill covers classify calls that you run in codemode during a task. For app or extension
-code that calls Jev, use the `typesafe-ai` skill.
+This skill covers classify calls that you run in codemode during a task.
 
 ## When Jev fits
 
@@ -107,4 +106,3 @@ return failures.map((f, i) => ({ test: f.name, ...brief(results[i]) }));
 Read only the `code_bug` failures in full.
 
 For more patterns (filter search hits, triage MCP tickets, gate a step), read [EXAMPLES.md](EXAMPLES.md).
-For deeper question design and the TypeSafe cookbooks, use the `typesafe-ai` skill. Its HTTP and SDK parts do not apply here: Pi makes the request.
