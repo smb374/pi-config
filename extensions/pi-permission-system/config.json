@@ -87,6 +87,7 @@
       "jq *": "allow",
       "which *": "allow",
       "just *": "allow",
+      "mkdir *": "allow",
       "gh label list *": "allow",
       "gh issue view *": "allow",
       "gh issue comment *": "allow",
