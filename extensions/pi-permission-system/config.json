@@ -23,11 +23,13 @@
     },
     "external_directory_read": {
       "*": "ask",
+      "/tmp": "allow",
       "/tmp/*": "allow",
       "~/Projects/*": "allow"
     },
     "external_directory_write": {
       "*": "ask",
+      "/tmp": "allow",
       "/tmp/*": "allow"
     },
     "bash": {
