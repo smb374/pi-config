@@ -118,9 +118,16 @@ export default function (pi: ExtensionAPI) {
     commands.clear();
   });
 
-  // Record the full command before the permission gate raises its ask. tool_call also fires for
-  // calls nested in codemode scripts, which never appear in an assistant message. This relies on
-  // this handler running before the permission system's; `commandSource` in the log shows whether it did.
+  // Record the full command before the permission gate raises its ask. tool_execution_start runs before
+  // every tool_call handler, so it does not depend on extension load order (the permission system's
+  // tool_call handler can run first and raise the ask before ours records anything).
+  pi.on("tool_execution_start", (event) => {
+    const command = (event.args as { command?: unknown } | undefined)?.command;
+    if (event.toolName === "bash" && typeof command === "string") commands.set(event.toolCallId, command);
+  });
+
+  // Fallback for calls nested in codemode scripts, which may not emit tool_execution_start. Works only when
+  // this handler runs before the permission system's; `commandSource` in the log shows whether it did.
   pi.on("tool_call", (event) => {
     if (event.toolName === "bash" && typeof event.input.command === "string") {
       commands.set(event.toolCallId, event.input.command);
