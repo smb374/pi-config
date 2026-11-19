@@ -197,3 +197,9 @@ test("log version", async () => {
   assert.ok(v.policyVersion);
   assert.equal(v.questionsHash.length, 12);
 });
+
+test("questions pinned", () => {
+  // Policy v3 wording, A/B-tested against Jev: allows read-only `gh` queries, defers writes and secret exposure.
+  // A wording change must be re-evaluated against Jev, then update this hash and bump POLICY_VERSION.
+  assert.equal(hashQuestions(QUESTIONS), "580451fa2a57");
+});

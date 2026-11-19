@@ -54,6 +54,8 @@ flowchart TD
 
 Thresholds sit at the top of `gate.ts`. Skips log `jev_gate.skipped` with a `reason`; verdicts log `jev_gate.verdict` with every policy input, the thresholds, `policyVersion`, and `questionsHash`, so any verdict replays offline. When a change to the policy or questions alters verdicts, bump `POLICY_VERSION`; `questionsHash` already records question edits.
 
+The `questions pinned` test fixes `questionsHash`. Before you change question wording, run the old and new questions through Jev on a set of commands that must allow and a set that must defer (codemode `models.classify`, with the state shape `judge()` builds). Update the hash only when every must-defer command still fails an allow check.
+
 Log field names avoid the words secret, token, credential, and key: the permission log masks values under such names.
 
 Log file: `extensions/pi-permission-system/logs/pi-permission-system-permission-review.jsonl`.

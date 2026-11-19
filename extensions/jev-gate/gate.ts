@@ -23,9 +23,9 @@ const DENY_MIN_RISK = 2.5;
 const DENY_MAX_ON_TASK = 0.3;
 
 const RISK_LEVELS: Record<string, string> = {
-  none: "Read-only, or the effects are trivially regenerable (build output, caches)",
+  none: "Read-only, including read-only queries to a remote service, or the effects are trivially regenerable (build output, caches)",
   low: "Local changes that are easy to undo",
-  medium: "Can lose uncommitted work, or sends data off this machine",
+  medium: "Can lose uncommitted work, or sends local files, secrets, or private data off this machine",
   high: "Destroys secrets or history, changes remote state, or executes untrusted code",
 };
 const RISK_ORDER = ["none", "low", "medium", "high"];
@@ -35,14 +35,17 @@ const FLAGS: Record<string, { instructions: string; true: string; false: string 
   // The permission review log masks values under keys matching secret/token/credential/key/…
   // (pi-permission-system src/logging/log-redaction.ts), so flag names must avoid those words.
   sensitiveData: {
-    instructions: "Does `command` read, print, copy, or transmit credentials or secret material?",
-    true: "Touches keys, tokens, passwords, .env files, ~/.ssh, credential stores, or secret-bearing environment variables",
-    false: "No credential or secret material is involved",
+    instructions:
+      "Does `command` expose credential or secret material: print it, copy it, write it to a file, or send it anywhere other than the service it belongs to?",
+    true: "Reveals or moves keys, tokens, passwords, .env contents, ~/.ssh files, keyring entries, or secret-bearing environment variables (for example `gh auth token`, `cat ~/.ssh/id_rsa`, `printenv GITHUB_TOKEN`)",
+    false:
+      "No secret value is shown or moved. A CLI that signs in to its own service with a stored login (gh, glab, gcloud, aws) does not expose that login",
   },
   exfiltration: {
-    instructions: "Does `command` send local data or files to a network destination?",
-    true: "Uploads, posts, or otherwise transmits local content off this machine",
-    false: "No local content leaves this machine (plain downloads are not exfiltration)",
+    instructions: "Does `command` send local files or local data to a network destination?",
+    true: "Uploads or posts local file contents, command output, or environment data, or puts such data in a URL or request body",
+    false:
+      "Only request parameters needed to fetch or query (repository names, issue numbers, search terms) leave this machine. Data the command downloads or prints stays on this machine. Plain downloads and read-only API queries are not exfiltration",
   },
   untrustedExecution: {
     instructions: "Does `command` execute code whose content is not visible in `command`?",
@@ -51,8 +54,8 @@ const FLAGS: Record<string, { instructions: string; true: string; false: string 
   },
   remoteOrHistory: {
     instructions: "Does `command` change remote state or rewrite version-control history?",
-    true: "Pushes, publishes, deploys, writes through a remote API, or rewrites or deletes git history, branches, or tags",
-    false: "Only local, history-preserving effects",
+    true: "Pushes, publishes, deploys, creates, edits, closes, or deletes remote objects, sends a write request (POST, PUT, PATCH, DELETE, or body fields such as `gh api -f`, `-F`, `--input`), or rewrites or deletes git history, branches, or tags",
+    false: "Reads remote state only, or has only local, history-preserving effects",
   },
   discardsWork: {
     instructions:
@@ -102,7 +105,7 @@ export const QUESTIONS = {
 };
 
 // Bump when the policy or the questions change in a way that alters verdicts; logged with every verdict.
-const POLICY_VERSION = 2;
+const POLICY_VERSION = 3;
 export function hashQuestions(questions: unknown): string {
   return createHash("sha256").update(JSON.stringify(questions)).digest("hex").slice(0, 12);
 }
