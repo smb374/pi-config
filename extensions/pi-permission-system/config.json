@@ -92,6 +92,7 @@
       "gh issue comment *": "allow",
       "gh issue list *": "allow",
       "gh pr list *": "allow",
+      "gh repo view *": "allow",
       "git status *": "allow",
       "git diff *": "allow",
       "git log *": "allow",

@@ -24,6 +24,7 @@
 ## Commands
 
 - `bash` runs programs only (builds, tests, git, formatters, linters, `date`); everything else goes through the dedicated tools. Read files with `read`. Run each command alone, with no pipes or `head`/`tail`. For long output, redirect it to a file and `read` a window, or run the command in codemode and return only the lines you need.
+- Before you `write` a path, `read` it. If the read finds a file, change it with `edit`. Use `write` only for a new file or a full rewrite that you planned.
 - Search with the `ffgrep` (content) and `fffind` (paths) tools, never the bash commands. The tools skip gitignored paths. If a path is missing or a search returns nothing unexpectedly, retry with `rg --no-ignore <pattern> <path>` in `bash`, one search per call. Never conclude "can't search" without that retry.
 - Do data work in codemode JavaScript: parse, filter, and transform tool results inside the script. `bash` runs programs, never inline Python or heredoc scripts.
 - Tool calls in one message run in parallel. When a call needs the result of another call (for example, `git add` after an `edit`), put it in a later message, or chain both with `await` in one codemode script.
