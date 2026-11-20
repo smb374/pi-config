@@ -1,14 +1,24 @@
+{{! fill: no-escape }}
 # Scan brief
 
 ## Target
 
-- Path: {{FILL: path of diff.patch}}
-- PR head: {{FILL: headRefOid}}
-- Tree matches head: {{FILL: yes | no}}
+{{! The path of diff.patch. }}
+- Path: {{target_path}}
+{{! The headRefOid of the PR. }}
+- PR head: {{pr_head}}
+{{! yes | no }}
+- Tree matches head: {{tree_matches}}
 
 ## Standards files
 
-{{FILL: the standards file paths of the project, or None}}
+{{! The standards file paths of the project. }}
+{{#standards_files}}
+- {{.}}
+{{/standards_files}}
+{{^standards_files}}
+None
+{{/standards_files}}
 
 ---
 
@@ -58,3 +68,5 @@ status: done | failed
 ## Lint rules skipped
 - <Leftovers rule>; <config file:line>
 ```
+
+{{> common.md}}

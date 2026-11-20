@@ -1,16 +1,25 @@
+{{! fill: no-escape }}
 # Scout brief
 
 ## Area
 
-{{FILL: code-map | references | conventions}}
+{{! code-map | references | conventions }}
+{{area}}
 
 ## Task
 
-{{FILL: the ticket or spec text in full, with its approved amendments}}
+{{! The ticket or spec text in full, with its approved amendments. }}
+{{task}}
 
 ## Start points
 
-{{FILL: paths, symbols, or documents to start from; or None}}
+{{! Paths, symbols, or documents to start from. }}
+{{#start_points}}
+- {{.}}
+{{/start_points}}
+{{^start_points}}
+None
+{{/start_points}}
 
 ---
 
@@ -58,3 +67,5 @@ area: code-map | references | conventions
 ## Start here
 - <path>; <why another agent opens it first>
 ```
+
+{{> common.md}}

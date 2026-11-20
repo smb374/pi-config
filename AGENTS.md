@@ -3,7 +3,7 @@
 ## Scope
 
 - Make the minimal diff: touch only the code the task needs. Propose wider refactors, renames, or restructures, and wait for my agreement.
-- Ask when a decision is hard to reverse. Main only: for any other gap, ship the lazy version with your default stated, and question it in the same reply. Subagents follow their brief and the agent-handoff rules.
+- Ask when a decision is hard to reverse. Main only: for any other gap, ship the lazy version with your default stated, and question it in the same reply. Subagents follow their brief and the handoff rules.
 
 ## Design
 

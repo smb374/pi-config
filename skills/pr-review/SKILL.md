@@ -25,7 +25,7 @@ Subagent rules:
 - Never pass `model` to `subagent`. The active profile chooses models.
 - Spawn every subagent with `run_in_background: true`. Each result arrives as a `<task-notification>`; act on it then. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief files are the only shared state.
-- Spawn `scout`, `reviewer`, and `indepth-reviewer` through the agent-handoff skill. Read `~/.pi/agent/skills/agent-handoff/SKILL.md` once. For every spawn, follow its **Main: spawn with a brief** procedure: copy the template, fill it, spawn with `Brief: <path>`, then save and check the report. Each step below names the template and the label. `<pass>` counts the passes of this review from 1.
+- Spawn `scout`, `reviewer`, and `indepth-reviewer` through the agent-handoff skill. Read `~/.pi/agent/skills/agent-handoff/SKILL.md` once. For every spawn, follow its **Spawn with a brief** procedure: render the template with `fill`, spawn with `Brief: <path>`, then save and check the report. Each step below names the template and the label. `<pass>` counts the passes of this review from 1.
 - Keep every ID (`SPEC-n`, `STD-n`, `SCAN-n`) unchanged in your report. Write a criterion as `#<ticket> AC-n`.
 
 ## Caller mode

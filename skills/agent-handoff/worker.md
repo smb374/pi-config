@@ -1,66 +1,126 @@
+{{! fill: no-escape }}
 # Worker brief
 
 ## Task
 
-{{FILL: one sentence: what to implement or fix, with the ticket ID}}
+{{! One sentence: what to implement or fix, with the ticket ID. }}
+{{task}}
 
 ## Base
 
-{{FILL: the commit SHA the change starts from}}
+{{! The commit SHA that the change starts from. }}
+{{base}}
 
 ## Criteria
 
-{{FILL: AC-1, AC-2, …: one literal, checkable line per acceptance criterion, from the ticket and its amendments}}
+{{! AC-1, AC-2, …: one literal, checkable line per acceptance criterion, from the ticket and its amendments. At least one item. }}
+{{#criteria}}
+- {{.}}
+{{/criteria}}
 
 ## Scope
 
-{{FILL: one file per line: `path; new | modified`. Or `Plan §Scope`}}
+{{! One file per item: `path; new | modified`. Or the one item `Plan §Stage <N> §Scope`. At least one item. }}
+{{#scope}}
+- {{.}}
+{{/scope}}
 
 ## Test seams
 
-{{FILL: one test per line: `seam → test name → expected value; citation`. Or `Plan §Tests to add`, or None}}
+{{! One test per item: `seam → test name → expected value; citation`. Or the one item `Plan §Stage <N> §Tests to add`. }}
+{{#test_seams}}
+- {{.}}
+{{/test_seams}}
+{{^test_seams}}
+None
+{{/test_seams}}
 
 ## Recipes
 
-- format: {{FILL: just recipe}}
-- typecheck: {{FILL: just recipe}}
-- single test: {{FILL: just recipe that takes the test name}}
-- full suite: {{FILL: just recipe}}
+{{! The just recipe for format. }}
+- format: {{format}}
+{{! The just recipe for typecheck. }}
+- typecheck: {{typecheck}}
+{{! The just recipe that runs one test, and takes the test name. }}
+- single test: {{single_test}}
+{{! The just recipe for the full suite. }}
+- full suite: {{full_suite}}
 
 ## Plan
 
-{{FILL: path of the plan file from plan-ticket-impl, or None}}
+{{! The one item `<path of the plan file from plan-ticket-impl>; stage <N>`. }}
+{{#plan}}
+{{.}}
+{{/plan}}
+{{^plan}}
+None
+{{/plan}}
 
 ## References
 
-{{FILL: quotes from specs and documents, each with file:line or section. Or `Plan §Rules / constraints`, or None}}
+{{! Quotes from specs and documents, each with file:line or section. Or the one item `Plan §Rules / constraints`. }}
+{{#references}}
+- {{.}}
+{{/references}}
+{{^references}}
+None
+{{/references}}
 
 ## Project rules
 
-{{FILL: the AGENTS.md, CONTRIBUTING, or standards lines that apply, quoted with file:line, and the high-risk path globs; or None}}
+{{! The AGENTS.md, CONTRIBUTING, or standards lines that apply, quoted with file:line, and the high-risk path globs. }}
+{{#project_rules}}
+- {{.}}
+{{/project_rules}}
+{{^project_rules}}
+None
+{{/project_rules}}
 
 ## Prior work
 
-{{FILL: `<brief-dir>/diff.patch — fix | replacement`: earlier work that is in the tree; or None}}
+{{! The one item `<brief-dir>/diff.patch — fix | replacement`: earlier work that is in the tree. }}
+{{#prior_work}}
+{{.}}
+{{/prior_work}}
+{{^prior_work}}
+None
+{{/prior_work}}
 
 ## Fix
 
-{{FILL: the findings to fix, quoted in full with their IDs (SPEC-n, STD-n, PLAN-n, SCAN-n), or the failing gate output quoted; or None}}
+{{! The findings to fix, quoted in full with their IDs (SPEC-n, STD-n, PLAN-n, SCAN-n), or the failing gate output quoted. }}
+{{#fix}}
+- {{.}}
+{{/fix}}
+{{^fix}}
+None
+{{/fix}}
 
 ## Answers
 
-{{FILL: each earlier ask_parent question → its answer; or None}}
+{{! Each earlier ask_parent question → its answer. }}
+{{#answers}}
+- {{.}}
+{{/answers}}
+{{^answers}}
+None
+{{/answers}}
 
 ## Skills
 
-{{FILL: skill file paths to load with `read`, for example the tdd skill; or None}}
-
+{{! Skill file paths to load with `read`, for example the tdd skill. }}
+{{#skills}}
+- {{.}}
+{{/skills}}
+{{^skills}}
+None
+{{/skills}}
 ---
 
 ## Worker rules (fixed)
 
 1. When Prior work is not None, read the patch first. The tree holds that work. Continue from it.
-2. When Plan is not None, read the plan. Its Builder contract applies. Authority order: this brief, the plan, the references.
+2. When Plan is not None, read the plan, and build only the named stage. Its Builder contract applies, except its Report shape: reply in the Report shape below. Authority order: this brief, the plan, the references.
 3. Load each skill under Skills with `read`, and follow it at the test seams.
 4. Change only the files in Scope. Add only the tests in Test seams.
 5. For each new test: write it, run it alone with the single-test recipe, and see it fail before you change implementation code. Quote the failing line in the report.
@@ -96,3 +156,5 @@ status: done | failed
 ```
 
 Under Tests, write `None; <reason>` when you added no test.
+
+{{> common.md}}

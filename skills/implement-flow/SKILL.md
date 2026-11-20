@@ -21,7 +21,7 @@ Subagent rules:
 - Never pass `model` to `subagent`. The active profile chooses models.
 - Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief files are the only shared state.
-- Spawn `scout`, `worker`, `reviewer`, and `indepth-reviewer` through the agent-handoff skill. Read `~/.pi/agent/skills/agent-handoff/SKILL.md` once. For every spawn, follow its **Main: spawn with a brief** procedure: copy the template, fill it, spawn with `Brief: <path>`, then save and check the report. Each step below names the template and the label.
+- Spawn `scout`, `worker`, `reviewer`, and `indepth-reviewer` through the agent-handoff skill. Read `~/.pi/agent/skills/agent-handoff/SKILL.md` once. For every spawn, follow its **Spawn with a brief** procedure: render the template with `fill`, spawn with `Brief: <path>`, then save and check the report. Each step below names the template and the label.
 - Keep every ID (`AC-n`, `C-n`, `SPEC-n`, `STD-n`) unchanged in later briefs and in your report to the user.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 6).
 - A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Reviewers and fresh workers read it; it is the review target, and `git diff` only confirms the tree matches it. Take one with the **Snapshot procedure** below.
@@ -45,7 +45,7 @@ Completion criterion: `diff.patch` covers every file in `git diff <base> --name-
 3. Set the brief directory: `/tmp/<project>-<ticket>/`, where `<project>` is the repo directory name. Save the body of the ticket, its parent spec, and each issue they cite to `<brief-dir>/issue-<n>.md`. Subagents cannot run `gh`, so a brief cites an issue by that path, never by a `gh` command.
    Also fetch each external source that the ticket or its parent cites (spec files, upstream code, licenses) into `<brief-dir>/sources/<name>-<ref>/`, pinned to the cited tag or commit. Subagents have no network access, so a brief cites a source by that path, never by a URL alone.
 4. Run `just --list`. Confirm `just` recipes exist for format, typecheck, a single test (taking the test name as an argument), and the full test suite. The worker can run only `just`, so each check must be a `just` recipe; never substitute a raw command. If one is missing, name it and ask the user to add it to the Justfile. Stop until they do.
-5. If the user passed a plan file from `plan-ticket-impl`, copy it into the brief directory and skip to step 4.
+5. If the user passed a plan file from `plan-ticket-impl` and a stage number `<N>`, copy the plan into the brief directory and skip to step 4. Every stage in Depends on of stage `<N>` must be committed. If one is not, tell the user and stop.
 
 Completion criterion: the base SHA is recorded, all four recipes are named, and every cited issue and external source is saved in the brief directory.
 
@@ -86,11 +86,13 @@ Fill the worker brief: the template `worker.md` with the label `worker-1`. Take 
 
 With a plan file from `plan-ticket-impl`, no scout ran:
 
-- Plan: the plan path in `<brief-dir>`.
-- Scope: `Plan §Scope`. Test seams: `Plan §Tests to add`. References: `Plan §Rules / constraints`.
+- Task: the ticket ID, the stage number, and the stage name.
+- Criteria: only the ACs that stage `<N>` covers.
+- Plan: `<plan path in brief-dir>; stage <N>`.
+- Scope: `Plan §Stage <N> §Scope`. Test seams: `Plan §Stage <N> §Tests to add`. References: `Plan §Rules / constraints`.
 - Project rules: the rules and the high-risk path globs from the project's `AGENTS.md` and the standards files it names.
 
-Completion criterion: the brief passes the `{{FILL` check, with no guessed paths or values.
+Completion criterion: `fill` rendered the brief, with no guessed paths or values.
 
 ## 5. Spawn the worker
 
@@ -167,6 +169,6 @@ A worker that hit `max_turns` stopped unfinished. Do not spawn another worker fo
 2. Judge the cause: the ticket is **too big** (more files or tests than one run can finish), or **too complex** (the worker looped on one problem).
 3. Report to the user: what got done, the cause with evidence, and one proposal:
    - too big: split the ticket; list draft sub-tickets with their acceptance criteria;
-   - too complex: tell the user to run `/skill:plan-ticket-impl` on the ticket, then start this skill again with the plan path.
+   - too complex: tell the user to run `/skill:plan-ticket-impl` on the ticket, then start this skill again with the plan path and stage 1.
 
 Stop. The user chooses.

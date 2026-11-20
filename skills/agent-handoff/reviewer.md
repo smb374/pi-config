@@ -1,37 +1,77 @@
+{{! fill: no-escape }}
 # Review brief
 
 ## Axis
 
-{{FILL: spec | standards | plan}}
+{{! spec | standards | plan }}
+{{axis}}
 
 ## Target
 
-- Path: {{FILL: path of diff.patch, or of the plan file for the plan axis}}
-- Tree matches target: {{FILL: yes | no}}
+{{! The path of diff.patch, or of the plan file for the plan axis. }}
+- Path: {{target_path}}
+{{! yes | no }}
+- Tree matches target: {{tree_matches}}
 
 ## Criteria
 
-{{FILL: spec and plan axes: the AC-n lines, grouped by ticket, each ticket marked `claimed` or `context`. Standards axis: the same AC-n lines, each ticket marked `context`; or None}}
+{{! Spec and plan axes: the AC-n lines, grouped by ticket, each ticket marked `claimed` or `context`. Standards axis: the same AC-n lines, each ticket marked `context`. }}
+{{#criteria}}
+- {{.}}
+{{/criteria}}
+{{^criteria}}
+None
+{{/criteria}}
 
 ## Rules
 
-{{FILL: standards axis: the standards file paths, and the project rules quoted with file:line. Spec and plan axes: None}}
+{{! Standards axis: the standards file paths, and the project rules quoted with file:line. Spec and plan axes: []. }}
+{{#rules}}
+- {{.}}
+{{/rules}}
+{{^rules}}
+None
+{{/rules}}
 
 ## Gate output
 
-{{FILL: path of the verify-gate output, or None}}
+{{! The one item: the path of the verify-gate output. }}
+{{#gate_output}}
+{{.}}
+{{/gate_output}}
+{{^gate_output}}
+None
+{{/gate_output}}
 
 ## Skip
 
-{{FILL: the categories another agent covers (for example the scan categories), each one line; or None}}
+{{! The categories that another agent covers (for example the scan categories), one per item. }}
+{{#skip}}
+- {{.}}
+{{/skip}}
+{{^skip}}
+None
+{{/skip}}
 
 ## Decide
 
-{{FILL: the comment-code mismatch items from the scan report, each with its SCAN-n ID and file:line; or None}}
+{{! The comment-code mismatch items from the scan report, each with its SCAN-n ID and file:line. }}
+{{#decide}}
+- {{.}}
+{{/decide}}
+{{^decide}}
+None
+{{/decide}}
 
 ## Prior report
 
-{{FILL: path of the earlier report on this axis (indepth-reviewer only), or None}}
+{{! indepth-reviewer only: the one item, the path of the earlier report on this axis. }}
+{{#prior_report}}
+{{.}}
+{{/prior_report}}
+{{^prior_report}}
+None
+{{/prior_report}}
 
 ---
 
@@ -56,6 +96,8 @@
    - Evidence: `file:line`, a short reason, or the command that an `unchecked` row needs. Quoted lines go in the finding.
    - Every finding has a row. The `source:` of the finding equals the Check cell of that row.
 10. A finding with severity `blocker` or `fix` has a `guard:` field. It names the cheapest check that would have caught the issue: `test`, `lint rule`, `type`, `api`, or `none`, then the concrete check in one line. Other findings have no `guard:` field.
+11. Severity: `blocker` when the target is wrong or unsafe as it is. `fix` when the target must change before the work closes. `note` for the record only.
+12. Certainty: `certain` when the evidence settles the finding. `uncertain` when it does not; then name the evidence that is missing.
 
 ## Axis rules (fixed)
 
@@ -92,19 +134,19 @@ Smell baseline (Fowler, _Refactoring_, ch. 3). Each entry: what it is → how to
 
 ### plan
 
-The target is a plan from plan-ticket-impl. Its rules are in `~/.pi/agent/skills/plan-ticket-impl/SKILL.md`.
+The target is a staged plan from plan-ticket-impl. Its rules are in `~/.agents/skills/to-impl-plan/SKILL.md`.
 
 1. For each AC, check that the plan covers it: an Action item, a named test, and an artifact under Behavior specification. Record each AC under Checks: `pass`, `fail`, or `unchecked`.
 2. Check each plan rule below. Record each rule under Checks with Check `plan rule <n>`: `pass`, `fail`, or `unchecked`.
-   1. Every required section of the plan template is present. Open questions holds `None` or the gaps.
+   1. Every section of the plan template is present, and every stage has all subsections of the Stage shape. Open questions holds `None` or the gaps.
    2. Every gate is a literal comparison. No gate says "behavior remains correct", "semantics are preserved", or an equivalent.
-   3. Every test under Tests to add has a matching artifact with expected values under Behavior specification.
-   4. Every path in Scope exists in the tree, or is marked `(new)`.
+   3. Every test under Tests to add of each stage has a matching artifact with expected values under Behavior specification.
+   4. Every path in the Scope of each stage exists in the tree, is marked `(new)`, or is created by a stage under Depends on.
    5. Every verification command comes from the project, or is labeled `(unconfirmed)` and listed under Open questions. No gate command changes the tree.
    6. Every rule under Rules / constraints cites a file and a line range or section, and the cited text supports the rule.
-   7. The Builder contract matches the block in plan-ticket-impl word for word, except under `### Project specifics`.
-   8. The Action items are red → green slices in build order, and need no invention.
-   9. The Budget is inside the ticket-sizing limits of the project.
+   7. The Builder contract matches `~/.agents/skills/to-impl-plan/assets/builder-contract.md` word for word.
+   8. The Action items of each stage are red → green slices in build order, and need no invention.
+   9. The Budget of each stage is inside the ticket-sizing limits of the project, and each stage leaves the tree green.
 3. Report plan content that no AC asks for (kind `unasked`, Basis `unasked`).
 4. Findings use the ID prefix `PLAN-`.
 
@@ -138,3 +180,5 @@ verdict: pass | fail
 ## Read outside target
 - <path>; <the check it serves>
 ```
+
+{{> common.md}}

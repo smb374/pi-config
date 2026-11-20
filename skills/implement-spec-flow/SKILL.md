@@ -28,7 +28,7 @@ Subagent rules:
 - Never pass `model` to `subagent`. The active profile chooses models.
 - Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief files are the only shared state.
-- Spawn `scout` and `worker` through the agent-handoff skill. Read `~/.pi/agent/skills/agent-handoff/SKILL.md` once. For every spawn, follow its **Main: spawn with a brief** procedure: copy the template, fill it, spawn with `Brief: <path>`, then save and check the report. Each step below names the template and the label.
+- Spawn `scout` and `worker` through the agent-handoff skill. Read `~/.pi/agent/skills/agent-handoff/SKILL.md` once. For every spawn, follow its **Spawn with a brief** procedure: render the template with `fill`, spawn with `Brief: <path>`, then save and check the report. Each step below names the template and the label.
 - Keep every ID (`AC-n`, `C-n`, `SPEC-n`, `STD-n`, `SCAN-n`) unchanged in later briefs and in your report to the user. Where criteria of more than one ticket meet, write a criterion as `#<ticket> AC-n`.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 4.3).
 - A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Fresh workers read it, and `git diff` only confirms the tree matches it. Take one with the **Snapshot procedure** below.
@@ -98,7 +98,7 @@ Run 4.1–4.6 for each ticket in order. Finish a ticket's commit before you star
    - Skills: `~/.agents/skills/tdd/SKILL.md`.
    - Plan, Prior work, Fix, Answers: None.
 
-Completion criterion: the brief passes the `{{FILL` check, with no guessed paths or values.
+Completion criterion: `fill` rendered the brief, with no guessed paths or values.
 
 ### 4.2 Spawn the worker
 
