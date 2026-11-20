@@ -128,6 +128,15 @@ async function setupCbm() {
   );
 }
 
+// Portable skills (handoff, to-impl-plan, codebase-memory, tdd, ...) into ~/.agents/skills. fill.py marks an install.
+// ponytail: install-if-missing only; update with the agent-skills installer and --force.
+async function setupSkills() {
+  if (existsSync(join(homedir(), ".agents", "skills", "handoff", "scripts", "fill.py"))) return;
+  const vendor = Bun.which("npx") ? [] : ["--no-vendor"];
+  if (vendor.length) console.log("npx not found: skipping the vendor skills (tdd, diagnosing-bugs, ...).");
+  await installer("agent-skills", "https://raw.githubusercontent.com/smb374/agent-skills/main/install.sh", vendor);
+}
+
 // Worktrunk (`wt`) for git worktrees. Flat install into BIN; the installer leaves shell rc files alone.
 async function setupWt() {
   if (Bun.which("wt") || existsSync(join(BIN, "wt"))) return;
@@ -200,6 +209,7 @@ if (import.meta.main) {
   await setupPi();
   writeSettings(values);
   await setupCbm();
+  await setupSkills();
   await setupWt();
   setupPermissionSystem();
   console.log(`Done. Run \`${BOLT ? "pi-bolt" : "pi"}\`, then \`/login\`.`);

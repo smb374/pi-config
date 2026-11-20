@@ -175,7 +175,9 @@ export default function (pi: ExtensionAPI) {
       "cbmem resolves the project from the current git root. Do not pass a project.",
       "Before you change a function signature or behavior, use cbmem trace_path with direction inbound to see the impact.",
       "Use cbmem query_graph when search_graph and trace_path cannot express the question. Call get_graph_schema to see labels and edge types.",
-      "Before you call cbmem (especially query_graph Cypher), read the codebase-memory skill.",
+      "Before you call cbmem (especially query_graph Cypher), read the codebase-memory skill. It names the codebase-memory-mcp tools; call each one as cbmem {tool, args}.",
+      'The index refreshes by itself. If results still disagree with the files (a symbol you can read is missing, or line ranges are off), call cbmem index_repository {repo_path: <git root>, mode: "moderate"} once, then retry.',
+      "A subagent gets cbmem only when its tools: frontmatter lists it. Otherwise, query the graph yourself and put the findings in its prompt: qualified symbols, paths, call chains, coverage gaps.",
       "Before an exhaustive or negative claim from the graph (no callers, dead code, full impact), call cbmem check_index_coverage with the cited paths, and read the reported gaps.",
     ],
     parameters: Type.Object({
