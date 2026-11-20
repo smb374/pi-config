@@ -42,11 +42,11 @@ Completion criterion: `diff.patch` covers every file in `git diff <base> --name-
 
 1. Fetch the ticket through `docs/agents/issue-tracker.md`, with its comments and parent spec. If that file is missing, tell the user to run `/skill:setup-project` and stop.
 2. Record the base: `git rev-parse HEAD`. Require a clean tree: `git status --porcelain` prints nothing. If it prints anything, tell the user and stop; their own edits would enter the worker's diff and the review.
-3. Set the brief directory: `/tmp/<project>-<ticket>/`, where `<project>` is the repo directory name.
+3. Set the brief directory: `/tmp/<project>-<ticket>/`, where `<project>` is the repo directory name. Save the body of the ticket, its parent spec, and each issue they cite to `<brief-dir>/issue-<n>.md`. Subagents cannot run `gh`, so a brief cites an issue by that path, never by a `gh` command.
 4. Run `just --list`. Confirm `just` recipes exist for format, typecheck, a single test (taking the test name as an argument), and the full test suite. The worker can run only `just`, so each check must be a `just` recipe; never substitute a raw command. If one is missing, name it and ask the user to add it to the Justfile. Stop until they do.
 5. If the user passed a plan file from `plan-ticket-impl`, copy it into the brief directory and skip to step 4.
 
-Completion criterion: the base SHA is recorded and all four recipes are named.
+Completion criterion: the base SHA is recorded, all four recipes are named, and every cited issue is saved in the brief directory.
 
 ## 2. Scout
 
@@ -128,7 +128,7 @@ Completion criterion: all recipes exit 0.
 1. **Run the reviewers.** Fill one reviewer brief for each axis: the template `reviewer.md` with the label `reviewer-<axis>-<pass>`, where `<pass>` counts review passes from 1. Spawn both reviewers in the same response.
    - Both axes: Target path is `<brief-dir>/diff.patch`. Tree matches target is `yes`. Gate output is `<brief-dir>/verify.txt`. Skip, Decide, and Prior report are None.
    - Spec axis: Axis is `spec`. Criteria is the Criteria of the latest worker brief, under the ticket ID, marked `claimed`. Rules is None.
-   - Standards axis: Axis is `standards`. Criteria is None. Rules is the Project rules of the latest worker brief, with the standards file paths, and this line: `~/.agents/skills/ponytail/SKILL.md`, a smell baseline: report each breach as kind `smell`, severity `note`.
+   - Standards axis: Axis is `standards`. Criteria is the Criteria of the latest worker brief, under the ticket ID, marked `context`, so the reviewer can tell asked-for behavior from an unasked change. Rules is the Project rules of the latest worker brief, with the standards file paths, and this line: `~/.agents/skills/ponytail/SKILL.md`, a smell baseline: report each breach as kind `smell`, severity `note`.
 2. **Escalate.** Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
    - A finding is `uncertain` and its kind is not `smell`. A smell is a judgement call; never escalate on it alone.
    - A finding qualifies as **Big** (step 9).

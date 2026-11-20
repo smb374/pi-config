@@ -11,7 +11,7 @@
 
 ## Criteria
 
-{{FILL: spec and plan axes: the AC-n lines, grouped by ticket, each ticket marked `claimed` or `context`. Standards axis: None}}
+{{FILL: spec and plan axes: the AC-n lines, grouped by ticket, each ticket marked `claimed` or `context`. Standards axis: the same AC-n lines, each ticket marked `context`; or None}}
 
 ## Rules
 
@@ -72,7 +72,8 @@
 1. Check the target against each rule in Rules. Give each quoted rule its own row, with its file:line as Check: `pass`, `fail`, or `unchecked`. A `fail` row has a finding of kind `violation`. A Rules entry that names a smell baseline (for example the ponytail skill) gets no row of its own. Apply it as in rule 3.
 2. Skip what tooling enforces: the formatter, and the rules of the lint config.
 3. Check the target against the smell baseline below. A smell is always kind `smell` and severity `note`. Its row has Basis `smell` and the smell name as Check. A smell with no breach gets no row. A documented project rule overrides the baseline: when a rule allows what a smell flags, do not report the smell.
-4. Findings use the ID prefix `STD-`.
+4. Criteria is context only. Give an AC no row. Do not report a change that an AC asks for as a violation or a smell.
+5. Findings use the ID prefix `STD-`.
 
 Smell baseline (Fowler, _Refactoring_, ch. 3). Each entry: what it is → how to fix it.
 
