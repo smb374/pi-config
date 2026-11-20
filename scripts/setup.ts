@@ -142,20 +142,6 @@ async function setupWt() {
   console.log("Optional: run `wt config shell install` so `wt switch` can change directories.");
 }
 
-// RTK: reinstall via the official installer when the latest release tag differs from `rtk --version`,
-// then (re)install its bundled pi extension (extensions/rtk.ts, git-ignored).
-async function setupRtk() {
-  const rtk = join(BIN, "rtk");
-  const res = await fetch("https://github.com/rtk-ai/rtk/releases/latest", { redirect: "manual" });
-  const latest = res.headers.get("location")?.split("/").pop()?.replace(/^v/, "");
-  const have = existsSync(rtk) ? Bun.spawnSync([rtk, "--version"]).stdout.toString().trim().split(" ").pop() : "";
-  if (have !== latest)
-    await installer("rtk", "https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh", [], {
-      RTK_INSTALL_DIR: BIN,
-    });
-  run([rtk, "init", "--agent", "pi", "--global", "--auto-patch"]);
-}
-
 // @gotgenes/pi-permission-system is not a settings.json package. Install the latest release, apply
 // patches/pi-permission-system/*.patch, run check.ts, and copy the result to extensions/pi-permission-system/.
 // Skips when version and patches are unchanged. Stops and keeps the old copy if a patch or the check fails.
@@ -215,7 +201,6 @@ if (import.meta.main) {
   writeSettings(values);
   await setupCbm();
   await setupWt();
-  await setupRtk();
   setupPermissionSystem();
   console.log(`Done. Run \`${BOLT ? "pi-bolt" : "pi"}\`, then \`/login\`.`);
 }
