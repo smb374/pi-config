@@ -25,14 +25,13 @@
       "*": "ask",
       "/tmp": "allow",
       "/tmp/*": "allow",
+      "~/.pi/*": "allow",
+      "~/.agents/*": "allow",
+      "~/.pi-bolt/*": "allow",
       "~/.cache/*": "allow"
     },
     "external_directory_read": {
       "~/Projects/*": "allow",
-      "~/.pi/*": "allow",
-      "~/.agents/*": "allow",
-      "~/.pi-bolt/*": "allow",
-      "~/.cache/*": "allow",
       "~/.config/*": "allow",
       "~/.local/share/*": "allow",
       "~/.bun/*": "allow",
