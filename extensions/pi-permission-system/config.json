@@ -139,12 +139,7 @@
       "git worktree list *": "allow",
       "git submodule status *": "allow",
       "git version": "allow",
-      "git --version": "allow",
-      "git *--output*": "deny",
-      "git -c *": "deny",
-      "git * -c *": "deny",
-      "git *--open-files-in-pager*": "deny",
-      "git *--exec-path*": "deny"
+      "git --version": "allow"
     }
   }
 }
