@@ -1,15 +1,15 @@
 {
   "scout": {
-    "model": "opencode-go/deepseek-v4.1-flash"
+    "model": "opencode-go/gpt-6-luna"
   },
   "researcher": {
     "model": "anthropic/claude-sonnet-5-5"
   },
   "worker": {
-    "model": "opencode-go/deepseek-v4.1-flash"
+    "model": "anthropic/claude-sonnet-5-5"
   },
   "reviewer": {
-    "model": "anthropic/claude-sonnet-5-5"
+    "model": "openai-codex/gpt-6.2-sol"
   },
   "indepth-reviewer": {
     "model": "anthropic/claude-opus-5-5"
