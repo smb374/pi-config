@@ -21,16 +21,33 @@
       },
       "*/agents/*.md": "ask"
     },
-    "external_directory_read": {
+    "external_directory": {
       "*": "ask",
       "/tmp": "allow",
       "/tmp/*": "allow",
-      "~/Projects/*": "allow"
+      "~/.cache/*": "allow"
+    },
+    "external_directory_read": {
+      "~/Projects/*": "allow",
+      "~/.pi/*": "allow",
+      "~/.agents/*": "allow",
+      "~/.pi-bolt/*": "allow",
+      "~/.cache/*": "allow",
+      "~/.config/*": "allow",
+      "~/.local/share/*": "allow",
+      "~/.bun/*": "allow",
+      "~/.cargo/registry/*": "allow",
+      "~/.rustup/*": "allow",
+      "~/go/pkg/mod/*": "allow",
+      "~/.nvm/*": "allow",
+      "/usr/share/*": "allow",
+      "/usr/include/*": "allow",
+      "/usr/lib/*": "allow",
+      "/opt/*": "allow",
+      "/etc/os-release": "allow"
     },
     "external_directory_write": {
-      "*": "ask",
-      "/tmp": "allow",
-      "/tmp/*": "allow"
+      "~/.pi/agent/sessions/*": "allow"
     },
     "bash": {
       "*": "ask",
