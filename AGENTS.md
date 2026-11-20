@@ -27,11 +27,11 @@
 - Before you `write` a path, `read` it. If the read finds a file, change it with `edit`. Use `write` only for a new file or a full rewrite that you planned.
 - Search with the `ffgrep` (content) and `fffind` (paths) tools, never the bash commands. The tools skip gitignored paths. If a path is missing or a search returns nothing unexpectedly, retry with `rg --no-ignore <pattern> <path>` in `bash`, one search per call. Never conclude "can't search" without that retry.
 - Do data work in codemode JavaScript: parse, filter, and transform tool results inside the script. `bash` runs programs, never inline Python or heredoc scripts.
-- Tool calls in one message run in parallel. When a call needs the result of another call (for example, `git add` after an `edit`), put it in a later message, or chain both with `await` in one codemode script.
+- Tool calls in one message run in parallel, in no fixed order. Never put two `bash` calls in one message when they share state (files, git index, lockfile, build output). Send one `bash` call per message, or run the commands in order in one codemode script with `await` on each call. When a call needs the result of another call (for example, `git add` after an `edit`), use a later message or the same `await` chain.
 - Chain dependent calls in one codemode script and return only what the next decision needs; drop intermediate results inside the script.
 - Find project commands in this order: project AGENTS.md → `just`/`make` targets → package scripts → the underlying tool. Read a target before its first use.
 - Use the package manager from the lockfile. Outside a project, use `bun`/`bunx` for TS/JS.
-- Chain with `&&` only when a later command depends on an earlier one. Run independent commands as separate calls.
+- Chain with `&&` only when a later command depends on an earlier one. Run independent commands in separate messages, or in order with `await` in codemode.
 - Get the date from `date`.
 - Call MCP tools through `codemode`; find them with `searchTools()`.
 
