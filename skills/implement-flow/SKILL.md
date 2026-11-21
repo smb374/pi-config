@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Implement flow
 
-You are **main**. You talk to the user, prepare the contract, run the subagents, gate their output, and commit. You do not write implementation code yourself.
+You are **main**. You talk to the user, prepare the contract, run the subagents, gate their output, and commit. You do not write implementation code yourself. You may edit comments directly (step 9, **Comment-only**).
 
 | Role             | Agent              | Job                                                      |
 | ---------------- | ------------------ | -------------------------------------------------------- |
@@ -148,10 +148,17 @@ When an axis has an `indepth-reviewer` report, use it in place of the `reviewer`
 Then classify the findings. Only findings with severity `blocker` or `fix` count. A `note` finding never starts a fix.
 
 - **Green** (no counted finding on either axis): go to step 10.
+- **Comment-only**: every counted finding asks to add, remove, or reword a comment, and the fix touches no code token. Fix it yourself. Do not write a brief and do not spawn a worker.
+  1. Edit the comments in the tree.
+  2. Run `git diff <base>` and confirm that the change since the last snapshot holds only comment lines. If it holds anything else, treat the findings as **Small**.
+  3. Go to step 7. The gate runs again, and a snapshot is taken for the next pass.
+  4. In step 8, re-review only the axes that had a comment finding, with Re-review set to the `delta-<pass>.patch`.
+
+  If comment findings come with other counted findings, treat all of them as **Small**, so that one editor at a time changes the tree.
 - **Small**: every counted finding stays inside the Criteria and the Scope of the worker brief. Copy the latest worker brief to the next label `worker-<n>`. Set Prior work to `<brief-dir>/diff.patch — fix`, and set Fix to the counted findings, quoted in full with their IDs, or to the failing gate output. Spawn a fresh worker with it. Then return to step 6.
 - **Big**: a finding changes ticket behavior, needs an amendment, touches a file outside Scope, or reports a missing requirement. Present it to the user with your recommendation, and stop.
 
-**Fix cap**: at most 2 fix workers per run (one stage, for a plan), counting verify-gate and review triggers together. When a third would be needed, present the open findings to the user and stop.
+**Fix cap**: at most 2 fix workers per run (one stage, for a plan), counting verify-gate and review triggers together. A **Comment-only** fix does not count. When a third would be needed, present the open findings to the user and stop.
 
 ## 10. Commit
 
