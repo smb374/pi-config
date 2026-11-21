@@ -76,6 +76,16 @@ None
 None
 {{/project_rules}}
 
+## Caveats
+
+{{! The traps that main foresaw, one per item: `<risk> → <action>; <file:line>`. Every item cites a file:line or a quoted reference. }}
+{{#caveats}}
+- {{.}}
+{{/caveats}}
+{{^caveats}}
+None
+{{/caveats}}
+
 ## Prior work
 
 {{! The one item `<brief-dir>/diff.patch — fix | replacement`: earlier work that is in the tree. }}
@@ -122,12 +132,13 @@ None
 1. When Prior work is not None, read the patch first. The tree holds that work. Continue from it.
 2. When Plan is not None, read the plan, and build only the named stage. Its Builder contract applies, except its Report shape: reply in the Report shape below. Authority order: this brief, the plan, the references.
 3. Load each skill under Skills with `read`, and follow it at the test seams.
-4. Change only the files in Scope. Add only the tests in Test seams.
-5. For each new test: write it, run it alone with the single-test recipe, and see it fail before you change implementation code. Quote the failing line in the report.
-6. Run the format and typecheck recipes as you go. Run the full-suite recipe once at the end.
-7. When Fix is not None, fix each item and report each ID under Fix. When an item has `guard: test`, add that test too, as an exception to rule 4. Do not add any other guard. Report it under Fix as `guard proposed: <guard>`.
-8. Do not commit.
-9. Report `status: failed` when the gate cannot pass, or a stop condition of the plan occurs. Name the cause under Deviations.
+4. Read Caveats before you change a file. Take the action of each caveat. When a caveat is wrong or does not apply, say so under Caveats in the report.
+5. Change only the files in Scope. Add only the tests in Test seams.
+6. For each new test: write it, run it alone with the single-test recipe, and see it fail before you change implementation code. Quote the failing line in the report.
+7. Run the format and typecheck recipes as you go. Run the full-suite recipe once at the end.
+8. When Fix is not None, fix each item and report each ID under Fix. When an item has `guard: test`, add that test too, as an exception to rule 5. Do not add any other guard. Report it under Fix as `guard proposed: <guard>`.
+9. Do not commit.
+10. Report `status: failed` when the gate cannot pass, or a stop condition of the plan occurs. Name the cause under Deviations.
 
 ## Report (fixed; reply in this shape)
 
@@ -146,6 +157,9 @@ status: done | failed
 ## Fix
 - <ID>: fixed | not fixed; <how, file:line>; guard: added <test name> | proposed <guard> | none
 
+## Caveats
+- <risk>: hit | not hit | wrong; <what happened, file:line>
+
 ## Gate
 - format: <recipe>; exit <n>
 - typecheck: <recipe>; exit <n>
@@ -155,6 +169,6 @@ status: done | failed
 - <deviation or stop cause>; <reason>
 ```
 
-Under Tests, write `None; <reason>` when you added no test.
+Under Tests, write `None; <reason>` when you added no test. Under Caveats, write `None` when the brief has none.
 
 {{> common.md}}

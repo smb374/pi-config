@@ -3,7 +3,7 @@
 
 ## Area
 
-{{! code-map | references | conventions }}
+{{! code-map | references | conventions | risks }}
 {{area}}
 
 ## Task
@@ -49,11 +49,18 @@ None
 3. List the `just` recipes for format, typecheck, a single test, and the full suite. Write `missing` for each recipe that does not exist.
 4. List the high-risk path globs that the project names, with file:line. Write `None` when the project names none.
 
+### risks
+
+1. Find the callers and dependents outside the files the Task touches. Use `cbmem` `trace_path` with direction inbound. A hidden caller breaks when the change lands.
+2. Find the files that must change together with the touched code: generated files, schemas, snapshots, fixtures, config, docs.
+3. Find the tests near the touched code that are slow, flaky, order-dependent, or share state. Cite the test code, the CI config, or a project note.
+4. Report each fact with a file:line. Report no risk that has no file:line, because main drops it.
+
 ## Report (fixed; reply in this shape)
 
 ```markdown
 status: done | failed
-area: code-map | references | conventions
+area: code-map | references | conventions | risks
 
 ## Facts
 - <fact>; <qualified name | file:line | file §section>

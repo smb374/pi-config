@@ -35,15 +35,10 @@ Subagent rules:
 
 ## Snapshot procedure
 
-1. Run `git status --porcelain --untracked-files=all`. Collect the path of every line that starts with `??`.
-2. If there are any, run `git add -N -- <path>...` once with all of those paths. Intent-to-add makes new files show in the diff; staging happens in step 4.6.
-3. Run `git diff --no-color --no-ext-diff <base> --output=<brief-dir>/diff.patch`.
-   - Diff against `<base>`, so the patch holds the whole change set.
-   - `--output` overwrites the old file, so you need no shell redirect.
-   - `--no-color --no-ext-diff` keep the user's git config out of the patch.
-4. Run `git diff <base> --name-only`. Compare it with the files under Changes in the worker's report. On a mismatch, or an empty patch after the worker changed files, repeat from step 1.
+1. Run `~/.pi/agent/skills/implement-flow/scripts/snapshot.sh <base> <brief-dir> 1`. The script writes `diff.patch` (the whole change set against `<base>`, new files included) and prints the names of the changed files. This flow has no re-review, so the pass is always 1.
+2. Compare the printed names with the files under Changes in the worker's report. On a mismatch, or an empty patch after the worker changed files, run the script again.
 
-Completion criterion: `diff.patch` covers every file in `git diff <base> --name-only` and every file the worker reported. To change the patch, change the tree and take a new snapshot.
+Completion criterion: `diff.patch` covers every file that the script printed and every file the worker reported. To change the patch, change the tree and take a new snapshot.
 
 ## 1. Prepare
 
@@ -85,7 +80,12 @@ Run 4.1–4.6 for each ticket in order. Finish a ticket's commit before you star
 ### 4.1 Ticket brief
 
 1. Record the ticket base: `git rev-parse HEAD`.
-2. Spawn one code-map scout for this ticket against the current HEAD, because earlier tickets changed the code. Use the template `scout.md` with the label `scout-code-map-t<n>`: Area `code-map`, Task the ticket text with its comments, Start points from the ticket. Route its conflicts through step 3.
+2. Spawn two scouts for this ticket against the current HEAD, in parallel, because earlier tickets changed the code. Use the template `scout.md` with the labels `scout-code-map-t<n>` and `scout-risks-t<n>`. Fill these fields:
+   - Area: `code-map`, and `risks`.
+   - Task: the ticket text with its comments.
+   - Start points: from the ticket.
+
+   Route their conflicts through step 3.
 3. Fill the worker brief: the template `worker.md` with the label `worker-t<n>-1`. Every field holds its content; copy the shared fields from `spec.md`.
    - Task: the ticket ID and one sentence.
    - Base: the ticket base.
@@ -96,6 +96,7 @@ Run 4.1–4.6 for each ticket in order. Finish a ticket's commit before you star
    - References: the quotes from `spec.md` that apply to this ticket.
    - Project rules: the Project rules from `spec.md`.
    - Skills: `~/.agents/skills/tdd/SKILL.md`.
+   - Caveats: from the `scout-risks-t<n>` report. Write each fact that has a file:line as `<risk> → <action>; <file:line>`. Write the action as one concrete step for the worker. Drop a fact with no file:line, and a fact with no clear action. Use None when nothing is left.
    - Plan, Prior work, Fix, Answers: None.
 
 Completion criterion: `fill` rendered the brief, with no guessed paths or values.
@@ -118,7 +119,7 @@ If the subagent status is `steered` or `aborted`, the worker hit `max_turns`: go
 
 If the report says `status: failed`, present the report to the user and stop.
 
-Check the Tests section of the report. Every test listed there needs a `red:` line. For `worker-t<n>-1`, every test under Test seams must also be listed there. If a check fails, present the report to the user and stop. This rejection does not spawn a worker and does not count against the fix cap.
+Check the Tests section of the report. Every test listed there needs a `red:` line. For `worker-t<n>-1`, every test under Test seams must also be listed there. Every caveat of the brief needs a line under Caveats. If a check fails, present the report to the user and stop. This rejection does not spawn a worker and does not count against the fix cap.
 
 Completion criterion: the subagent status is `completed`, the report passes the report check with `status: done`, its question (if any) is answered, and the Tests check passes.
 
@@ -126,7 +127,7 @@ Completion criterion: the subagent status is `completed`, the report passes the 
 
 1. Take a snapshot, so `diff.patch` and `git diff <base>` show the worker's new files.
 2. Run `git diff <base> --name-only`. Every listed file must be in the Scope of the ticket's worker brief. A file outside Scope is a **Big** finding (step 4.5).
-3. Run the format recipe, then the typecheck and full-suite recipes, yourself. Save their output to `<brief-dir>/verify.txt`, in place of any older file.
+3. Run `~/.pi/agent/skills/implement-flow/scripts/verify.sh <brief-dir> <format> <typecheck> <full-suite>`, with the three recipe names from step 1. The script runs them in order, stops at the first failure, and saves the output to `<brief-dir>/verify.txt`.
 
 If any recipe fails, go to step 4.5 with the failure output as the finding.
 
@@ -173,7 +174,7 @@ A stop (Big finding, fix cap, max turns, user rejection) keeps the brief directo
      - Recipes, References, Project rules, Skills: as in step 4.1.
      - Prior work: `<pr-brief-dir>/diff.patch — fix`.
      - Fix: the counted findings, quoted in full with their IDs, and the items in the `## Scan` section of `findings.md` except the `comment-code mismatch` items, with their `SCAN-n` IDs.
-     - Plan, Answers: None.
+     - Plan, Answers, Caveats: None.
 
      Spawn a fresh worker with it. Run steps 4.3 and 4.4 on its result, with the gate's `<base>` = HEAD. Make one commit `fix: review findings` that references the spec, and push it. Then run pr-review in caller mode again (a re-run), and repeat from item 3.
    - **Scan items** (the `## Scan` section) are not findings. Never sort them into Green, Small, or Big. Scan items alone never start a fix worker, never count against the fix cap, and never block Green. They enter a fix worker brief only through the Small item above. A `comment-code mismatch` item counts only through the Spec reviewer's finding, if it made one.

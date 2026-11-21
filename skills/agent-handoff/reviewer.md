@@ -73,6 +73,16 @@ None
 None
 {{/prior_report}}
 
+## Re-review
+
+{{! Review pass 2 or later, reviewer only (Prior report is None): the one item `<path of the last report on this axis>; delta <path of the delta patch>`. }}
+{{#re_review}}
+{{.}}
+{{/re_review}}
+{{^re_review}}
+None
+{{/re_review}}
+
 ---
 
 ## Review rules (fixed)
@@ -98,6 +108,12 @@ None
 10. A finding with severity `blocker` or `fix` has a `guard:` field. It names the cheapest check that would have caught the issue: `test`, `lint rule`, `type`, `api`, or `none`, then the concrete check in one line. Other findings have no `guard:` field.
 11. Severity: `blocker` when the target is wrong or unsafe as it is. `fix` when the target must change before the work closes. `note` for the record only.
 12. Certainty: `certain` when the evidence settles the finding. `uncertain` when it does not; then name the evidence that is missing.
+13. When Re-review is not None, review only these. The full-suite gate covers the rest.
+   - Each check that has Result `fail` in the last report. Judge it against the target.
+   - Each hunk of the delta patch, against every check of the axis. Also the callers of each symbol that the delta changes. Rule 4 allows reading them.
+   - Leave out the rows of all other checks.
+   - Give each finding of the last report one verdict under Prior findings: `fixed` or `open`. An `open` finding keeps its ID and gets `origin: prior`.
+   - Number new findings after the highest ID of the last report, with `origin: new`.
 
 ## Axis rules (fixed)
 
@@ -175,7 +191,7 @@ verdict: pass | fail
   - guard: test | lint rule | type | api | none; <the check> (blocker and fix only)
 
 ## Prior findings
-- <ID>: confirmed | refuted | revised; <evidence, and for revised the corrected claim>
+- <ID>: confirmed | refuted | revised | fixed | open; <evidence, and for revised the corrected claim>
 
 ## Read outside target
 - <path>; <the check it serves>
