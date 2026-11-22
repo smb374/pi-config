@@ -119,7 +119,7 @@ If the subagent status is `steered` or `aborted`, the worker hit `max_turns`: go
 
 If the report says `status: failed`, present the report to the user and stop.
 
-Check the Tests section of the report. Every test listed there needs a `red:` line. For `worker-t<n>-1`, every test under Test seams must also be listed there. Every caveat of the brief needs a line under Caveats. If a check fails, present the report to the user and stop. This rejection does not spawn a worker and does not count against the fix cap.
+Check the Tests section of the report. Every test listed there needs a `red:` line and a `mutation:` line. A `mutation:` line names the change and quotes a failing line. For `worker-t<n>-1`, every test under Test seams must also be listed there. Every caveat of the brief needs a line under Caveats. If a check fails, present the report to the user and stop. This rejection does not spawn a worker and does not count against the fix cap.
 
 Completion criterion: the subagent status is `completed`, the report passes the report check with `status: done`, its question (if any) is answered, and the Tests check passes.
 
