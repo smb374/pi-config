@@ -15,7 +15,7 @@
 
 ## Criteria
 
-{{! Spec and plan axes: the AC-n lines, grouped by ticket, each ticket marked `claimed` or `context`. Standards axis: the same AC-n lines, each ticket marked `context`. }}
+{{! Spec and plan axes: the AC-n lines, each written as `#<ticket> AC-n`, with the ticket marked `claimed` or `context`. Standards axis: the same lines, each ticket marked `context`. }}
 {{#criteria}}
 - {{.}}
 {{/criteria}}
@@ -99,7 +99,7 @@ None
    - Keep the prior IDs. Number new findings after the highest prior ID. Mark each finding `origin: prior` or `origin: new`.
 8. `verdict: fail` when any finding has severity `blocker` or `fix`. Otherwise `verdict: pass`.
 9. Checks is a table with one row per check. Each row is one line. No cell holds a `|`.
-   - Check: `#<ticket> AC-n`, a rule `file:line`, `plan rule <n>`, `SCAN-n`, a smell name, or `unasked`.
+   - Check: `#<ticket> AC-n` (always with the ticket), a rule `file:line`, `plan rule <n>`, `SCAN-n`, a smell name, or `unasked`.
    - Basis: `check` for a check that the axis rules name. `unasked` or `smell` for a finding that no check produced.
    - Result: `pass`, `fail`, or `unchecked`. An `unasked` or `smell` row is always `fail`.
    - Finding: for a `fail` row, the IDs of its findings, comma-separated. For `pass` and `unchecked`, `-`.

@@ -134,9 +134,11 @@ None
 3. Load each skill under Skills with `read`, and follow it at the test seams.
 4. Read Caveats before you change a file. Take the action of each caveat. When a caveat is wrong or does not apply, say so under Caveats in the report.
 5. Change only the files in Scope. Add only the tests in Test seams.
-6. For each new test: write it, run it alone with the single-test recipe, and see it fail before you change implementation code. Quote the failing line in the report.
+6. For each new test, prove it can fail. Do one of these, and quote the failing line in the report:
+   - **red**: run the test alone with the single-test recipe before the implementation exists, and see it fail.
+   - **mutation**: with `edit`, make one change in the implementation that breaks the behavior the test names (flip a condition, change a constant, or delete a call). Run the test alone with the single-test recipe. It must fail. Then undo the change with `edit`, and run the test again to see it pass. When the test still passes with the broken code, the test is too weak: fix the test, and repeat.
 7. Run the format and typecheck recipes as you go. Run the full-suite recipe once at the end.
-8. Mutation check, required for each new test, after the full suite is green: with `edit`, make one change in the implementation that breaks the behavior the test names (flip a condition, change a constant, or delete a call). Run the test alone with the single-test recipe. It must fail. Then undo the change with `edit`, and run the test again to see it pass. When the test still passes with the broken code, the test is too weak: fix the test, and repeat. Quote the failing line in the report. Run the full-suite recipe again at the end. The tree must hold no mutation.
+8. After a mutation proof, run the full-suite recipe again at the end. The tree must hold no mutation.
 9. When Fix is not None, fix each item and report each ID under Fix. When an item has `guard: test`, add that test too, as an exception to rule 5. Do not add any other guard. Report it under Fix as `guard proposed: <guard>`.
 10. Do not commit.
 11. Report `status: failed` when the gate cannot pass, or a stop condition of the plan occurs. Name the cause under Deviations.
@@ -153,7 +155,7 @@ status: done | failed
 - <path>; new | modified; +<added> -<removed>; <reason>
 
 ## Tests
-- <test name>; <seam>; red: "<quoted failing line>"; mutation: "<change made>; <quoted failing line>"; green: yes | no
+- <test name>; <seam>; proof: red "<quoted failing line>" | mutation "<change made>; <quoted failing line>"; green: yes | no
 
 ## Fix
 - <ID>: fixed | not fixed; <how, file:line>; guard: added <test name> | proposed <guard> | none
@@ -170,6 +172,6 @@ status: done | failed
 - <deviation or stop cause>; <reason>
 ```
 
-Under Tests, write `None; <reason>` when you added no test. A test with no `mutation:` entry is not done. Under Caveats, write `None` when the brief has none.
+Under Tests, write `None; <reason>` when you added no test. A test with no `proof:` entry is not done. Under Caveats, write `None` when the brief has none.
 
 {{> common.md}}
