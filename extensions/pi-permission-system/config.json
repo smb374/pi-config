@@ -95,6 +95,7 @@
         "reason": "Use read with offset and limit to slice a file. Run the command in codemode and return only the lines you need."
       },
       "~/.agents/skills/*/scripts/fill.py *": "allow",
+      "~/.pi/agent/skills/implement-flow/scripts/*": "allow",
       "rg *": "allow",
       "rg *--pre*": "deny",
       "fd *": "allow",
