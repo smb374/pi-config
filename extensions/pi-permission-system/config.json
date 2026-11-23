@@ -96,6 +96,7 @@
       },
       "~/.agents/skills/*/scripts/fill.py *": "allow",
       "~/.pi/agent/skills/implement-flow/scripts/*": "allow",
+      "~/.pi/agent/skills/agent-handoff/probe.sh *": "allow",
       "rg *": "allow",
       "rg *--pre*": "deny",
       "fd *": "allow",

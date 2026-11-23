@@ -28,9 +28,28 @@ All paths are under `~/.pi/agent/skills/agent-handoff/`.
    - Every heading of the Report section is present, in the same order.
    - Every finding, fact, or conflict has its ID and every field the shape names.
    - Reviewer reports: the Checks table has the header row of the template. Every Basis is `check`, `unasked`, or `smell`. Every Result is `pass`, `fail`, or `unchecked`. A `fail` row names at least one finding ID. A `pass` or `unchecked` row has `-` as Finding. Every finding ID is in a row, and the `source:` of the finding equals the Check cell of that row.
+   - Reviewer reports: every `certain` finding of severity `blocker` or `fix` has a `probe:` list with one or more probes. Each probe has `confirm:` and `refute:`.
 5. If the check fails, resume the same agent once with the list of missing parts. If the second report also fails the check:
    - worker: treat the report as `status: failed`;
    - reviewer: use the escalation rule of the flow for a report that failed the check;
    - any other role (scout, scan, indepth-reviewer, plan reviewer): show the report to the user, and stop.
+
+## Run probes
+
+The parent runs the probes of a reviewer report when a finding needs proof. Run a `read` probe in the live tree. Run a `mutate` probe in a throwaway worktree in `/tmp` that holds a snapshot of the dirty tree. The live tree stays unchanged, so no restore is needed.
+
+1. `probe.sh create` prints the path `<wt>` of a worktree. It holds a snapshot of the dirty tree: the tracked changes and the untracked files that git does not ignore.
+2. Run `setup:` of the probe, then its steps, in `<wt>`. The snapshot has no gitignored files, such as `node_modules`.
+3. `probe.sh remove <wt>` removes the worktree and fails when it is not gone. Report its output.
+4. Compare the output of the steps with `confirm:` and `refute:`.
+
+Run only `probe.sh` for the worktree. Do not type `git worktree` commands by hand. `probe.sh` is in this directory.
+
+Stop and report to the user when:
+- cleanup fails;
+- a probe has `cost: high`: ask the user before you run it;
+- a probe needs the live tree: ask the user before you run it.
+
+When a probe refutes a finding, resume the indepth-reviewer with the probe output. Do not drop the finding alone.
 
 To copy a brief to a new label, copy its values file to `<brief-dir>/<new label>.values.json`, change the fields that the flow names, and render it.

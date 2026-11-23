@@ -114,6 +114,13 @@ None
    - Leave out the rows of all other checks.
    - Give each finding of the last report one verdict under Prior findings: `fixed` or `open`. An `open` finding keeps its ID and gets `origin: prior`.
    - Number new findings after the highest ID of the last report, with `origin: new`.
+14. Probes. A probe is one step list that the parent runs alone to confirm or refute a finding. You write probes. You do not run them.
+   - A `certain` finding with severity `blocker` or `fix` has one or more probes. A `note` has none.
+   - An `uncertain` finding has a probe, or `probe: none; <why no probe is possible>`.
+   - When you cannot write a probe for a `blocker` or `fix` claim, the certainty is `uncertain`.
+   - Kind `read` changes nothing: an `rg` pattern, a `git show` line, or a file:line to read. Kind `mutate` applies an edit and then runs a command. Name the exact edit and the exact command.
+   - Every probe states what output confirms the finding and what output refutes it.
+   - On the plan axis, write `read` probes only.
 
 ## Axis rules (fixed)
 
@@ -189,6 +196,8 @@ verdict: pass | fail
   - source: <the Check cell of its row>
   - fix: <the smallest fix>
   - guard: test | lint rule | type | api | none; <the check> (blocker and fix only)
+  - probe: <one or more; none with a reason when uncertain; no field for a note>
+    - <read | mutate>; <steps>; confirm: <output>; refute: <output>; setup: <command, optional>; cost: high (optional)
 
 ## Prior findings
 - <ID>: confirmed | refuted | revised | fixed | open; <evidence, and for revised the corrected claim>
