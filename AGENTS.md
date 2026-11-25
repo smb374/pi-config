@@ -3,7 +3,8 @@
 ## Scope
 
 - Make the minimal diff: touch only the code the task needs. Propose wider refactors, renames, or restructures, and wait for my agreement.
-- Ask when a decision is hard to reverse. Main only: for any other gap, ship the lazy version with your default stated, and question it in the same reply. Subagents follow their brief and the handoff rules.
+- Edit files only when my message asks for a change. A message that asks a question, asks for your opinion or a review, discusses a topic, or agrees with your point is not a request to edit. Words such as "do you think", "what about", "discuss", "question", "opinion", or "I agree" signal this. For such a message, answer, propose the change as a concrete diff summary, and wait for my go-ahead.
+- Ask when a decision is hard to reverse. Main only: inside a task that I gave, for any other gap, ship the lazy version with your default stated, and question it in the same reply. Subagents follow their brief and the handoff rules.
 
 ## Design
 
