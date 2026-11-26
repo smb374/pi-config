@@ -3,7 +3,7 @@
 
 ## Axis
 
-{{! spec | standards | plan }}
+{{! spec | standards | correctness | plan }}
 {{axis}}
 
 ## Target
@@ -15,7 +15,7 @@
 
 ## Criteria
 
-{{! Spec and plan axes: the AC-n lines, each written as `#<ticket> AC-n`, with the ticket marked `claimed` or `context`. Standards axis: the same lines, each ticket marked `context`. }}
+{{! The AC-n lines, each written as `#<ticket> AC-n`. Spec and plan axes: each ticket marked `claimed` or `context`. Standards and correctness axes: each ticket marked `context`. }}
 {{#criteria}}
 - {{.}}
 {{/criteria}}
@@ -25,7 +25,7 @@ None
 
 ## Rules
 
-{{! Standards axis: the standards file paths, and the project rules quoted with file:line. Spec and plan axes: []. }}
+{{! Standards axis: the standards file paths, and the project rules quoted with file:line, read at the base ref. Other axes: []. }}
 {{#rules}}
 - {{.}}
 {{/rules}}
@@ -55,7 +55,7 @@ None
 
 ## Decide
 
-{{! The comment-code mismatch items from the scan report, each with its SCAN-n ID and file:line. }}
+{{! Spec axis only: the comment-code mismatch items from the scan report, each with its SCAN-n ID and file:line. }}
 {{#decide}}
 - {{.}}
 {{/decide}}
@@ -87,118 +87,30 @@ None
 
 ## Review rules (fixed)
 
-1. Review only the axis in Axis. Apply its subsection of Axis rules below.
-2. Report only issues that the target causes or makes reachable.
+1. Read `~/.agents/skills/code-review/SKILL.md` before you start. It is the review standard: the axis rules, the flag bar, the finding fields, the probes, the verdict, and the axis report shape. On the plan axis, also read `~/.agents/skills/to-impl-plan/references/plan-review.md`. Its plan checks replace the axis rules of the standard. The rules below add the fields of this brief to the standard.
+2. Review only the axis in Axis.
 3. When Tree matches target is `no`, the target is the only source of truth. Do not read the tree as if it were the target.
 4. Read a file outside the target only when a check cannot be done otherwise. List it under Read outside target, with the check it serves.
-5. You cannot run tests. Use Gate output as the evidence for build and test results. When a check needs a command run, mark the check `unchecked` and name the command in Evidence.
+5. You cannot run tests. Use Gate output as the evidence for build and test results.
 6. Do not report an item in a Skip category, except the items in Decide.
-7. When Prior report is not None:
+7. Decide each item in Decide, and give each one a row with Check `SCAN-n`. No issue: `pass`. A real bug: `fail`, with a normal finding of kind `wrong`.
+8. Give each finding the field `origin: new` or `origin: prior`, after `kind`.
+9. When Prior report is not None:
    - Give each prior finding one verdict under Prior findings: `confirmed`, `refuted`, or `revised`. A `revised` verdict states the corrected claim.
    - Then review the target again, as if no prior report existed.
    - Keep the prior IDs. Number new findings after the highest prior ID. Mark each finding `origin: prior` or `origin: new`.
-8. `verdict: fail` when any finding has severity `blocker` or `fix`. Otherwise `verdict: pass`.
-9. Checks is a table with one row per check. Each row is one line. No cell holds a `|`.
-   - Check: `#<ticket> AC-n` (always with the ticket), a rule `file:line`, `plan rule <n>`, `SCAN-n`, a smell name, or `unasked`.
-   - Basis: `check` for a check that the axis rules name. `unasked` or `smell` for a finding that no check produced.
-   - Result: `pass`, `fail`, or `unchecked`. An `unasked` or `smell` row is always `fail`.
-   - Finding: for a `fail` row, the IDs of its findings, comma-separated. For `pass` and `unchecked`, `-`.
-   - Evidence: `file:line`, a short reason, or the command that an `unchecked` row needs. Quoted lines go in the finding.
-   - Every finding has a row. The `source:` of the finding equals the Check cell of that row.
-10. A finding with severity `blocker` or `fix` has a `guard:` field. It names the cheapest check that would have caught the issue: `test`, `lint rule`, `type`, `api`, or `none`, then the concrete check in one line. Other findings have no `guard:` field.
-11. Severity: `blocker` when the target is wrong or unsafe as it is. `fix` when the target must change before the work closes. `note` for the record only.
-12. Certainty: `certain` when the evidence settles the finding. `uncertain` when it does not; then name the evidence that is missing.
-13. When Re-review is not None, review only these. The full-suite gate covers the rest.
-   - Each check that has Result `fail` in the last report. Judge it against the target.
-   - Each hunk of the delta patch, against every check of the axis. Also the callers of each symbol that the delta changes. Rule 4 allows reading them.
-   - Leave out the rows of all other checks.
-   - Give each finding of the last report one verdict under Prior findings: `fixed` or `open`. An `open` finding keeps its ID and gets `origin: prior`.
-   - Number new findings after the highest ID of the last report, with `origin: new`.
-14. Probes. A probe is one step list that the parent runs alone to confirm or refute a finding. You write probes. You do not run them.
-   - A `certain` finding with severity `blocker` or `fix` has one or more probes. A `note` has none.
-   - An `uncertain` finding has a probe, or `probe: none; <why no probe is possible>`.
-   - When you cannot write a probe for a `blocker` or `fix` claim, the certainty is `uncertain`.
-   - Kind `read` changes nothing: an `rg` pattern, a `git show` line, or a file:line to read. Kind `mutate` applies an edit and then runs a command. Name the exact edit and the exact command.
-   - Every probe states what output confirms the finding and what output refutes it.
-   - On the plan axis, write `read` probes only.
-
-## Axis rules (fixed)
-
-### spec
-
-1. Check each AC of each `claimed` ticket, one by one. Record each one under Checks: `pass`, `fail`, or `unchecked`. A `fail` row has a finding of kind `missing` or `wrong`.
-2. A `context` ticket is never a finding.
-3. Also report behavior in the target that no criterion asks for (kind `unasked`, Basis `unasked`).
-4. Decide each item in Decide, and give each one a row with Check `SCAN-n`. No issue: `pass`. A real bug: `fail`, with a normal finding of kind `wrong`.
-5. Findings use the ID prefix `SPEC-`.
-
-### standards
-
-1. Check the target against each rule in Rules. Give each quoted rule its own row, with its file:line as Check: `pass`, `fail`, or `unchecked`. A `fail` row has a finding of kind `violation`. A Rules entry that names a smell baseline (for example the ponytail skill) gets no row of its own. Apply it as in rule 3.
-2. Skip what tooling enforces: the formatter, and the rules of the lint config.
-3. Check the target against the smell baseline below. A smell is always kind `smell` and severity `note`. Its row has Basis `smell` and the smell name as Check. A smell with no breach gets no row. A documented project rule overrides the baseline: when a rule allows what a smell flags, do not report the smell.
-4. Criteria is context only. Give an AC no row. Do not report a change that an AC asks for as a violation or a smell.
-5. Findings use the ID prefix `STD-`.
-
-Smell baseline (Fowler, _Refactoring_, ch. 3). Each entry: what it is → how to fix it.
-
-- **Mysterious Name**: a function, variable, or type whose name does not tell what it does or holds. → Rename it. If no honest name comes, the design is not clear.
-- **Duplicated Code**: the same logic shape occurs in more than one hunk or file of the change. → Extract the shared shape, and call it from both places.
-- **Feature Envy**: a method that uses the data of another object more than its own. → Move the method to the data it uses.
-- **Data Clumps**: the same few fields or parameters travel together. → Put them in one type, and pass that type.
-- **Primitive Obsession**: a primitive or a string stands for a domain concept. → Give the concept its own small type.
-- **Repeated Switches**: the same `switch` or `if` chain on the same type occurs more than once in the change. → Use polymorphism, or one map that both places share.
-- **Shotgun Surgery**: one logical change causes edits in many files of the diff. → Put what changes together into one module.
-- **Divergent Change**: one file or module changes for more than one unrelated reason. → Split it, so that each module changes for one reason.
-- **Speculative Generality**: an abstraction, parameter, or hook for a need the spec does not have. → Delete it. Inline it until a real need occurs.
-- **Message Chains**: a long `a.b().c().d()` walk that the caller must not depend on. → Hide the walk behind one method on the first object.
-- **Middle Man**: a class or function that only passes calls on. → Remove it, and call the real target directly.
-- **Refused Bequest**: a subclass or implementer that ignores or overrides most of what it inherits. → Remove the inheritance, and use composition.
-
-### plan
-
-The target is a staged plan from plan-ticket-impl. Its rules are in `~/.agents/skills/to-impl-plan/SKILL.md`.
-
-1. For each AC, check that the plan covers it: an Action item, a named test, and an artifact under Behavior specification. Record each AC under Checks: `pass`, `fail`, or `unchecked`.
-2. Check each plan rule below. Record each rule under Checks with Check `plan rule <n>`: `pass`, `fail`, or `unchecked`.
-   1. Every section of the plan template is present, and every stage has all subsections of the Stage shape. Open questions holds `None` or the gaps.
-   2. Every gate is a literal comparison. No gate says "behavior remains correct", "semantics are preserved", or an equivalent.
-   3. Every test under Tests to add of each stage has a matching artifact with expected values under Behavior specification.
-   4. Every path in the Scope of each stage exists in the tree, is marked `(new)`, or is created by a stage under Depends on.
-   5. Every verification command comes from the project, or is labeled `(unconfirmed)` and listed under Open questions. No gate command changes the tree.
-   6. Every rule under Rules / constraints cites a file and a line range or section, and the cited text supports the rule.
-   7. The Builder contract matches `~/.agents/skills/to-impl-plan/assets/builder-contract.md` word for word.
-   8. The Action items of each stage are red → green slices in build order, and need no invention.
-   9. The Budget of each stage is inside the ticket-sizing limits of the project, and each stage leaves the tree green.
-3. Report plan content that no AC asks for (kind `unasked`, Basis `unasked`).
-4. Findings use the ID prefix `PLAN-`.
+10. When Re-review is not None, review only these. The full-suite gate covers the rest.
+    - Each check that has Result `fail` in the last report. Judge it against the target.
+    - Each hunk of the delta patch, against every check of the axis. Also the callers of each symbol that the delta changes. Rule 4 allows reading them.
+    - Leave out the rows of all other checks.
+    - Give each finding of the last report one verdict under Prior findings: `fixed` or `open`. An `open` finding keeps its ID and gets `origin: prior`.
+    - Number new findings after the highest ID of the last report, with `origin: new`.
 
 ## Report (fixed; reply in this shape)
 
+Reply in the axis report shape of the standard, with `axis:` set to the Axis of this brief. Then add these two sections, in this order:
+
 ```markdown
-status: done | failed
-axis: spec | standards | plan
-verdict: pass | fail
-
-## Checks
-| Check | Basis | Result | Finding | Evidence |
-| ----- | ----- | ------ | ------- | -------- |
-| <check> | <basis> | <result> | <finding IDs or -> | <evidence> |
-
-## Findings
-- <SPEC-n | STD-n | PLAN-n>: <one-line issue>
-  - severity: blocker | fix | note
-  - certainty: certain | uncertain; <the missing evidence, when uncertain>
-  - kind: missing | wrong | unasked | violation | smell
-  - origin: new | prior
-  - location: <file:line>
-  - evidence: <quoted line or output, tied to the location>
-  - source: <the Check cell of its row>
-  - fix: <the smallest fix>
-  - guard: test | lint rule | type | api | none; <the check> (blocker and fix only)
-  - probe: <one or more; none with a reason when uncertain; no field for a note>
-    - <read | mutate>; <steps>; confirm: <output>; refute: <output>; setup: <command, optional>; cost: high (optional)
-
 ## Prior findings
 - <ID>: confirmed | refuted | revised | fixed | open; <evidence, and for revised the corrected claim>
 

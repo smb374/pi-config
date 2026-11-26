@@ -10,7 +10,7 @@ Brief templates for the Pi subagents. Render them with the `handoff` skill: `~/.
 | Template      | Agent                          | Use                                                         |
 | ------------- | ------------------------------ | ----------------------------------------------------------- |
 | `worker.md`   | `worker`                       | Implement or fix code                                       |
-| `reviewer.md` | `reviewer`, `indepth-reviewer` | Review one axis: spec, standards, or plan                   |
+| `reviewer.md` | `reviewer`, `indepth-reviewer` | Review one axis: spec, standards, correctness, or plan      |
 | `scout.md`    | `scout`                        | Gather facts in one area: code-map, references, conventions |
 | `scan.md`     | `scout`                        | Scan a PR diff for small items (pr-review)                  |
 
@@ -25,7 +25,7 @@ All paths are under `~/.pi/agent/skills/agent-handoff/`.
 3. When the result arrives, save the final message of the agent to `<brief-dir>/<label>.report.md`.
 4. Check the report against the Report section of the template:
    - The first line is the status line.
-   - Every heading of the Report section is present, in the same order.
+   - Every heading of the Report section is present, in the same order. For a reviewer, these are the headings of the axis report shape in `~/.agents/skills/code-review/SKILL.md`, then `## Prior findings` and `## Read outside target`.
    - Every finding, fact, or conflict has its ID and every field the shape names.
    - Reviewer reports: the Checks table has the header row of the template. Every Basis is `check`, `unasked`, or `smell`. Every Result is `pass`, `fail`, or `unchecked`. A `fail` row names at least one finding ID. A `pass` or `unchecked` row has `-` as Finding. Every finding ID is in a row, and the `source:` of the finding equals the Check cell of that row.
    - Reviewer reports: every `certain` finding of severity `blocker` or `fix` has a `probe:` list with one or more probes. Each probe has `confirm:` and `refute:`.
@@ -33,6 +33,19 @@ All paths are under `~/.pi/agent/skills/agent-handoff/`.
    - worker: treat the report as `status: failed`;
    - reviewer: use the escalation rule of the flow for a report that failed the check;
    - any other role (scout, scan, indepth-reviewer, plan reviewer): show the report to the user, and stop.
+
+## Escalate a review
+
+The flows that spawn reviewers use this rule. **Big** is defined in `~/.agents/skills/code-review/SKILL.md`, section **Verdict and Big**.
+
+Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
+
+- A finding is `uncertain` and its kind is not `smell`. A smell is a judgement call; never escalate on it alone.
+- A finding is **Big**.
+- The target touches a path that matches a high-risk glob of the flow. This triggers every axis.
+- The reviewer report failed the report check twice.
+
+Copy the reviewer brief of that axis to the label `<reviewer label>-indepth`. Set Prior report to the saved reviewer report, and set Re-review to None. The `indepth-reviewer` always reviews the whole target. When an axis has an `indepth-reviewer` report, use it in place of the `reviewer` report for that axis. Escalate once per axis in each review pass; do not loop.
 
 ## Run probes
 

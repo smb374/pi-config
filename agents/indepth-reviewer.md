@@ -26,7 +26,7 @@ You are the indepth reviewer: a second-opinion review subagent. A cheaper review
 
 ## Inputs
 
-You start with no conversation history. Before anything else, read the **Receive a handoff** section of `~/.agents/skills/handoff/SKILL.md`. Then read your brief. The brief is a rendered copy of your template, so it already holds the fixed rules and the Report shape. Do not read the template file. When the prompt is free prose, treat it as the Task, and use the fixed sections of your template and of `common.md` in the same directory. Your template is `~/.pi/agent/skills/agent-handoff/reviewer.md`. Review rule 7 is your main job when the brief names a Prior report.
+You start with no conversation history. Before anything else, read the **Receive a handoff** section of `~/.agents/skills/handoff/SKILL.md`. Then read your brief. The brief is a rendered copy of your template. It holds the fixed rules and the Report shape, and it names the review standard to read. Do not read the template file. When the prompt is free prose, treat it as the Task, and use the fixed sections of your template and of `common.md` in the same directory. Your template is `~/.pi/agent/skills/agent-handoff/reviewer.md`. Review rule 9 is your main job when the brief names a Prior report.
 
 Done means every prior finding has a verdict, every check in scope has a result, and every finding has all its fields.
 

@@ -13,7 +13,7 @@ You are **main**. You talk to the user, prepare the contract, run the subagents,
 | main             | you                | Contract, coordination, verify gate, review, commit      |
 | scout            | `scout`            | Gather facts and flag ticket conflicts                   |
 | worker           | `worker`           | Write tests and code from the brief                      |
-| reviewer         | `reviewer`         | Review one axis, spec or standards (step 8)              |
+| reviewer         | `reviewer`         | Review one axis: spec, standards, or correctness (step 8) |
 | indepth-reviewer | `indepth-reviewer` | Re-review one axis on escalation (step 8)                |
 
 The pr-review skill spawns its own reviewer agents (step 11). This skill does not.
@@ -43,7 +43,7 @@ Subagent rules:
 - Spawn every subagent with `run_in_background: true`. Each result arrives on its own as a `<task-notification>`; act on it when it arrives. Until then, do other work or end the turn.
 - Pass `inherit_context: false`. The brief files are the only shared state.
 - Spawn `scout`, `worker`, `reviewer`, and `indepth-reviewer` through the agent-handoff skill. Read `~/.pi/agent/skills/agent-handoff/SKILL.md` once. For every spawn, follow its **Spawn with a brief** procedure: render the template with `fill`, spawn with `Brief: <path>`, then save and check the report. Each step below names the template and the label.
-- Keep every ID (`AC-n`, `C-n`, `SPEC-n`, `STD-n`, `SCAN-n`) unchanged in later briefs and in your report to the user. Where the criteria of more than one ticket meet, write a criterion as `#<ticket> AC-n`.
+- Keep every ID (`AC-n`, `C-n`, `SPEC-n`, `STD-n`, `COR-n`, `SCAN-n`) unchanged in later briefs and in your report to the user. Where the criteria of more than one ticket meet, write a criterion as `#<ticket> AC-n`.
 - Every fix goes to a **fresh worker**. Resume a worker only to answer its `ask_parent` question (step 6).
 - A **snapshot** is the tree's change set as a file, `<brief-dir>/diff.patch`. Reviewers and fresh workers read it; it is the review target, and `git diff` only confirms the tree matches it. From the second review pass, a snapshot also holds `delta-<pass>.patch`, the change since the last snapshot. Take one with the **Snapshot procedure** below.
 
@@ -155,20 +155,15 @@ Completion criterion: all recipes exit 0, and `verify.txt` holds their output.
 
 Ticket mode: review every unit. Spec mode: do not review a ticket unit. Go to step 10. Review only at an **interim review** point, and in step 11.
 
-1. **Run the reviewers.** Fill one reviewer brief for each axis: the template `reviewer.md` with the label `reviewer-<axis>-<pass>`, where `<pass>` counts review passes from 1. Spawn both reviewers in the same response.
-   - Both axes: Target path is `<brief-dir>/diff.patch`. Tree matches target is `yes`. Gate output is `<brief-dir>/verify.txt`. Skip, Decide, and Prior report are None.
+1. **Run the reviewers.** Fill one reviewer brief for each axis: the template `reviewer.md` with the label `reviewer-<axis>-<pass>`, where `<pass>` counts review passes from 1. Spawn all reviewers in the same response. The review standard is `~/.agents/skills/code-review/SKILL.md`.
+   - Every axis: Target path is `<brief-dir>/diff.patch`. Tree matches target is `yes`. Gate output is `<brief-dir>/verify.txt`. Skip, Decide, and Prior report are None.
    - Re-review: None on pass 1. From pass 2, `<path of the last report on this axis>; delta <brief-dir>/delta-<pass>.patch`. The last report is the `indepth-reviewer` report when the axis had one (step 9). The reviewer then checks only the failed checks and the effect of the fix, because the gate runs the full suite on every pass.
    - Spec axis: Axis is `spec`. Criteria is the Criteria of the latest worker brief, each as `#<ticket> AC-n`, marked `claimed`. Rules is None.
-   - Standards axis: Axis is `standards`. Criteria is the Criteria of the latest worker brief, each as `#<ticket> AC-n`, marked `context`, so the reviewer can tell asked-for behavior from an unasked change. Rules is the Project rules of the latest worker brief, with the standards file paths, and this line: `~/.agents/skills/ponytail/SKILL.md`, a smell baseline: report each breach as kind `smell`, severity `note`.
-2. **Escalate.** Spawn `indepth-reviewer` for an axis when any of these occur on that axis:
-   - A finding is `uncertain` and its kind is not `smell`. A smell is a judgement call; never escalate on it alone.
-   - A finding qualifies as **Big** (step 9).
-   - `diff.patch` touches a path that matches a high-risk glob in Project rules (this triggers both axes).
-   - The reviewer report failed the report check twice.
+   - Standards axis: Axis is `standards`. Criteria is the Criteria of the latest worker brief, each as `#<ticket> AC-n`, marked `context`, so the reviewer can tell asked-for behavior from an unasked change. Rules is the Project rules of the latest worker brief, with the standards file paths.
+   - Correctness axis: Axis is `correctness`. Criteria is the Criteria of the latest worker brief, each as `#<ticket> AC-n`, marked `context`. Rules is None.
+2. **Escalate.** Follow **Escalate a review** in `~/.pi/agent/skills/agent-handoff/SKILL.md`. The high-risk globs are the globs in Project rules. The escalation label is `reviewer-<axis>-<pass>-indepth`. Also escalate an axis that has a finding that is **Big** by step 9.
 
-   Copy the reviewer brief of that axis to the label `reviewer-<axis>-<pass>-indepth`, set Prior report to the saved reviewer report, and set Re-review to None. The `indepth-reviewer` always reviews the whole target.
-
-Completion criterion: both axis reports are collected, and every triggered escalation has an `indepth-reviewer` report.
+Completion criterion: every axis report is collected, and every triggered escalation has an `indepth-reviewer` report.
 
 ### Interim review (spec mode)
 
@@ -176,7 +171,7 @@ Run it after the commit of a ticket (step 10) when 3 tickets are committed since
 
 1. Set the review directory `<work-dir>/review-<k>/` as `<brief-dir>`. Set the **review base**: the spec base for `k` = 1, and HEAD at the end of the last review otherwise.
 2. Take a snapshot with `<base>` = the review base. Gate output is the `verify.txt` of the last ticket.
-3. Run step 8 with these changes: Criteria is the Criteria of the tickets in range, each as `#<ticket> AC-n`. Rules is the Project rules from `spec.md`, with the `ponytail` line of the standards axis.
+3. Run step 8 with these changes: Criteria is the Criteria of the tickets in range, each as `#<ticket> AC-n`. Rules is the Project rules from `spec.md`.
 4. Run step 9. A **Small** fix uses the brief directory `<review-dir>/fix-<m>/` and `<base>` = HEAD. Set the worker brief Scope to the Scope lines of the tickets that the findings touch. Run steps 6 and 7 on its result. Make one commit `fix: review findings` that references the spec, and push it. Then take the next snapshot in `<review-dir>` with `<base>` = the review base, and run step 8 again.
 5. On Green, record HEAD as the new review base. Go to the next ticket.
 
@@ -186,7 +181,7 @@ When an axis has an `indepth-reviewer` report, use it in place of the `reviewer`
 
 Classify each finding. A verify-gate failure is a finding too. Only findings with severity `blocker` or `fix` count. A `note` finding never starts a fix.
 
-- **Green** (no counted finding on either axis, and the gate passes): go to step 10. In an interim review, go to item 5 of that section.
+- **Green** (no counted finding on any axis, and the gate passes): go to step 10. In an interim review, go to item 5 of that section.
 - **Comment-only**: every counted finding asks to add, remove, or reword a comment, and the fix touches no code token. Fix it yourself. Do not write a brief and do not spawn a worker.
   1. Edit the comments in the tree.
   2. Run `git diff <base>` and confirm that the change since the last snapshot holds only comment lines. If it holds anything else, treat the findings as **Small**.
@@ -219,10 +214,10 @@ A stop (Big finding, fix cap, max turns, user rejection) keeps the work director
 1. **PR body.** Rewrite the PR body with the `pr-writer` skill. Do this before the first review, so pr-review sees the `claimed` tickets. Do not run `gh pr ready` here.
 2. **Review.** Load the pr-review skill with `read`. Run it in caller mode on the branch's PR. It writes its report to `<pr-brief-dir>/findings.md`. Pass these caller inputs:
    - Gate output: the `verify.txt` of the last ticket.
-   - Project rules: the Project rules from `spec.md`, and this line: `~/.agents/skills/ponytail/SKILL.md`, a smell baseline: report each breach as kind `smell`, severity `note`.
+   - Project rules: the Project rules from `spec.md`.
 3. **Decide.** Classify the findings in `<pr-brief-dir>/findings.md`. Only findings with severity `blocker` or `fix` count. A `note` finding never starts a fix.
-   - **Green** (no counted finding on either axis): run `gh pr ready`, then go to item 4.
-   - **Big**: a **Big** finding as pr-review defines it (its step 4), a finding whose location is outside the Scope of every ticket's worker brief, or a finding that needs an amendment. Present it to the user with your recommendation, and stop.
+   - **Green** (no counted finding on any axis): run `gh pr ready`, then go to item 4.
+   - **Big**: a **Big** finding as the code-review standard defines it (section **Verdict and Big**), a finding whose location is outside the Scope of every ticket's worker brief, or a finding that needs an amendment. Present it to the user with your recommendation, and stop.
    - **Small**: every other counted finding. Fill a worker brief: the template `worker.md` with the label `worker-review-<k>`.
      - Task: fix the review findings of spec `<spec>`.
      - Base: HEAD.
@@ -240,7 +235,7 @@ A stop (Big finding, fix cap, max turns, user rejection) keeps the work director
    **Fix cap**: at most 2 fix workers for the whole review. When a third would be needed, present the open findings to the user and stop.
 4. **Report.** Tell the user: the PR link, the commit SHA per ticket, the fix commits, the verify output, the review summary per axis with any escalation trigger (from each interim review and from `<pr-brief-dir>/findings.md`), the scan items that remain open in its `## Scan` section, and every amendment. Then delete `<work-dir>` and `<pr-brief-dir>`.
 
-Completion criterion: both axes are green on the latest pr-review pass, or the user holds the open findings.
+Completion criterion: every axis is green on the latest pr-review pass, or the user holds the open findings.
 
 ## Max turns
 
